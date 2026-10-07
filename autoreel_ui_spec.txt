@@ -1,0 +1,471 @@
+AUTOREEL LANDING PAGE - UI/UX SPEC FOR AI AGENT
+==================================================
+
+MUC TIEU
+-------
+Build landing page cho AutoReel theo dinh vi:
+"AI Content Automation - Tao video hang loat. Xu ly tu dong. Dang thang len nen tang."
+
+Target user:
+- Affiliate creator ca nhan
+- Content creator / page owner
+- Shop / team content nho
+- Nhom affiliate
+
+Landing page KHONG nen trong nhu website SaaS corporate kho khan.
+Can hien dai, high-tech, de hieu, de scan, tap trung vao demo va workflow.
+
+TECH STACK DE XUAT
+------------------
+Nen dung:
+- React
+- Vite
+- Tailwind CSS
+- Lucide React cho icons
+- Framer Motion chi dung animation nhe neu can
+
+Khong can backend.
+Khong can Next.js o giai doan nay.
+Output production:
+- npm run build
+- dist/
+
+Phu hop deploy Cloudflare Pages:
+Build command: npm run build
+Output directory: dist
+
+PROJECT STRUCTURE GOI Y
+----------------------
+src/
+  main.jsx
+  App.jsx
+  components/
+    Navbar.jsx
+    Hero.jsx
+    WorkflowSection.jsx
+    WorkflowCard.jsx
+    HowItWorks.jsx
+    Benefits.jsx
+    DemoSection.jsx
+    ProofSection.jsx
+    Pricing.jsx
+    FAQ.jsx
+    CTA.jsx
+    Footer.jsx
+  data/
+    workflows.js
+    features.js
+    pricing.js
+    faq.js
+  assets/
+    logo/
+    screenshots/
+    demo/
+  styles/
+    globals.css
+
+VISUAL STYLE
+------------
+Theme:
+- Dark technology
+- Premium AI/video automation
+- Clean, simple, professional
+- Khong lam qua nhieu neon den muc roi mat
+
+Main colors:
+- Background: #070B1A
+- Surface: #11172D
+- Secondary surface: #151D38
+- Text: #F8FAFF
+- Muted: #AEB8D4
+- Cyan: #37D9FF
+- Blue: #5B78FF
+- Purple: #9B5CFF
+- Pink accent: #EF4FC4
+
+Gradient:
+cyan -> blue -> purple -> pink
+
+Border:
+rgba(255,255,255,0.08~0.12)
+
+Cards:
+- border-radius 18-24px
+- subtle gradient
+- light glow only on hover/important cards
+- no heavy glassmorphism everywhere
+
+Typography:
+- Inter / Geist / Manrope
+- Headline bold 700-900
+- Large negative letter spacing for hero
+- Body easy to read
+
+Responsive:
+Desktop:
+- max-width 1180-1240px
+Tablet:
+- 2-column feature grids
+Mobile:
+- 1-column
+- CTA full-width
+- hide desktop navbar links, use mobile menu if needed
+
+HEADER / NAVBAR
+---------------
+Sticky navbar, transparent dark blur.
+
+Left:
+AutoReel logo + text
+
+Menu:
+- Workflow
+- Loi ich
+- Demo
+- Bang gia
+- FAQ
+
+Right:
+Primary CTA: "Lien he" or "Dung thu AutoReel"
+
+Hero must appear immediately under navbar.
+
+HERO
+----
+Badge:
+"AI CONTENT AUTOMATION"
+
+Headline:
+"Tao video hang loat.
+Xu ly tu dong. Dang thang len nen tang."
+
+Highlight second line with gradient.
+
+Subheadline:
+"Bien san pham, video co san hoac y tuong thanh noi dung hoan chinh
+va tu dong dang len Shopee, Facebook/Reels chi trong mot workflow."
+
+Support:
+"Khong can chuyen qua nhieu tool. Khong can dang thu cong tung video."
+
+CTA:
+Primary: "Xem Demo"
+Secondary: "Dung thu AutoReel"
+
+Trust chips:
+- Affiliate Flow
+- Reup Flow
+- AI Review
+- AI Voice tieng Viet
+- Auto Publish
+
+Hero visual (right desktop, below mobile):
+Create an abstract workflow UI, not generic stock art:
+INPUT
+-> AUTOREEL
+-> CREATE + PROCESS
+-> VIDEO + CAPTION
+-> SHOPEE / FACEBOOK
+
+Can look like product workflow cards connected vertically.
+Optional animated glowing connector.
+Do NOT use random robot illustration.
+
+WORKFLOW SECTION
+----------------
+Title:
+"Mot AutoReel. Ba workflow chinh."
+
+3 cards equal visual priority.
+
+1) Affiliate Flow
+Icon: shopping bag/cart
+Headline:
+"Tu san pham -> Video -> Dang ban"
+Mini flow:
+San pham -> AI Content -> Video -> Caption -> Shopee/Facebook
+Features:
+- bulk video
+- AI voice
+- subtitle
+- caption
+- publish
+
+2) Reup / Repurpose Flow
+Icon: repeat/recycle
+Headline:
+"Bien video co san thanh noi dung moi"
+Mini flow:
+Video -> Highlight/Dub/Branding -> Final Video -> Publish
+Features:
+- YouTube/TikTok/local file
+- highlight
+- dub
+- subtitle
+- branding
+- logo/text
+
+Use "Repurpose" prominently enough so product feels professional,
+not positioned around copyright infringement.
+
+3) AI Review Flow
+Icon: film/play/sparkles
+Headline:
+"Mot video nguon -> Nhieu video moi"
+Mini flow:
+1 video -> AI Analyze -> Rewrite -> N Scripts -> N Videos -> Publish
+Features:
+- analyze original script/content
+- rewrite variants
+- voice/speed/music
+- caption/publish
+
+HOW IT WORKS
+------------
+4 horizontal steps desktop, vertical mobile:
+01 Input
+02 Chon Flow
+03 AutoReel xu ly
+04 Publish
+
+Use simple line/arrow connector.
+
+BENEFITS
+--------
+Grid 8 items:
+- Tiet kiem thoi gian
+- Xu ly hang loat
+- AI linh hoat
+- AI Voice tieng Viet
+- Branding tu dong
+- Auto Publish
+- Telegram Remote
+- Local-first
+
+Each card:
+small icon
+title
+max 1-2 line description
+
+Avoid excessive text.
+
+DEMO SECTION
+------------
+This is a high priority section.
+
+Two-column layout:
+Left:
+Badge "DEMO THUC TE"
+Headline:
+"Xem AutoReel hoat dong thay vi chi doc tinh nang."
+
+3 demo examples:
+- Affiliate: 10 san pham -> 10 video -> Publish
+- Reup: Video dai -> Highlight -> Branding -> Reels
+- Review: 1 video -> AI Analyze -> multiple videos
+
+Right:
+16:9 video player placeholder.
+Later embed YouTube or local MP4.
+
+Primary CTA:
+"Xem Demo"
+
+PROOF / SOCIAL PROOF
+--------------------
+Do NOT fake testimonials.
+
+Initially use real platform metrics only:
+XX+ Video da tao
+XX+ Workflow da hoan thanh
+X Nen tang duoc ho tro
+
+Mark in code/data as placeholders that must be replaced before production.
+
+Later this area can support:
+- real testimonials
+- screenshots
+- case studies
+
+PRICING
+-------
+Only 2 packages for now.
+
+Layout:
+Centered 2-column pricing, max width around 900px.
+
+PERSONAL
+1.490.000 VND
+Lifetime License
+
+Target:
+Affiliate & Creator ca nhan
+
+Include:
+- 3 flows
+- AI Video
+- Vietnamese Voice
+- Highlight
+- Branding
+- AI Caption
+- Shopee + Facebook
+- Telegram
+- 1 PC
+- 1 Shopee account
+- 2 Facebook pages
+- 10 videos/batch
+- 1 concurrent job
+
+TEAM
+3.990.000 VND
+Lifetime License
+
+Badge:
+MOST POPULAR
+
+Target:
+team content / shop / affiliate team
+
+Include:
+- everything Personal
+- 3 PCs
+- 5 Shopee accounts
+- 10 Facebook pages
+- 50 videos/batch
+- 3 concurrent jobs
+- multi-account
+- campaign management
+- scheduler
+- priority support
+
+Team card visually more prominent but not dramatically larger.
+
+Pricing note:
+"Khong co phi thue bao AutoReel bat buoc hang thang.
+License lifetime cho phien ban da mua.
+Chi phi AI/API ben thu ba, neu co, thanh toan rieng."
+
+Do not mention Agency package.
+
+FAQ
+---
+Accordion, one open item at a time.
+
+Questions:
+1. AutoReel co phai tra phi hang thang khong?
+2. AutoReel chay o dau?
+3. Co can biet edit video khong?
+4. Co the tao nhieu video cung luc khong?
+5. Ho tro AI nao?
+6. Co ho tro tieng Viet khong?
+7. Co tu dang video khong?
+8. Telegram Remote dung de lam gi?
+9. AutoReel co tu dong kiem tien Affiliate khong?
+10. Co the dung video cua nguoi khac khong?
+
+For content-rights FAQ:
+Clearly state user should only use content they own or have permission to use.
+
+FINAL CTA
+---------
+High impact gradient panel.
+
+Headline:
+"Dung danh ca ngay cho nhung thao tac co the tu dong hoa."
+
+Subheadline:
+"Tao -> Xu ly -> Dang."
+
+Supporting text:
+"De AutoReel xu ly workflow video, con ban tap trung vao noi dung,
+san pham va tang truong."
+
+Buttons:
+- "Lien he Zalo"
+- "WhatsApp"
+
+Contact:
+0326012999
+
+Brand line:
+AutoReel - AI Content Automation
+Create. Process. Publish. Automate.
+
+FOOTER
+------
+AutoReel logo
+AI Content Automation Platform
+
+Links:
+Workflow / Demo / Pricing / FAQ / Contact
+
+Domain:
+autoreelvn.com
+
+INTERACTIONS
+------------
+Keep animation subtle:
+- hero cards fade/slide
+- card hover border glow
+- smooth scroll
+- FAQ accordion
+- optional animated workflow connector
+
+Avoid:
+- heavy particle effects
+- 3D scenes that slow page
+- excessive parallax
+- autoplay audio
+- huge JS bundles
+
+SEO
+---
+Title:
+AutoReel - AI Content Automation | Tao va dang video tu dong
+
+Description:
+AutoReel giup Affiliate va Creator tao, xu ly va dang video tu dong
+len Shopee va Facebook/Reels trong mot workflow.
+
+Add:
+- OpenGraph
+- favicon
+- canonical autoreelvn.com
+- semantic headings
+- descriptive alt text
+
+PERFORMANCE
+-----------
+Target Lighthouse:
+Performance >= 90
+Accessibility >= 90
+SEO >= 90
+
+Use:
+- lazy load images/video
+- WebP/AVIF
+- compressed assets
+- no unnecessary dependencies
+
+IMPORTANT PRODUCT POSITIONING
+-----------------------------
+Do not present AutoReel as just "AI video generator".
+
+Core message:
+"Tao -> Xu ly -> Dang"
+
+Main value:
+one end-to-end automation workflow.
+
+Do not make the landing page a long feature catalog.
+Workflows + Demo + Pricing should dominate the page.
+
+DELIVERABLE
+-----------
+AI Agent should:
+1. Build responsive React + Vite + Tailwind implementation.
+2. Reuse exact content/structure from supplied HTML unless UI refinement improves clarity.
+3. Keep all content editable via small data arrays/objects.
+4. Run npm run build and fix all errors.
+5. Ensure dist/ is generated.
+6. Prepare for Cloudflare Pages deployment.

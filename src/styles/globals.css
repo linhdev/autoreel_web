@@ -1,0 +1,1053 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   AutoReel — design tokens
+   Dark premium SaaS: cyan → blue → purple → pink on a deep navy base.
+   ========================================================================== */
+@theme {
+  --color-ink: #070b1a;
+  --color-ink-2: #0b1024;
+  --color-surface: #11172d;
+  --color-surface-2: #151d38;
+  --color-cream: #f8faff;
+  --color-muted: #aeb8d4;
+  --color-cyan-brand: #37d9ff;
+  --color-blue-brand: #5b78ff;
+  --color-purple-brand: #9b5cff;
+  --color-pink-brand: #ef4fc4;
+  --color-green-brand: #55e6a5;
+}
+
+:root {
+  --bg: #070b1a;
+  --bg-2: #0b1024;
+  --surface: #11172d;
+  --surface-2: #151d38;
+  --text: #f8faff;
+  --muted: #aeb8d4;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-soft: rgba(255, 255, 255, 0.06);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --cyan: #37d9ff;
+  --blue: #5b78ff;
+  --purple: #9b5cff;
+  --pink: #ef4fc4;
+  --green: #55e6a5;
+  --grad-brand: linear-gradient(135deg, #37d9ff 0%, #5b78ff 38%, #9b5cff 68%, #ef4fc4 100%);
+  --grad-brand-soft: linear-gradient(
+    135deg,
+    rgba(55, 217, 255, 0.85),
+    rgba(91, 120, 255, 0.85),
+    rgba(155, 92, 255, 0.85),
+    rgba(239, 79, 196, 0.85)
+  );
+  --shadow-card: 0 18px 55px rgba(0, 0, 0, 0.22);
+  --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.35);
+  --radius-card: 22px;
+  --radius-panel: 30px;
+  --nav-h: 72px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family:
+      'Inter',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      sans-serif;
+    color: var(--text);
+    background-color: var(--bg);
+    background-image: linear-gradient(180deg, var(--bg), #090d1d 48%, #060916);
+    line-height: 1.6;
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* NOTE: no `overflow-x: hidden` here — it would turn <body> into a scroll
+       container and break the sticky navbar. Decorative overflow is clipped by
+       the hero section instead. */
+  }
+
+  /* Brand tint over the whole page. `fixed` (rather than
+     background-attachment: fixed) keeps it on its own composited layer, so
+     scrolling never repaints it. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 12% 6%, rgba(55, 217, 255, 0.13), transparent 26%),
+      radial-gradient(circle at 88% 10%, rgba(155, 92, 255, 0.17), transparent 28%);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  ::selection {
+    background: rgba(155, 92, 255, 0.4);
+    color: #fff;
+  }
+
+  /* Anchors clear the sticky navbar */
+  section[id],
+  main[id] {
+    scroll-margin-top: calc(var(--nav-h) + 16px);
+  }
+}
+
+/* ==========================================================================
+   Components
+   ========================================================================== */
+@layer components {
+  .ar-container {
+    width: min(1180px, 92%);
+    margin-inline: auto;
+  }
+
+  .ar-section {
+    padding: 80px 0;
+  }
+
+  /* ---- Section heading ---- */
+  .ar-section-head {
+    max-width: 790px;
+    margin: 0 auto 44px;
+    text-align: center;
+  }
+
+  .ar-section-head h2 {
+    margin: 0 0 14px;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+  }
+
+  .ar-section-head p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.02rem;
+  }
+
+  /* ---- Text helpers ---- */
+  .ar-gradient-text {
+    background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple), var(--pink));
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Brand wordmark */
+  .ar-brand-text {
+    background: linear-gradient(90deg, #f8faff 10%, #cfefff 45%, #c8b8ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---- Badge ---- */
+  .ar-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(55, 217, 255, 0.3);
+    background: rgba(55, 217, 255, 0.08);
+    color: #dcf9ff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1;
+  }
+
+  /* ---- Buttons ---- */
+  .ar-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 20px;
+    border-radius: 14px;
+    font-weight: 800;
+    font-size: 0.98rem;
+    line-height: 1.2;
+    border: 1px solid transparent;
+    cursor: pointer;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      transform 0.25s var(--ease-out),
+      box-shadow 0.25s var(--ease-out),
+      border-color 0.25s var(--ease-out),
+      background-color 0.25s var(--ease-out);
+  }
+
+  .ar-btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, var(--blue), var(--purple), var(--pink));
+    box-shadow: 0 14px 40px rgba(109, 82, 255, 0.28);
+  }
+
+  /* Subtle gradient drift on primary CTAs (transform-only → stays on the compositor) */
+  .ar-btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: -60% -20%;
+    z-index: -1;
+    background: linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(55, 217, 255, 0.55) 42%,
+      rgba(239, 79, 196, 0.5) 58%,
+      transparent 80%
+    );
+    transform: translate3d(-60%, 0, 0);
+    animation: ar-cta-sheen 7s ease-in-out infinite;
+  }
+
+  .ar-btn-secondary {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.045);
+    border-color: var(--line);
+  }
+
+  .ar-btn-lg {
+    padding: 15px 26px;
+    font-size: 1.02rem;
+  }
+
+  /* ---- Cards ---- */
+  .ar-card {
+    position: relative;
+    padding: 26px;
+    border-radius: var(--radius-card);
+    border: 1px solid var(--line);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025));
+    box-shadow: var(--shadow-card);
+    transition:
+      transform 0.35s var(--ease-out),
+      border-color 0.35s var(--ease-out),
+      box-shadow 0.35s var(--ease-out);
+  }
+
+  /* Gradient border ring, revealed on hover/focus */
+  .ar-card-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--cyan), var(--blue), var(--purple), var(--pink));
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.35s var(--ease-out);
+    pointer-events: none;
+  }
+
+  .ar-card h3 {
+    margin: 12px 0 10px;
+    font-size: 1.28rem;
+    font-weight: 800;
+  }
+
+  .ar-card p {
+    color: var(--muted);
+    font-size: 0.96rem;
+  }
+
+  /* Compact variant used by the 8-item benefit grid */
+  .ar-benefit {
+    padding: 24px;
+  }
+
+  .ar-benefit h3 {
+    margin: 12px 0 6px;
+    font-size: 1.06rem;
+  }
+
+  .ar-benefit p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+
+  /* ---- Icon tile ---- */
+  .ar-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #eaf4ff;
+    background: linear-gradient(135deg, rgba(55, 217, 255, 0.16), rgba(155, 92, 255, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* ---- Trust pills ---- */
+  .ar-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    color: #dde5fa;
+    font-size: 0.86rem;
+    line-height: 1.2;
+  }
+
+  /* ---- Checklist ---- */
+  .ar-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+  }
+
+  .ar-checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 9px 0;
+    color: #dce4f7;
+    font-size: 0.94rem;
+    line-height: 1.5;
+  }
+
+  .ar-checklist svg {
+    flex: 0 0 auto;
+    margin-top: 4px;
+    color: var(--green);
+  }
+
+  /* ---- Mini flow strip inside workflow cards ---- */
+  .ar-mini-flow {
+    margin: 18px 0;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #0b1124;
+    border: 1px solid var(--line);
+    color: #dde5f8;
+    font-size: 0.88rem;
+    line-height: 1.5;
+  }
+
+  /* ---- Sticky nav ---- */
+  .ar-nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(7, 11, 26, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+    transition:
+      background-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+
+  .ar-nav-scrolled {
+    background: rgba(7, 11, 26, 0.9);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .ar-nav-link {
+    position: relative;
+    color: #d7dff3;
+    font-weight: 700;
+    font-size: 0.98rem;
+    padding: 6px 2px;
+    transition: color 0.2s ease;
+  }
+
+  .ar-nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out);
+  }
+
+  .ar-nav-link:hover {
+    color: var(--text);
+  }
+
+  .ar-nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* ---- Hero ---- */
+  .ar-hero {
+    position: relative;
+    padding: 92px 0 72px;
+    display: grid;
+    grid-template-columns: 1.06fr 0.94fr;
+    gap: 54px;
+    align-items: center;
+  }
+
+  .ar-hero h1 {
+    font-size: clamp(2.6rem, 5.6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+    margin: 18px 0 22px;
+  }
+
+  .ar-hero-lede {
+    font-size: 1.11rem;
+    color: var(--muted);
+    max-width: 720px;
+  }
+
+  .ar-hero-lede strong {
+    color: #e8eeff;
+    font-weight: 700;
+  }
+
+  /* Ambient animated glow behind the hero */
+  .ar-aurora {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: -1;
+    will-change: transform;
+  }
+
+  .ar-aurora-1 {
+    width: 46vw;
+    height: 46vw;
+    max-width: 620px;
+    max-height: 620px;
+    top: -14%;
+    left: -12%;
+    background: radial-gradient(circle, rgba(55, 217, 255, 0.5), transparent 68%);
+    animation: ar-drift-a 26s ease-in-out infinite;
+  }
+
+  .ar-aurora-2 {
+    width: 42vw;
+    height: 42vw;
+    max-width: 560px;
+    max-height: 560px;
+    top: 4%;
+    right: -14%;
+    background: radial-gradient(circle, rgba(155, 92, 255, 0.55), transparent 68%);
+    animation: ar-drift-b 32s ease-in-out infinite;
+  }
+
+  .ar-aurora-3 {
+    width: 34vw;
+    height: 34vw;
+    max-width: 460px;
+    max-height: 460px;
+    bottom: -18%;
+    left: 34%;
+    background: radial-gradient(circle, rgba(239, 79, 196, 0.32), transparent 70%);
+    animation: ar-drift-c 38s ease-in-out infinite;
+  }
+
+  /* ---- Hero workflow visual ---- */
+  .ar-hero-visual {
+    position: relative;
+    padding: 28px;
+    border-radius: var(--radius-panel);
+    background:
+      radial-gradient(circle at 20% 18%, rgba(55, 217, 255, 0.22), transparent 30%),
+      radial-gradient(circle at 82% 24%, rgba(155, 92, 255, 0.23), transparent 32%),
+      linear-gradient(145deg, #10172f, #090d1e 70%);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-panel);
+    overflow: hidden;
+  }
+
+  .ar-flow-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 17px;
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid var(--line);
+    animation: ar-node-pulse 6s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * 1.2s);
+    transition: background-color 0.3s ease;
+  }
+
+  .ar-flow-card strong {
+    display: block;
+    font-size: 0.94rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .ar-flow-card small {
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+
+  .ar-flow-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: #eaf4ff;
+    background: linear-gradient(135deg, rgba(55, 217, 255, 0.18), rgba(155, 92, 255, 0.22));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Connector with a light pulse travelling top → bottom */
+  .ar-connector {
+    position: relative;
+    width: 2px;
+    height: 26px;
+    margin: 0 auto;
+    border-radius: 2px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  }
+
+  .ar-connector::after {
+    content: '';
+    position: absolute;
+    inset: -100% 0;
+    background: linear-gradient(180deg, transparent, var(--cyan) 45%, #fff 50%, var(--purple) 55%, transparent);
+    transform: translate3d(0, -100%, 0);
+    animation: ar-trail 6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    animation-delay: calc(var(--i, 0) * 1.2s);
+  }
+
+  /* ---- Steps (How it works) ---- */
+  .ar-step {
+    position: relative;
+    padding: 24px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--line);
+    transition:
+      transform 0.3s var(--ease-out),
+      border-color 0.3s var(--ease-out),
+      background-color 0.3s var(--ease-out);
+  }
+
+  .ar-step-num {
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ar-step h3 {
+    margin: 8px 0 6px;
+    font-size: 1.1rem;
+  }
+
+  .ar-step p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.93rem;
+  }
+
+  /* ---- Demo panel ---- */
+  .ar-demo-box {
+    padding: 34px;
+    border-radius: 28px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(55, 217, 255, 0.14), transparent 28%),
+      radial-gradient(circle at 85% 20%, rgba(239, 79, 196, 0.13), transparent 26%),
+      #0b1022;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .ar-video-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    border: 1px dashed rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.025);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    overflow: hidden;
+  }
+
+  /* When real media is supplied the frame becomes a plain solid container */
+  .ar-video-frame-fill {
+    padding: 0;
+    border-style: solid;
+    border-color: var(--line);
+  }
+
+  /* ---- Pricing ---- */
+  .ar-pricing-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ar-pricing-card .ar-price {
+    font-size: 2.15rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    margin: 10px 0 2px;
+  }
+
+  .ar-pricing-card .ar-subprice {
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  .ar-pricing-card .ar-btn {
+    width: 100%;
+    margin-top: 26px;
+  }
+
+  .ar-pricing-popular {
+    border-color: rgba(155, 92, 255, 0.62);
+    box-shadow:
+      0 0 0 1px rgba(155, 92, 255, 0.18),
+      0 24px 75px rgba(99, 68, 255, 0.22);
+  }
+
+  .ar-popular-tag {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(109, 82, 255, 0.35);
+  }
+
+  /* ---- FAQ ---- */
+  .ar-faq-item {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ar-faq-btn {
+    width: 100%;
+    border: 0;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    text-align: left;
+    padding: 20px 4px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 1.02rem;
+    transition: color 0.2s ease;
+  }
+
+  .ar-faq-btn:hover {
+    color: #dbe9ff;
+  }
+
+  .ar-faq-icon {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--cyan);
+    border: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.04);
+    transition:
+      transform 0.3s var(--ease-out),
+      background-color 0.3s ease;
+  }
+
+  .ar-faq-answer {
+    color: var(--muted);
+    overflow: hidden;
+  }
+
+  .ar-faq-answer p {
+    margin: 0;
+    padding: 0 4px 20px;
+    font-size: 0.96rem;
+  }
+
+  /* ---- Final CTA ---- */
+  .ar-final-cta {
+    position: relative;
+    padding: 56px 54px;
+    border-radius: var(--radius-panel);
+    text-align: center;
+    overflow: hidden;
+    isolation: isolate;
+    background: linear-gradient(145deg, #101733, #0a0f23);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-panel);
+  }
+
+  /* Slow-drifting gradient wash — transform only, no repaint */
+  .ar-final-cta::before {
+    content: '';
+    position: absolute;
+    inset: -40%;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 22% 18%, rgba(55, 217, 255, 0.3), transparent 34%),
+      radial-gradient(circle at 82% 22%, rgba(239, 79, 196, 0.3), transparent 34%),
+      radial-gradient(circle at 50% 92%, rgba(155, 92, 255, 0.26), transparent 40%);
+    animation: ar-cta-drift 22s ease-in-out infinite;
+  }
+
+  .ar-final-cta h2 {
+    font-size: clamp(2.1rem, 4.6vw, 3.7rem);
+    font-weight: 900;
+    line-height: 1.08;
+    margin: 14px 0 16px;
+  }
+
+  .ar-final-cta p {
+    color: var(--muted);
+    max-width: 760px;
+    margin: 0 auto 22px;
+  }
+
+  /* ---- Misc ---- */
+  .ar-note {
+    font-size: 0.86rem;
+    color: var(--muted);
+  }
+
+  .ar-proof-number {
+    font-size: clamp(1.9rem, 3.4vw, 2.35rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(90deg, #ffffff, #cfefff 45%, #c8b8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .ar-proof-label {
+    color: var(--muted);
+    font-size: 0.96rem;
+    margin-top: 4px;
+  }
+
+  .ar-footer-link {
+    transition: color 0.2s ease;
+  }
+
+  .ar-footer-link:hover {
+    color: var(--text);
+  }
+
+  /* Scroll progress bar (transform-driven) */
+  .ar-scroll-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    transform-origin: 0 50%;
+    background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple), var(--pink));
+  }
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes ar-trail {
+  0% {
+    transform: translate3d(0, -100%, 0);
+  }
+  14%,
+  100% {
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes ar-node-pulse {
+  0%,
+  100% {
+    border-color: var(--line);
+    box-shadow: none;
+  }
+  3% {
+    border-color: rgba(55, 217, 255, 0.55);
+    box-shadow:
+      0 0 0 1px rgba(55, 217, 255, 0.22),
+      0 14px 44px rgba(55, 217, 255, 0.16);
+  }
+  9% {
+    border-color: var(--line);
+    box-shadow: none;
+  }
+}
+
+@keyframes ar-cta-sheen {
+  0%,
+  55% {
+    transform: translate3d(-60%, 0, 0);
+  }
+  85%,
+  100% {
+    transform: translate3d(60%, 0, 0);
+  }
+}
+
+@keyframes ar-cta-drift {
+  0%,
+  100% {
+    transform: translate3d(-2%, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -2%, 0) scale(1.06);
+  }
+}
+
+@keyframes ar-drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6%, 5%, 0) scale(1.12);
+  }
+}
+
+@keyframes ar-drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-7%, 6%, 0) scale(1);
+  }
+}
+
+@keyframes ar-drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-5%, -6%, 0) scale(1.15);
+  }
+}
+
+/* ==========================================================================
+   Hover interactions — pointer devices only
+   ========================================================================== */
+@media (hover: hover) and (pointer: fine) {
+  .ar-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .ar-btn-primary:hover {
+    box-shadow: 0 18px 48px rgba(109, 82, 255, 0.42);
+  }
+
+  .ar-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--line-strong);
+  }
+
+  .ar-card:hover,
+  .ar-step:hover {
+    transform: translateY(-4px);
+    border-color: var(--line-strong);
+  }
+
+  .ar-card:hover {
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.35);
+  }
+
+  .ar-card-glow:hover::after {
+    opacity: 0.9;
+  }
+
+  .ar-pill:hover {
+    border-color: var(--line-strong);
+    background: rgba(255, 255, 255, 0.07);
+  }
+
+  .ar-faq-btn:hover .ar-faq-icon {
+    background: rgba(55, 217, 255, 0.12);
+  }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 980px) {
+  .ar-hero,
+  .ar-demo-box {
+    grid-template-columns: 1fr;
+  }
+
+  .ar-hero {
+    padding: 68px 0 56px;
+    gap: 40px;
+  }
+
+  .ar-demo-box {
+    padding: 26px;
+  }
+}
+
+@media (max-width: 680px) {
+  :root {
+    --nav-h: 66px;
+  }
+
+  .ar-section {
+    padding: 60px 0;
+  }
+
+  .ar-hero {
+    padding: 52px 0 44px;
+  }
+
+  .ar-hero h1 {
+    margin: 14px 0 18px;
+  }
+
+  .ar-hero-lede {
+    font-size: 1.02rem;
+  }
+
+  .ar-card,
+  .ar-final-cta,
+  .ar-hero-visual {
+    padding: 22px;
+  }
+
+  .ar-mini-flow {
+    font-size: 0.84rem;
+  }
+
+  .ar-popular-tag {
+    position: static;
+    display: inline-flex;
+    align-self: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .ar-faq-btn {
+    font-size: 0.97rem;
+    gap: 12px;
+  }
+
+  /* Cheaper blur on phone GPUs — same look, less rasterisation per frame */
+  .ar-aurora {
+    filter: blur(56px);
+    opacity: 0.45;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion — drop every decorative animation
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ar-aurora,
+  .ar-final-cta::before,
+  .ar-btn-primary::before,
+  .ar-connector::after {
+    animation: none !important;
+  }
+
+  .ar-connector::after {
+    opacity: 0.35;
+    transform: none;
+    inset: 0;
+    background: linear-gradient(180deg, transparent, var(--cyan), transparent);
+  }
+}

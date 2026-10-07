@@ -1,0 +1,24 @@
+{
+  "name": "AutoReel — AI Content Automation",
+  "short_name": "AutoReel",
+  "description": "Tạo video hàng loạt, xử lý tự động và đăng thẳng lên Shopee, Facebook/Reels trong một workflow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#070B1A",
+  "theme_color": "#070B1A",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
