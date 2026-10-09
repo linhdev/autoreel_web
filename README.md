@@ -7,6 +7,10 @@ Rebuilt from the approved `autoreel_landing_v6_header.html` as a React + Vite + 
 All copy is preserved; the markup, styling and motion were rewritten for maintainability,
 accessibility and performance.
 
+> **📋 Việc còn dở cần kiểm lại: [HANDOVER.md](./HANDOVER.md)**
+> Trang chưa từng được mở bằng browser thật, Lighthouse chưa đo, và có một vài
+> quyết định đang chờ bạn (contrast nút gradient, metrics placeholder, demo video).
+
 ## Stack
 
 | Concern    | Choice                                     |
@@ -139,4 +143,7 @@ Lighthouse targets: Performance / Accessibility / SEO ≥ 90.
   and every FAQ item.
 - The hero workflow diagram is exposed as a single labelled `role="img"` with a Vietnamese
   description, so screen readers get the meaning rather than five disconnected fragments.
-- Contrast kept at/above WCAG AA on the dark surface.
+- Text contrast measured: body and card copy sits between 8.9:1 and 18.8:1
+  (AAA) against its backgrounds. **Open item:** the white label on the primary
+  button gradient measures 3.2–3.9:1, which passes AA only as *large* text, and
+  the `MOST POPULAR` tag is 3.9:1 at 11px. See `HANDOVER.md` §C1.

@@ -63,6 +63,17 @@ export default function Footer() {
               >
                 Zalo / WhatsApp: {site.phone}
               </a>
+              {/* Shown without its scheme, the way the domain line above it is:
+                  the full https:// is what the href carries, not what a reader
+                  needs to see twice. */}
+              <a
+                href={site.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ar-footer-link"
+              >
+                LinkedIn: {site.linkedinUrl.replace(/^https?:\/\/(www\.)?/, '')}
+              </a>
             </div>
             <p className="mt-5 text-[0.84rem] text-[var(--muted)]">{footer.copyright}</p>
           </div>

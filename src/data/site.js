@@ -11,6 +11,7 @@ export const site = {
   phone: '0326012999',
   zaloUrl: 'https://zalo.me/0326012999',
   whatsappUrl: 'https://wa.me/84326012999',
+  linkedinUrl: 'https://www.linkedin.com/in/linhbui291298',
   brandLine: 'Create. Process. Publish. Automate.',
 };
 
@@ -115,10 +116,17 @@ export const demo = {
   ],
   cta: { label: 'Xem Demo', href: '#contact' },
   /**
-   * Replace `videoSrc` with a local MP4 in /public (e.g. '/demo/autoreel-demo.mp4')
-   * or set `youtubeId` to embed a YouTube video. Leaving both empty renders the placeholder.
+   * The 16:9 cut, recorded from the running app: `tools/record-demo.mjs --set
+   * short` in the ShortGPT repo, then `tools/demo-stitch.mjs --set short`.
+   * 1m34s, 1080p, Vietnamese narration with a burned-in subtitle band.
+   *
+   * Here rather than on YouTube on purpose: the player is `preload="none"`,
+   * so a visitor who does not press play downloads none of the 10 MB, and
+   * nobody's consent is needed to load it. If it moves to YouTube instead,
+   * clear `videoSrc`, set `youtubeId`, and the facade below swaps over
+   * without touching the component.
    */
-  videoSrc: '',
+  videoSrc: '/demo/autoreel-demo.mp4',
   youtubeId: '',
   videoTitle: 'Video demo AutoReel',
   placeholder: {
@@ -131,14 +139,25 @@ export const proof = {
   headline: 'Được xây dựng từ nhu cầu làm content thực tế',
   subheadline: 'Chỉ hiển thị số liệu thật. Không dùng testimonial giả.',
   /**
-   * ⚠️ PLACEHOLDER — must be replaced with real numbers before production.
-   * While `value` is null the metric renders its `placeholder` text instead of a
-   * fabricated figure. Set `value: <number>` and the count-up animation takes over.
+   * Real figures, counted from the app's own database on 2026-10-09 — not
+   * estimated and not rounded up. The note below only renders while a metric
+   * is still a placeholder, so it is gone now; it stays here for the day a
+   * number has to come back out.
+   *
+   *   501  rows in `videos`, every one `status = generated`, the oldest
+   *        2026-09-20 and the newest the morning this was counted.
+   *   189  of 241 rows in `jobs` finished `succeeded` (43 failed, 9 cancelled
+   *        — a workflow that breaks is not a workflow completed, so they are
+   *        not in the figure).
+   *     2  Shopee Video and Facebook/Reels, which is what this page already
+   *        calls "nền tảng" in the FAQ.
+   *
+   * The `+` carries the ones that arrive after this was written.
    */
   metrics: [
-    { value: null, placeholder: 'XX+', suffix: '+', label: 'Video đã tạo' },
-    { value: null, placeholder: 'XX+', suffix: '+', label: 'Workflow đã hoàn thành' },
-    { value: null, placeholder: 'X', suffix: '', label: 'Nền tảng được hỗ trợ' },
+    { value: 501, placeholder: '', suffix: '+', label: 'Video đã tạo' },
+    { value: 189, placeholder: '', suffix: '+', label: 'Workflow đã hoàn thành' },
+    { value: 2, placeholder: '', suffix: '', label: 'Nền tảng được hỗ trợ' },
   ],
   note: 'Hãy thay “XX” bằng số liệu thực tế trước khi publish.',
 };
