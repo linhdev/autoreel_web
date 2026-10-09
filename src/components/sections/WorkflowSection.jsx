@@ -1,16 +1,17 @@
-import { workflowSection, workflows } from '../../data/workflows.js';
+import { useCopy } from '../../i18n/copy.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import { RevealGroup } from '../ui/Reveal.jsx';
 import WorkflowCard from './WorkflowCard.jsx';
 
 export default function WorkflowSection() {
+  const { workflowSection, workflows } = useCopy();
+
   return (
     <section id="workflows" className="ar-section" aria-labelledby="workflows-title">
       <div className="ar-container">
         <SectionHeading
           id="workflows-title"
-          before={workflowSection.title}
-          highlight={workflowSection.titleHighlight}
+          title={workflowSection.title}
           subtitle={workflowSection.subtitle}
         />
 

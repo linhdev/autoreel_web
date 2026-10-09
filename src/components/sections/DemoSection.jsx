@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { demo } from '../../data/site.js';
+import { useCopy } from '../../i18n/copy.jsx';
+import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from '../ui/Icon.jsx';
 import Reveal from '../ui/Reveal.jsx';
 
@@ -11,6 +12,7 @@ import Reveal from '../ui/Reveal.jsx';
  */
 function VideoFrame() {
   const [activated, setActivated] = useState(false);
+  const { demo, ui } = useCopy();
 
   if (demo.videoSrc) {
     return (
@@ -23,7 +25,7 @@ function VideoFrame() {
           aria-label={demo.videoTitle}
         >
           <source src={demo.videoSrc} />
-          Trình duyệt của bạn không hỗ trợ phát video.
+          {ui.videoUnsupported}
         </video>
       </div>
     );
@@ -55,7 +57,7 @@ function VideoFrame() {
             onClick={() => setActivated(true)}
             className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full text-white transition-transform duration-300 hover:scale-105"
             style={{ background: 'var(--grad-brand)', boxShadow: '0 16px 50px rgba(109,82,255,.4)' }}
-            aria-label={`Phát ${demo.videoTitle}`}
+            aria-label={`${ui.playVideo} ${demo.videoTitle}`}
           >
             <Icon name="Play" size={26} />
           </button>
@@ -69,6 +71,9 @@ function VideoFrame() {
 }
 
 export default function DemoSection() {
+  const href = useHref();
+  const { demo } = useCopy();
+
   return (
     <section id="demo" className="ar-section" aria-labelledby="demo-title">
       <div className="ar-container">
@@ -98,10 +103,10 @@ export default function DemoSection() {
             </ul>
 
             <div className="mt-7 flex flex-wrap gap-3 max-[680px]:flex-col">
-              <a href={demo.cta.href} className="ar-btn ar-btn-primary ar-btn-lg">
+              <Link to={href(demo.cta.to)} className="ar-btn ar-btn-primary ar-btn-lg">
                 <Icon name="Play" size={17} />
                 {demo.cta.label}
-              </a>
+              </Link>
             </div>
           </div>
 

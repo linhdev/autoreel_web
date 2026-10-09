@@ -1,4 +1,6 @@
 import { LazyMotion, domAnimation } from 'framer-motion';
+import { CopyProvider } from './i18n/copy.jsx';
+import { RouterProvider } from './i18n/router.jsx';
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
 import Hero from './components/sections/Hero.jsx';
@@ -17,27 +19,37 @@ import CTA from './components/sections/CTA.jsx';
  * projections, which are the bulk of framer-motion.
  * Every animated element below therefore uses `m.*`, not `motion.*`:
  * a stray `motion.*` would silently pull the full feature set back in.
+ *
+ * `initialPath` exists for the SSR smoke test, which runs in Node with no
+ * address bar to read. The browser passes nothing and the router reads
+ * `location` itself.
  */
-export default function App() {
+export default function App({ initialPath }) {
   return (
-    <LazyMotion features={domAnimation}>
-      <div id="top">
-        <Navbar />
+    <RouterProvider initialPath={initialPath}>
+      {/* Inside the router on purpose: the language is read from the URL, so
+          the copy has to be chosen after the route is known. */}
+      <CopyProvider>
+        <LazyMotion features={domAnimation}>
+          <div id="top">
+            <Navbar />
 
-        <main id="main">
-          <Hero />
-          <WorkflowSection />
-          <HowItWorks />
-          <Benefits />
-          <DemoSection />
-          <ProofSection />
-          <Pricing />
-          <FAQ />
-          <CTA />
-        </main>
+            <main id="main">
+              <Hero />
+              <WorkflowSection />
+              <HowItWorks />
+              <Benefits />
+              <DemoSection />
+              <ProofSection />
+              <Pricing />
+              <FAQ />
+              <CTA />
+            </main>
 
-        <Footer />
-      </div>
-    </LazyMotion>
+            <Footer />
+          </div>
+        </LazyMotion>
+      </CopyProvider>
+    </RouterProvider>
   );
 }

@@ -10,28 +10,30 @@ còn lại — không bao gồm những thứ đã kiểm rồi (xem §D).
 
 ## A. Chưa kiểm chứng được — cần mạng khỏe hoặc cần browser
 
-### A1. Chưa từng mở trang bằng browser thật ⚠️ quan trọng nhất
+### A1. Kiểm bằng browser thật
 
-Toàn bộ phần animation chưa được xem bằng mắt. Đã kiểm bằng build + SSR render +
-phân tích tĩnh, nhưng **chưa ai nhìn thấy trang chạy**.
+Phần này **đã được kiểm bằng Chrome thật** (qua CDP, `tools/lib/browser.mjs` của repo ShortGPT):
+dây chuyền ở hero, trạng thái giảm chuyển động, nút VI|EN, cuộn khi mở thẳng URL. Bảng dưới giữ
+lại để lần sau có người kiểm lại bằng mắt.
 
 ```bash
 npm run dev        # → http://localhost:5173
 ```
 
-Checklist khi mở:
-
 | # | Kiểm gì | Mong đợi |
 |---|---|---|
 | 1 | Hero | 3 vệt sáng xanh/tím trôi chậm sau tiêu đề |
-| 2 | Khung workflow phải hero | Tia sáng chạy **lần lượt** trên→dưới, mỗi card sáng viền đúng nhịp, lặp ~6s/vòng |
+| 2 | Khung dây chuyền phải hero | 5 trạm sáng **lần lượt trên→dưới**, mỗi trạm hiện dấu ✓ và giữ nguyên; thanh tiến độ đầy dần; bộ đếm chạy tới `30/30` rồi cả dây chuyền xoá về đầu, lặp ~10s/vòng |
 | 3 | Cuộn xuống | Card trượt lên + mờ dần hiện ra; card đầu **không** bị trắng trên mobile |
 | 4 | Rê chuột vào card | Nâng nhẹ + viền gradient hiện |
 | 5 | FAQ | Mở/đóng mượt, mỗi lần 1 câu, dấu + xoay 45° |
 | 6 | Thu nhỏ < 981px / < 680px | Menu hamburger / CTA full-width, không tràn ngang |
 
 Kiểm `prefers-reduced-motion`: DevTools → `Ctrl+Shift+P` → "Emulate CSS prefers-reduced-motion"
-→ `reduce` → reload. **Mọi animation phải đứng yên hoàn toàn.**
+→ `reduce` → reload. Mọi animation phải đứng yên — **riêng dây chuyền phải đứng ở trạng thái ĐÃ
+CHẠY XONG** (đủ 5 dấu ✓, thanh đầy, `30/30`), không phải trạng thái rỗng. Cầu dao chung trong CSS
+đóng băng animation ở khung cuối, mà khung cuối của một trạm là trạng thái *chưa chạy* — nên trạng
+thái kết thúc được viết tay trong khối `prefers-reduced-motion`. **Đừng "sửa" nó thành rỗng.**
 
 ### A2. Lighthouse chưa đo
 
@@ -112,14 +114,42 @@ Cùng file, `demo.videoSrc` và `demo.youtubeId` đang rỗng → hiện placeho
 Bản YouTube dùng facade click-to-load (chỉ nhúng iframe khi người dùng bấm) nên
 không tải JS bên thứ ba khi vào trang.
 
-### B3. Domain — nếu đổi thì sửa 8 chỗ
+### B3. Domain — nếu đổi thì sửa 4 chỗ
 
-`autoreelvn.com` đang hardcode ở:
+`autoreelvn.com` nằm ở:
 
-- `index.html` — canonical, `og:url`, `og:image`, `twitter:image`, JSON-LD `url` (5 chỗ)
+- `src/data/routes.js` — `SITE_URL` (**nguồn duy nhất**). Mọi canonical, `og:url`, `hreflang`,
+  `<loc>` trong sitemap và JSON-LD đều sinh ra từ đây, cả khi build lẫn khi chạy trong trình duyệt.
+- `index.html` — canonical, `og:url`, `og:image`, `twitter:image`, JSON-LD `url`. Đây là bản mẫu
+  mà `scripts/build-routes.mjs` đọc rồi thay phần `<head>` cho 13 trang còn lại, nên **sửa ở đây
+  là sửa cho trang chủ**, các trang kia tự đúng theo.
 - `public/robots.txt` — dòng `Sitemap:`
-- `public/sitemap.xml` — thẻ `<loc>`
 - `src/data/site.js` — `domain` và `email`
+
+`public/sitemap.xml` đã **xoá**: sitemap giờ do `scripts/build-routes.mjs` sinh vào `dist/`.
+
+---
+
+## B4. Đường dẫn tiếng Việt + i18n — đã làm, còn 2 chỗ phải xem trên môi trường thật
+
+Trang giờ có **14 URL** (7 mục × 2 ngôn ngữ) khai báo ở `src/data/routes.js`, mỗi URL một file
+HTML tĩnh do `scripts/build-routes.mjs` sinh sau `vite build`. Nền tảng và luật lệ ghi ở
+`README.md` mục *URLs and languages*. Hai điều **chưa kiểm chứng được ở máy**:
+
+1. **Cloudflare Pages chuyển `/duong-dan` → 301 → `/duong-dan/`.** Đây là hành vi của Pages,
+   `vite preview` không mô phỏng. Mọi link, canonical và sitemap đã dùng dạng có `/` cuối để
+   không tốn vòng chuyển hướng — nhưng phải `curl -I` trên production xác nhận lại, cả hai dạng.
+2. **`dist/404.html` có thật sự tắt fallback của Pages không.** Nếu không có file này, Pages trả
+   trang chủ kèm HTTP 200 cho mọi đường dẫn sai. Kiểm bằng cách mở một URL rác trên production
+   và xem mã trạng thái có phải 404.
+
+Còn lại đã thử bằng Chrome thật (qua CDP): cuộn tới đúng mục khi mở thẳng URL, Back/Forward,
+nút logo về đầu trang, link `#faq` cũ vẫn chạy, nút VI|EN đổi ngôn ngữ và **giữ nguyên mục đang
+xem**, đường dẫn lạ bị đưa về `/`.
+
+**Video demo là tiếng Việt.** `public/demo/autoreel-demo.mp4` có thuyết minh và phụ đề tiếng Việt
+đốt vào hình, nên khách vào `/en/` vẫn xem video tiếng Việt. Muốn có bản tiếng Anh thì sửa `say`
+trong `tools/demo/short.mjs` (repo ShortGPT) rồi quay lại `--set short`.
 
 ---
 

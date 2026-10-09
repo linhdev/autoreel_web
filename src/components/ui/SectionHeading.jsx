@@ -1,28 +1,18 @@
 import Reveal from './Reveal.jsx';
+import RichText from './RichText.jsx';
 
 /**
- * Centered section heading with an optional gradient-highlighted fragment.
- * Pass `title` for plain headings, or the before/highlight/after triple.
+ * Centered section heading.
+ *
+ * The heading is one string; the gradient phrase inside it is marked with
+ * `**` and rendered by `RichText`. There used to be a before/highlight/after
+ * triple here, which could not survive translation — see `RichText.jsx`.
  */
-export default function SectionHeading({
-  title,
-  before,
-  highlight,
-  after,
-  subtitle,
-  id,
-  className = '',
-}) {
+export default function SectionHeading({ title, subtitle, id, className = '' }) {
   return (
     <Reveal className={`ar-section-head ${className}`}>
       <h2 id={id}>
-        {title ?? (
-          <>
-            {before ? `${before} ` : null}
-            {highlight ? <span className="ar-gradient-text">{highlight}</span> : null}
-            {after ? ` ${after}` : null}
-          </>
-        )}
+        <RichText text={title} />
       </h2>
       {subtitle ? <p>{subtitle}</p> : null}
     </Reveal>

@@ -6,7 +6,7 @@
   "description": "AutoReel landing page - AI Content Automation",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/build-routes.mjs",
     "preview": "vite preview",
     "assets": "node scripts/generate-assets.mjs",
     "smoke": "vite build --ssr scripts/ssr-smoke.jsx --outDir .ssr-tmp --logLevel error && node .ssr-tmp/ssr-smoke.js",

@@ -1,0 +1,8 @@
+# Anyone who guesses a `/vi/` prefix means the Vietnamese page, which lives at
+# the root. A 301 rather than a rewrite so the prefixed form never becomes a
+# second URL for the same content.
+#
+# Do NOT add a catch-all (`/* /index.html 200`) here. Every route has a real
+# HTML file, and a catch-all would answer every typo with the home page and a
+# 200 — the soft-404 farm that dist/404.html exists to prevent.
+/vi/*  /:splat  301

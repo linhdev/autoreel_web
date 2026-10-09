@@ -1,17 +1,14 @@
-import { howItWorks } from '../../data/site.js';
+import { useCopy } from '../../i18n/copy.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import { RevealGroup, RevealItem } from '../ui/Reveal.jsx';
 
 export default function HowItWorks() {
+  const { howItWorks } = useCopy();
+
   return (
     <section className="ar-section" aria-labelledby="how-title">
       <div className="ar-container">
-        <SectionHeading
-          id="how-title"
-          before={howItWorks.titleBefore}
-          highlight={howItWorks.titleHighlight}
-          after={howItWorks.titleAfter}
-        />
+        <SectionHeading id="how-title" title={howItWorks.title} />
 
         <div className="relative">
           {/* Simple line connector behind the step numbers (desktop only) */}

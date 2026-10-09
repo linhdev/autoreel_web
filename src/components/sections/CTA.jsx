@@ -1,8 +1,10 @@
-import { finalCta } from '../../data/site.js';
+import { useCopy } from '../../i18n/copy.jsx';
 import Icon from '../ui/Icon.jsx';
 import Reveal from '../ui/Reveal.jsx';
 
 export default function CTA() {
+  const { finalCta } = useCopy();
+
   return (
     <section id="contact" className="ar-section" aria-labelledby="cta-title">
       <div className="ar-container">

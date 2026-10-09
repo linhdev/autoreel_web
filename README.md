@@ -51,20 +51,45 @@ src/
     layout/                Navbar, Footer
     sections/              Hero, WorkflowSection, HowItWorks, Benefits,
                            DemoSection, ProofSection, Pricing, FAQ, CTA
-    ui/                    Icon, Reveal, CountUp, SectionHeading
+    ui/                    Icon, Reveal, CountUp, SectionHeading, RichText
+  i18n/
+    copy.jsx               picks a language, hands the copy down
+    router.jsx             the router, the scroll behaviour, <Link>
+    head.js                keeps <title>/canonical in step after a click
   data/                    ← all editable content lives here
-    site.js                brand, nav, hero, steps, demo, proof, CTA, footer
+    routes.js              ← every URL, and its title + description
+    site.js                brand, nav, hero, steps, demo, proof, CTA, footer, UI strings
     workflows.js           the 3 flows + section heading
     features.js            the 8 benefits
-    pricing.js             2 plans + pricing note
+    pricing.js             2 plans + pricing note + the prices as numbers
     faq.js                 10 questions
   styles/globals.css       design tokens, component classes, keyframes
 scripts/
   generate-assets.mjs      image pipeline (sharp) → public/
+  build-routes.mjs         one HTML file per route + sitemap + 404, after vite build
   verify-build.mjs         post-build assertions on dist/
   ssr-smoke.jsx            renders the app to catch runtime errors
-public/                    favicons, OG image, _headers, robots.txt, sitemap.xml
+public/                    favicons, OG images, _headers, _redirects, robots.txt
 ```
+
+### URLs and languages
+
+The site is one page with **seven URLs** — `/`, `/quy-trinh-tao-video-hang-loat/`,
+`/bang-gia-phan-mem-tao-video/` and so on — plus an English copy of each under `/en/`.
+Every one is declared once in `src/data/routes.js`: the slug, the section it scrolls to, and
+the title and description a search result shows. The app reads that file for its links, and
+`scripts/build-routes.mjs` reads it after `vite build` to write a real HTML file per URL and
+to write `sitemap.xml`. A URL that is wrong in `routes.js` is wrong in one place.
+
+Two rules that are easy to break and expensive to notice:
+
+- **Slugs end in a slash, and so does every link and canonical.** Cloudflare Pages serves
+  `slug/index.html` at `/slug/` and redirects `/slug` to it, so the slash form is the one
+  that costs no round trip. `npm run verify` fails if a sitemap URL loses its slash.
+- **Nothing gets added to `_redirects` except the `/vi/*` rule.** Every route has a real
+  file, and `dist/404.html` is what makes an unknown path an honest 404. A catch-all
+  rewrite (`/* /index.html 200`) would answer every typo with the home page and a 200, and
+  `verify` fails if one appears.
 
 Two token layers exist on purpose: `@theme` maps the brand palette into Tailwind's utility
 namespace (`bg-ink`, `text-muted`, …) for new components, while the `ar-*` component classes
@@ -75,6 +100,24 @@ classes first so styling stays consistent with the existing sections.
 
 Every string on the page comes from `src/data/*.js` — no copy is hard-coded in components.
 To change a headline, a price, a FAQ answer or the nav, edit the matching data file.
+
+Each translatable export is `{ vi, en }`; anything that reads the same in both languages —
+the brand, the phone number, icon names, route keys — sits outside the split so nobody is
+tempted to translate a domain name. `npm run verify` fails when the two languages stop
+describing the same page: a missing key, a short list, a renamed plan id, an empty string.
+
+**Emphasis lives inside the sentence.** A heading with a highlighted phrase is written
+`'One AutoReel. **Three core workflows.**'` and rendered by `components/ui/RichText.jsx`. It
+used to be three separate fields (`titleBefore` / `titleHighlight` / `titleAfter`), which
+only worked while the sentence was Vietnamese — English puts the emphasis somewhere else,
+and the translator could not move it. A `**` count that comes out odd is a `verify` failure.
+
+### Adding a language
+
+1. Add the code to `LOCALES` and its `<html lang>`/`og:locale` pair to `LOCALE_TAGS` in
+   `src/data/routes.js`, and a slug for it on every route.
+2. Add that branch to every `{ vi, en }` export in `src/data/`.
+3. `npm run verify` — the parity checks say exactly what is missing.
 
 ## ⚠️ Before going live
 
@@ -105,8 +148,25 @@ Alternative: `npx wrangler pages deploy dist --project-name autoreel` .
 ## Motion & performance notes
 
 - **Hero glow** — slow transform-only drift of three blurred radial gradients (compositor only).
-- **Workflow light trail** — a CSS pulse travels each connector in sequence via
-  `animation-delay: calc(var(--i) * 1.2s)` in a 6s cycle; the node cards light up on the same beat.
+- **The line** (hero) — five workflow stations run one shared keyframe, offset by
+  `animation-delay: calc(var(--i) * var(--stagger))`, so a job visibly moves down the stack: the
+  station lights, a tick appears, the batch bar fills, the batch counter counts, and the line
+  drains and starts again. Only `opacity` and `transform` animate, except the counter.
+
+  The three numbers are **constrained, not chosen**. All stations share one 10s keyframe, so the
+  cycle must be longer than the last station's offset plus its drain:
+
+  ```
+  cycle >= stagger x (stations - 1) + drain      10s >= 0.6s x 4 + 0.9s
+  ```
+
+  At a 1.5s stagger the last station drained at 14.8s — four seconds into the next cycle — and the
+  batch bar reset to empty while four stations still showed ticks. Change the node count in
+  `heroFlow` and all three numbers want revisiting.
+- **The batch counter** writes to a `ref`'s `textContent` from a rAF loop rather than holding state:
+  a counter that re-renders 60 times a second would re-render the whole hero — five stations, their
+  text, their icons — for one character. It pauses via `IntersectionObserver` when scrolled off
+  screen.
 - **Scroll reveals** — Framer Motion `whileInView` animating only `opacity`/`transform`, with
   `viewport={{ once: true }}` so nothing re-animates.
 - **Card hover** — translate lift plus a gradient border ring drawn with
@@ -114,6 +174,11 @@ Alternative: `npx wrangler pages deploy dist --project-name autoreel` .
 - **Count-up** — `requestAnimationFrame` + `IntersectionObserver`, runs once.
 - **Reduced motion** — `prefers-reduced-motion: reduce` disables every decorative animation
   (CSS level) and short-circuits Framer Motion via `useReducedMotion()`.
+
+  The line is the one place that stops **finished** rather than empty. The blanket rule freezes
+  each animation on its last keyframe, and a station's last keyframe is its idle state — five blank
+  rows and an empty bar, a picture of a machine that has never run. So the end state is written out
+  in the reduce block: all five ticks, a full bar, `30/30`.
 - No particles, no Three.js, no autoplay audio, no scroll-jacking.
 
 ### Bundle

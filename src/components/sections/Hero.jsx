@@ -1,6 +1,8 @@
 import { m, useReducedMotion } from 'framer-motion';
-import { hero } from '../../data/site.js';
+import { useCopy } from '../../i18n/copy.jsx';
+import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from '../ui/Icon.jsx';
+import RichText from '../ui/RichText.jsx';
 import HeroVisual from './HeroVisual.jsx';
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -18,6 +20,8 @@ const item = {
 export default function Hero() {
   const prefersReduced = useReducedMotion();
   const play = prefersReduced ? false : 'show';
+  const href = useHref();
+  const { hero } = useCopy();
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-title">
@@ -46,11 +50,10 @@ export default function Hero() {
           </m.h1>
 
           <m.p className="ar-hero-lede" variants={item}>
-            {hero.subheadline.before}
-            <strong>{hero.subheadline.strong1}</strong>
-            {hero.subheadline.middle}
-            <strong>{hero.subheadline.strong2}</strong>
-            {hero.subheadline.after}
+            {/* One sentence with `**` around the two phrases that stay bold.
+                The words used to arrive pre-split into five fields, which only
+                worked while the sentence was Vietnamese — see RichText.jsx. */}
+            <RichText text={hero.subheadline} tag="strong" />
           </m.p>
 
           <m.p className="ar-hero-lede mt-4" variants={item}>
@@ -58,14 +61,14 @@ export default function Hero() {
           </m.p>
 
           <m.div className="my-7 flex flex-wrap gap-3 max-[680px]:flex-col" variants={item}>
-            <a href={hero.primaryCta.href} className="ar-btn ar-btn-primary ar-btn-lg">
+            <Link to={href(hero.primaryCta.to)} className="ar-btn ar-btn-primary ar-btn-lg">
               <Icon name="Play" size={17} />
               {hero.primaryCta.label}
-            </a>
-            <a href={hero.secondaryCta.href} className="ar-btn ar-btn-secondary ar-btn-lg">
+            </Link>
+            <Link to={href(hero.secondaryCta.to)} className="ar-btn ar-btn-secondary ar-btn-lg">
               <Icon name="Rocket" size={17} />
               {hero.secondaryCta.label}
-            </a>
+            </Link>
           </m.div>
 
           <m.ul className="flex flex-wrap gap-2.5" variants={item}>

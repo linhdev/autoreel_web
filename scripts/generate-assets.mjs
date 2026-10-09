@@ -52,7 +52,16 @@ async function main() {
     .png()
     .toBuffer();
 
-  const ogSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  /**
+   * The social card, one per language.
+   *
+   * `scripts/build-routes.mjs` points every `/en/` page at `og-image-en.png`:
+   * a link shared into a Zalo or Facebook chat unfurls with whatever is painted
+   * on this picture, and a card reading "Tạo video hàng loạt" above an English
+   * article is the sort of detail that makes a page look machine-translated.
+   * Only the tagline line differs — the brand mark and the domain do not.
+   */
+  const ogCard = (tagline) => `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#0B1024"/>
@@ -90,22 +99,34 @@ async function main() {
 
   <text x="600" y="428" text-anchor="middle"
         font-family="Segoe UI, Inter, Arial, sans-serif" font-size="28" font-weight="600"
-        fill="url(#text)" letter-spacing="3">AI CONTENT AUTOMATION</text>
+        fill="url(#text)" letter-spacing="3">AI CONTENT AUTOMATION PLATFORM</text>
 
   <text x="600" y="500" text-anchor="middle"
         font-family="Segoe UI, Inter, Arial, sans-serif" font-size="30" font-weight="400"
-        fill="#AEB8D4">Tạo video hàng loạt. Xử lý tự động. Đăng thẳng lên nền tảng.</text>
+        fill="#AEB8D4">${tagline}</text>
 
   <text x="600" y="556" text-anchor="middle"
         font-family="Segoe UI, Inter, Arial, sans-serif" font-size="24" font-weight="600"
         fill="#7C89AC">autoreelvn.com</text>
 </svg>`;
 
-  const ogImage = path.join(OUT, 'og-image.png');
-  await sharp(Buffer.from(ogSvg))
-    .png({ compressionLevel: 9, palette: true })
-    .toFile(ogImage);
-  await report(ogImage);
+  for (const [file, tagline] of [
+    ['og-image.png', 'Tạo video hàng loạt. Xử lý tự động. Đăng thẳng lên nền tảng.'],
+    ['og-image-en.png', 'Create video in bulk. Processed and published automatically.'],
+  ]) {
+    const ogImage = path.join(OUT, file);
+    // No `palette: true` here, unlike the icons above. This card is one big
+    // smooth gradient, which is the worst case for a 256-colour palette: the
+    // quantiser hides the banding with a dither pattern, and it is visible —
+    // a speckled patch in the top-left corner of the card, which is not what
+    // anybody wants to see when their link unfurls. The smaller file was not
+    // worth it: this image is fetched by a chat client's crawler, never by the
+    // page, so its weight costs a visitor nothing.
+    await sharp(Buffer.from(ogCard(tagline)))
+      .png({ compressionLevel: 9, effort: 10 })
+      .toFile(ogImage);
+    await report(ogImage);
+  }
 
   console.log('\nAssets written to public/.');
 }

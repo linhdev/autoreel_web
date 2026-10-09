@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion';
-import { faqHeadline, faqs } from '../../data/faq.js';
+import { useCopy } from '../../i18n/copy.jsx';
 import Icon from '../ui/Icon.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import Reveal from '../ui/Reveal.jsx';
 
 export default function FAQ() {
+  const { faqHeadline, faqs } = useCopy();
   // One panel open at a time; the first question starts open so the
-  // interaction is discoverable.
+  // interaction is discoverable. Keyed by the question's `id`, which is the
+  // same string in both languages — so switching language keeps the panel the
+  // reader had open open, instead of snapping back to the first question.
   const [openId, setOpenId] = useState(faqs[0]?.id ?? null);
   const prefersReduced = useReducedMotion();
 

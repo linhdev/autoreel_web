@@ -6,6 +6,23 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
+import {
+  demo,
+  finalCta,
+  footer,
+  hero,
+  heroFlow,
+  howItWorks,
+  navLinks,
+  proof,
+  ui,
+} from '../src/data/site.js';
+import { benefits, benefitsSection } from '../src/data/features.js';
+import { workflows, workflowSection } from '../src/data/workflows.js';
+import { plans, pricingSection } from '../src/data/pricing.js';
+import { faqHeadline, faqs } from '../src/data/faq.js';
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
 
@@ -45,6 +62,9 @@ async function main() {
     'favicon-192.png',
     'apple-touch-icon.png',
     'og-image.png',
+    // The English pages point their social preview and their home-screen icon
+    // at these two; without them the unfurl falls back to a Vietnamese card.
+    ...(LOCALES.length > 1 ? ['og-image-en.png', 'en/site.webmanifest'] : []),
   ];
 
   for (const file of required) {
@@ -78,16 +98,29 @@ async function main() {
   // ---- CSS must contain the design-system classes ----
   if (cssFiles.length) {
     const css = await readFile(path.join(dist, cssFiles[0]), 'utf8');
+    // A record of the design, not a test of it: if one of these disappears the
+    // stylesheet changed shape and somebody should look, whether or not the
+    // build still succeeds.
+    // A record of the design, not a test of it: if one of these disappears the
+    // stylesheet changed shape and somebody should look, whether or not the
+    // build still succeeds. Keep the list short — a pin per visual detail turns
+    // this into a second stylesheet to maintain.
     const wanted = [
       '.ar-container',
       '.ar-card',
       '.ar-btn-primary',
-      '.ar-connector',
-      '.ar-flow-card',
       '.ar-aurora',
       '.ar-final-cta',
+      // The line: a station, its finished marker, the batch bar. These are the
+      // three things a visitor actually reads in the hero.
+      '.ar-station',
+      '.ar-station-check',
+      '.ar-batch-fill',
+      // Reduced motion is a correctness requirement, not a nicety — a redesign
+      // that drops this block ships an animation to people who asked not to
+      // have one.
       'prefers-reduced-motion',
-      '@keyframes ar-trail',
+      '@keyframes ar-station-bar',
     ];
     for (const token of wanted) {
       if (css.includes(token)) pass(`css contains ${token}`);
@@ -111,6 +144,219 @@ async function main() {
     if (html.includes(token)) pass(`index.html has ${label}`);
     else fail(`index.html MISSING ${label}`);
   }
+
+  // ---- The two languages have to describe the same page ----
+  //
+  // A translation misses things quietly: a FAQ answer added in Vietnamese, a
+  // benefit card inserted in one list only, a plan renamed on one side. None of
+  // that throws — it ships a page that is half in the wrong language and looks
+  // fine in whichever language the person checking it reads. So every bilingual
+  // export is walked and compared structurally.
+  const pairs = {
+    navLinks,
+    hero,
+    heroFlow,
+    howItWorks,
+    demo: { vi: demo.vi, en: demo.en },
+    proof,
+    finalCta: { vi: finalCta.vi, en: finalCta.en },
+    footer,
+    ui,
+    workflows,
+    workflowSection,
+    benefits,
+    benefitsSection,
+    pricingSection,
+    plans,
+    faqs,
+    faqHeadline,
+  };
+
+  /** The shape of a value: keys, nesting and array lengths, with types at the leaves. */
+  const shapeOf = (value) => {
+    if (Array.isArray(value)) return value.map(shapeOf);
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(
+        Object.keys(value)
+          .sort()
+          .map((key) => [key, shapeOf(value[key])]),
+      );
+    }
+    return typeof value;
+  };
+
+  for (const [name, pair] of Object.entries(pairs)) {
+    const missingSide = LOCALES.filter((code) => pair[code] === undefined);
+    if (missingSide.length) {
+      fail(`${name} has no ${missingSide.join(', ')} version`);
+      continue;
+    }
+    if (JSON.stringify(shapeOf(pair.vi)) !== JSON.stringify(shapeOf(pair.en))) {
+      fail(`${name}: the vi and en versions are not the same shape`);
+    }
+  }
+
+  // Lists that pair up by position must agree on what each entry *is*.
+  const idPairs = [
+    ['plans', plans.vi.map((p) => p.id), plans.en.map((p) => p.id)],
+    ['faqs', faqs.vi.map((f) => f.id), faqs.en.map((f) => f.id)],
+    ['benefit icons', benefits.vi.map((b) => b.icon), benefits.en.map((b) => b.icon)],
+  ];
+  for (const [label, a, b] of idPairs) {
+    if (a.join() !== b.join()) fail(`${label} differ between vi and en: ${a} vs ${b}`);
+  }
+
+  // An untranslated string is usually an empty one — but a few fields are
+  // empty on purpose and must not be "fixed": `suffix` and `placeholder` are
+  // blank whenever a metric is a real number, and a video id is blank while the
+  // video is self-hosted.
+  const EMPTY_BY_DESIGN = ['placeholder', 'suffix', 'youtubeId', 'videoSrc'];
+  const blanks = [];
+  const scanForBlanks = (value, path) => {
+    const key = path.split('.').pop().replace(/\[\d+\]$/, '');
+    if (EMPTY_BY_DESIGN.includes(key)) return;
+    if (typeof value === 'string' && !value.trim()) blanks.push(path);
+    else if (Array.isArray(value)) value.forEach((v, i) => scanForBlanks(v, `${path}[${i}]`));
+    else if (value && typeof value === 'object') {
+      for (const [key, v] of Object.entries(value)) scanForBlanks(v, `${path}.${key}`);
+    }
+  };
+  for (const [name, pair] of Object.entries(pairs)) {
+    for (const code of LOCALES) scanForBlanks(pair[code], `${name}.${code}`);
+  }
+  if (blanks.length) fail(`empty strings in the copy: ${blanks.slice(0, 5).join(', ')}`);
+
+  // Emphasis markers come in pairs; an odd count drops the rest of the
+  // sentence into the gradient, or shows the asterisks to a reader.
+  const oddMarkers = [];
+  const scanMarkers = (value, path) => {
+    if (typeof value === 'string') {
+      if ((value.match(/\*\*/g) || []).length % 2) oddMarkers.push(path);
+    } else if (Array.isArray(value)) value.forEach((v, i) => scanMarkers(v, `${path}[${i}]`));
+    else if (value && typeof value === 'object') {
+      for (const [key, v] of Object.entries(value)) scanMarkers(v, `${path}.${key}`);
+    }
+  };
+  for (const [name, pair] of Object.entries(pairs)) {
+    for (const code of LOCALES) scanMarkers(pair[code], `${name}.${code}`);
+  }
+  if (oddMarkers.length) fail(`unpaired ** markers: ${oddMarkers.join(', ')}`);
+
+  // What Google will show. Past roughly these lengths it truncates, and a
+  // cut-off title loses the part that carries the keyword.
+  const tooLong = [];
+  for (const route of routes) {
+    for (const code of LOCALES) {
+      const { title, description } = route.meta[code];
+      if (!title || title.length > 62) tooLong.push(`${route.key}.${code} title (${title?.length})`);
+      if (!description || description.length > 165) {
+        tooLong.push(`${route.key}.${code} description (${description?.length})`);
+      }
+    }
+  }
+  if (tooLong.length) fail(`meta too long: ${tooLong.join(', ')}`);
+
+  // A slug that collides with a file in `public/` builds a directory in `dist/`
+  // next to it, and whichever wins is not obvious — `/demo/` holds the video.
+  const publicNames = await readdir(path.join(root, 'public'));
+  const collisions = [];
+  for (const route of routes) {
+    for (const code of LOCALES) {
+      // `en` slugs are `/en/<name>/`, so the name is the second segment.
+      const segments = route.slug[code].split('/').filter(Boolean);
+      const own = segments[code === 'en' ? 1 : 0];
+      if (own && publicNames.includes(own)) collisions.push(`${route.key} (${code}): /${own}/`);
+    }
+  }
+  if (collisions.length) fail(`route slug collides with public/: ${collisions.join(', ')}`);
+  else pass('no route slug shadows a file in public/');
+
+  // ---- One real HTML file per route, with that route's head in it ----
+  //
+  // Driven by the route table, never by a list written out here: a route added
+  // to `routes.js` and forgotten by the build shows up as a failure rather than
+  // as a URL that quietly serves the home page's title.
+  // The hashed bundle name, so a page still pointing at the previous build's
+  // hash can be called out as stale rather than merely "wrong".
+  const bundle = html.match(/assets\/index-[\w-]+\.js/)?.[0];
+  if (!bundle) fail('index.html does not reference a hashed JS bundle');
+
+  for (const route of routes) {
+    for (const lang of LOCALES) {
+      const slug = route.slug[lang];
+      const file = path.join(dist, slug.replace(/^\/+|\/+$/g, ''), 'index.html');
+      const label = `${route.key} [${lang}] ${slug}`;
+
+      if (!(await exists(file))) {
+        fail(`${label} MISSING (no HTML file at this route)`);
+        continue;
+      }
+
+      const page = await readFile(file, 'utf8');
+      const wantUrl = absolute(slug);
+      const problems = [];
+
+      if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) problems.push('lang');
+      if (!page.includes(`<title>${route.meta[lang].title}</title>`)) problems.push('title');
+      if (!page.includes(`<link rel="canonical" href="${wantUrl}" />`)) problems.push('canonical');
+      if (!page.includes('application/ld+json')) problems.push('structured data');
+      if (LOCALES.length > 1) {
+        // Each page must point at the other language, and at its own country's
+        // social card and manifest.
+        if (!page.includes(`hreflang="${LOCALE_TAGS[lang].html}"`)) problems.push('hreflang');
+        const wantManifest = lang === 'en' ? '/en/site.webmanifest' : '/site.webmanifest';
+        if (!page.includes(`href="${wantManifest}"`)) problems.push('manifest');
+        const wantCard = lang === 'en' ? 'og-image-en.png' : 'og-image.png';
+        if (!page.includes(`content="${SITE_URL}/${wantCard}"`)) problems.push('og:image');
+      }
+      // A page that kept the previous build's asset hash was generated from a
+      // stale template — the whole file is out of date, not just one tag.
+      if (bundle && !page.includes(bundle)) problems.push('stale asset hash');
+
+      if (problems.length) fail(`${label} — wrong ${problems.join(', ')}`);
+      else pass(`${label}`);
+    }
+  }
+
+  // ---- The file that stops Cloudflare from answering unknown URLs with `/` ----
+  const notFoundFile = path.join(dist, '404.html');
+  if (await exists(notFoundFile)) {
+    const page = await readFile(notFoundFile, 'utf8');
+    if (!page.includes('content="noindex')) fail('404.html must be noindex');
+    else if (/rel="canonical"/.test(page)) fail('404.html must not carry a canonical link');
+    else pass('404.html present, noindex, no canonical');
+  } else {
+    fail('404.html MISSING — unknown URLs would serve the home page with a 200');
+  }
+
+  // ---- A catch-all rewrite would undo every one of those files ----
+  const redirectsFile = path.join(dist, '_redirects');
+  if (await exists(redirectsFile)) {
+    const rules = await readFile(redirectsFile, 'utf8');
+    if (/^\s*\/\*\s+\/index\.html\s+200/m.test(rules)) {
+      fail('_redirects has a catch-all rewrite — every route file is dead weight if so');
+    } else {
+      pass('_redirects has no catch-all rewrite');
+    }
+  }
+
+  // ---- Sitemap: every URL, and no URL that is not a route ----
+  const map = await readFile(path.join(dist, 'sitemap.xml'), 'utf8');
+  const locs = [...map.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  const want = new Set(routes.flatMap((route) => LOCALES.map((lang) => absolute(route.slug[lang]))));
+  const strays = locs.filter((loc) => !want.has(loc));
+  if (locs.length !== want.size) {
+    fail(`sitemap has ${locs.length} URLs, expected ${want.size}`);
+  } else if (strays.length) {
+    fail(`sitemap lists URLs that are not routes: ${strays.join(', ')}`);
+  } else {
+    pass(`sitemap has all ${locs.length} route URLs`);
+  }
+  // Cloudflare 301s `/x` to `/x/`; a canonical without the slash costs a hop
+  // on every crawl and splits the two forms across two URLs.
+  const unslashed = locs.filter((loc) => !loc.endsWith('/'));
+  if (unslashed.length) fail(`sitemap URLs missing a trailing slash: ${unslashed.join(', ')}`);
+  else pass('every sitemap URL ends in a slash');
 
   // ---- Report ----
   console.log('\nBuild verification\n==================');

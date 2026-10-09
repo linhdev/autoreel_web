@@ -4,9 +4,16 @@ import { useEffect, useRef, useState } from 'react';
  * Count-up that starts the first time the number scrolls into view.
  * - rAF driven (no timers), never re-renders more than once per frame.
  * - Respects prefers-reduced-motion by jumping straight to the final value.
- * - Formats with vi-VN grouping (1.234) to match the rest of the page.
+ * - Groups digits by `locale`, which the caller takes from the language on
+ *   screen: `1.234` in Vietnamese, `1,234` in English.
  */
-export default function CountUp({ value, duration = 1600, suffix = '', className }) {
+export default function CountUp({
+  value,
+  duration = 1600,
+  suffix = '',
+  locale = 'vi-VN',
+  className,
+}) {
   const ref = useRef(null);
   const hasRun = useRef(false);
   const [display, setDisplay] = useState(0);
@@ -55,7 +62,7 @@ export default function CountUp({ value, duration = 1600, suffix = '', className
     };
   }, [value, duration]);
 
-  const formatted = display.toLocaleString('vi-VN');
+  const formatted = display.toLocaleString(locale);
 
   return (
     <span ref={ref} className={className}>
