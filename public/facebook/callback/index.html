@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Đăng nhập Facebook — AutoReel</title>
+    <!--
+      The page Facebook returns to for the ShortGPT install, and nothing else.
+
+      It is a plain file under `public/` on purpose. It used to not exist, and
+      Cloudflare's fallback answered `/facebook/callback` with the home page:
+      the React router then saw a route it did not know, replaced the address
+      with `/`, and **took the `?code=` off the URL with it** — so the app was
+      told "not connected" however many times the person signed in. A real file
+      is served instead of the fallback, nothing here boots the app, and
+      nothing rewrites the address bar.
+
+      No canonical, no sitemap entry, no analytics: it is not a page anyone
+      should arrive at from a search result.
+    -->
+    <style>
+      :root {
+        --ink: #070b1a;
+        --surface: #11172d;
+        --cream: #f8faff;
+        --muted: #aeb8d4;
+        --cyan: #37d9ff;
+        --blue: #5b78ff;
+        --green: #55e6a5;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: var(--ink);
+        color: var(--cream);
+        font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      main { width: 100%; max-width: 620px; }
+      .card {
+        background: var(--surface);
+        border: 1px solid rgba(91, 120, 255, 0.35);
+        border-radius: 16px;
+        padding: 28px;
+      }
+      h1 { margin: 0 0 4px; font-size: 22px; }
+      .ok {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--green);
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 14px;
+      }
+      p { color: var(--muted); margin: 0 0 14px; }
+      ol { color: var(--muted); margin: 0 0 18px; padding-left: 20px; }
+      ol li { margin-bottom: 6px; }
+      b, code { color: var(--cream); }
+      code {
+        background: rgba(55, 217, 255, 0.12);
+        border-radius: 6px;
+        padding: 1px 6px;
+        font-size: 14px;
+      }
+      .row { display: flex; gap: 8px; }
+      input {
+        flex: 1;
+        min-width: 0;
+        background: #0b1024;
+        color: var(--cream);
+        border: 1px solid rgba(174, 184, 212, 0.3);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      button {
+        border: 0;
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-weight: 600;
+        color: #04122a;
+        background: linear-gradient(90deg, var(--cyan), var(--blue));
+        cursor: pointer;
+      }
+      button:active { transform: translateY(1px); }
+      .hint { font-size: 13px; margin: 12px 0 0; }
+      .en { border-top: 1px solid rgba(174, 184, 212, 0.18); margin-top: 22px; padding-top: 18px; }
+      .en h2 { font-size: 15px; margin: 0 0 8px; color: var(--cream); }
+      .en p, .en ol { font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="card">
+        <div class="ok">✓ <span>Đăng nhập Facebook xong</span></div>
+        <h1>Còn một bước nữa</h1>
+        <p>
+          Facebook đã trả anh về đây. Địa chỉ trên thanh địa chỉ của trang này
+          chứa mã đăng nhập mà ShortGPT cần — hãy mang nó về app:
+        </p>
+        <ol>
+          <li>Quay lại <b>ShortGPT</b>, mở màn <b>Facebook</b>.</li>
+          <li>Mở mục <b>“Nếu đăng nhập không tự quay về”</b>.</li>
+          <li>Dán địa chỉ dưới đây vào ô <b>“Địa chỉ, hoặc chỉ mã”</b>, rồi bấm <b>Hoàn tất kết nối</b>.</li>
+        </ol>
+        <div class="row">
+          <input id="url" readonly />
+          <button id="copy" type="button">Copy</button>
+        </div>
+        <p class="hint" id="state">
+          Mã này chỉ sống vài phút. Nếu để lâu quá, quay lại app bấm
+          <b>Connect Facebook</b> lần nữa để lấy mã mới.
+        </p>
+
+        <div class="en">
+          <h2>Signed in with Facebook — one step left</h2>
+          <p>
+            The address in this page's address bar holds the code ShortGPT
+            needs. Copy it and paste it into the Facebook screen of the app,
+            under “If the sign-in does not come back”, then press
+            <b>Finish connecting</b>.
+          </p>
+        </div>
+      </div>
+    </main>
+    <script>
+      (function () {
+        var field = document.getElementById('url');
+        var button = document.getElementById('copy');
+        var state = document.getElementById('state');
+        // The whole address, exactly as Facebook left it. Read from
+        // `location` rather than rebuilt: every parameter matters to the app,
+        // and the one that matters most (`code`) is the one nobody types.
+        field.value = window.location.href;
+        button.addEventListener('click', function () {
+          field.select();
+          field.setSelectionRange(0, 9999);
+          var done = function () {
+            button.textContent = 'Đã copy ✓';
+            setTimeout(function () { button.textContent = 'Copy'; }, 2000);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(field.value).then(done, function () {
+              document.execCommand('copy');
+              done();
+            });
+          } else {
+            document.execCommand('copy');
+            done();
+          }
+        });
+        if (field.value.indexOf('code=') === -1) {
+          state.innerHTML =
+            'Trang này không thấy mã đăng nhập trong địa chỉ. Hãy quay lại ' +
+            'app và bấm <b>Connect Facebook</b> để bắt đầu lại.';
+        }
+      })();
+    </script>
+  </body>
+</html>
