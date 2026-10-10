@@ -33,8 +33,64 @@ import chayOCauHinhMay from './posts/autoreel-chay-o-dau-can-cau-hinh-may-the-na
 import dieuKhienTuXaTelegram from './posts/dieu-khien-tao-video-tu-xa-bang-telegram.js';
 import tuLamHayDungPhanMem from './posts/tu-lam-video-hay-dung-phan-mem.js';
 
-/** Everything above, newest first — the order the index and the footer draw. */
+// Architecture, kept at the level a customer needs — layers, principles and
+// trade-offs, never how any of it is built. `scripts/verify-build.mjs` has a
+// list of internal words these articles may not contain.
+import kienTrucHeThong from './posts/kien-truc-he-thong-san-xuat-video-tu-dong.js';
+import hangDoiVaChaySongSong from './posts/hang-doi-job-va-chay-song-song.js';
+import motLoiNhieuCuaRa from './posts/mot-loi-nhieu-cua-ra.js';
+import giamSatHeThong from './posts/lam-sao-biet-he-thong-dang-chay-hay-da-dung.js';
+import dangBaiKhongApi from './posts/tu-dong-dang-bai-khi-nen-tang-khong-mo-api.js';
+
+// Doing the work: picking products, writing, voice, subtitles, reuse.
+import chonSanPhamAffiliate from './posts/chon-san-pham-affiliate-shopee-de-lam-video.js';
+import congThucKichBan30Giay from './posts/cong-thuc-kich-ban-video-ban-hang-30-giay.js';
+import giongDocTiengViet from './posts/giong-doc-tieng-viet-cho-video-ban-hang.js';
+import phuDeVaChuTrenVideo from './posts/phu-de-va-chu-tren-video-ngan.js';
+import taiSuDungVideoCu from './posts/tai-su-dung-video-cu-thanh-nhieu-video-moi.js';
+
+// Running it as a habit: cadence, scheduling, frame, channels.
+import viSaoVideoKhongCoNguoiXem from './posts/vi-sao-video-khong-co-nguoi-xem.js';
+import baoNhieuVideoMotNgay from './posts/bao-nhieu-video-mot-ngay-la-du.js';
+import lenLichDangVideo from './posts/len-lich-dang-video-cho-nguoi-ban-hang.js';
+import videoDocHayVideoNgang from './posts/video-doc-hay-video-ngang.js';
+import dangNhieuNenTang from './posts/dang-video-len-nhieu-nen-tang-cung-luc.js';
+
+// The money side: what a video costs, who makes it, and what it returns.
+import chiPhiMotVideo from './posts/mot-video-ban-hang-ton-bao-nhieu-tien.js';
+import videoKhongLoMat from './posts/video-affiliate-khong-can-lo-mat.js';
+import lamVideoChoNhieuShop from './posts/lam-video-cho-nhieu-shop-cung-luc.js';
+import tuLuotXemToiDonHang from './posts/tu-luot-xem-toi-don-hang.js';
+import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
+
+/**
+ * Everything above, newest first — the order the index and the footer draw.
+ *
+ * Thirty articles share one date, and `posts.sort` is stable, so the order
+ * written here is the order the index shows: the newer groups first, the ten
+ * the blog opened with at the bottom.
+ */
 export const posts = [
+  kienTrucHeThong,
+  hangDoiVaChaySongSong,
+  motLoiNhieuCuaRa,
+  giamSatHeThong,
+  dangBaiKhongApi,
+  chonSanPhamAffiliate,
+  congThucKichBan30Giay,
+  giongDocTiengViet,
+  phuDeVaChuTrenVideo,
+  taiSuDungVideoCu,
+  viSaoVideoKhongCoNguoiXem,
+  baoNhieuVideoMotNgay,
+  lenLichDangVideo,
+  videoDocHayVideoNgang,
+  dangNhieuNenTang,
+  chiPhiMotVideo,
+  videoKhongLoMat,
+  lamVideoChoNhieuShop,
+  tuLuotXemToiDonHang,
+  doLuongHieuQuaVideo,
   cachTaoVideoAffiliate,
   meoDangShopeeVideo,
   reupKhongBanQuyen,

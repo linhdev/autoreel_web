@@ -380,6 +380,27 @@ async function main() {
   if (blogProblems.length) fail(`blog: ${blogProblems.join(', ')}`);
   else pass(`blog: ${posts.length} article(s) + index, each with its own head`);
 
+  // An article about how the system works is written for the person using it —
+  // layers, principles and trade-offs — and never describes what is inside the
+  // machine. Every word below is a name from the build rather than from the
+  // explanation, and one of them appearing in a published page tells a reader
+  // (or a competitor) more about how this is made than any article intends to.
+  // Read off the source, not the built page, so it fails at the moment the word
+  // is typed rather than at the end of a build.
+  const INTERNAL_WORDS = [
+    'ffmpeg', 'sqlite', 'gradio', 'docker', 'adb', 'uiautomator', 'moviepy',
+    'moneyprinter', 'zerotts', 'nvenc', 'jsonrpc', '127.0.0.1', 'localhost',
+  ];
+  const leaks = [];
+  for (const post of posts) {
+    const text = JSON.stringify(post).toLowerCase();
+    for (const word of INTERNAL_WORDS) {
+      if (text.includes(word)) leaks.push(`${post.slug} names "${word}"`);
+    }
+  }
+  if (leaks.length) fail(`blog tells the reader what is inside the system: ${leaks.join(', ')}`);
+  else pass('no article names anything inside the system');
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
   // "Route" here includes the blog, which is not in `routes.js` on purpose -

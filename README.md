@@ -148,6 +148,12 @@ and `npm run verify` fails if the page it wrote has no canonical link, no `BlogP
 or a stylesheet from an older build. The sitemap is written by `build-routes.mjs`, which
 reads the same list — an article cannot be in one and missing from the other.
 
+**Two subjects, two levels of detail.** The articles about how the system works are written
+for the person using it: layers, principles, trade-offs. They never describe what is inside
+the machine, and `verify-build.mjs` holds the list of words that would (`ffmpeg`, `adb`, a
+library name, a loopback address). If you are writing about architecture and reach for
+something from the code, say what it *does* for the reader instead of what it is called.
+
 Articles are Vietnamese only, on purpose: there is no English half, so they carry no
 `hreflang`, and `/en/` links back to the Vietnamese blog.
 
