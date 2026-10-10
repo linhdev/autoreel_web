@@ -40,10 +40,14 @@ export default function FeatureList() {
 
             <RevealGroup className="grid gap-4 min-[981px]:grid-cols-3 max-[980px]:grid-cols-2 max-[680px]:grid-cols-1">
               {group.items.map((item) => (
-                // The name, not the index: the names are the product's own and
-                // do not change with the language, so a switch does not remount
-                // every card and replay the reveal.
-                <RevealItem as="article" key={item.name} className="ar-card ar-feature">
+                // The icon, not the name: the names are the product's own and
+                // do not change with the language, and the icons are the same
+                // in both halves — but the icon is what makes the card
+                // recognisable at a glance, and it is unique within the list.
+                <RevealItem as="article" key={item.icon} className="ar-card ar-feature">
+                  <span className="ar-icon">
+                    <Icon name={item.icon} size={19} />
+                  </span>
                   <h4>{item.name}</h4>
                   <p>{item.line}</p>
                 </RevealItem>

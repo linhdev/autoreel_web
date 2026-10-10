@@ -357,7 +357,16 @@
   }
 
   .ar-feature {
-    padding: 20px;
+    padding: 18px 20px 20px;
+  }
+
+  /* A third of the size of a benefit card's tile: this section has twenty of
+   * them and the icon here is a signpost, not a headline. */
+  .ar-feature .ar-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    margin-bottom: 10px;
   }
 
   /* `h4`, not `h3`: the group above these cards is the `h3`, and a card

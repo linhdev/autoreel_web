@@ -205,6 +205,12 @@ async function main() {
     ['plans', plans.vi.map((p) => p.id), plans.en.map((p) => p.id)],
     ['faqs', faqs.vi.map((f) => f.id), faqs.en.map((f) => f.id)],
     ['benefit icons', benefits.vi.map((b) => b.icon), benefits.en.map((b) => b.icon)],
+    // The feature cards pair up by position too, and a card whose icon moved
+    // to the wrong list would be a card with the wrong glyph on one language
+    // and not the other.
+    ['feature icons',
+      allFeatures.vi.flatMap((g) => g.items.map((i) => i.icon)),
+      allFeatures.en.flatMap((g) => g.items.map((i) => i.icon))],
   ];
   for (const [label, a, b] of idPairs) {
     if (a.join() !== b.join()) fail(`${label} differ between vi and en: ${a} vs ${b}`);

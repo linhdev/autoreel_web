@@ -1,20 +1,27 @@
 /**
  * Single icon registry so content files can reference icons by name.
  * Only the icons actually used by the landing page are imported — this keeps
- * the lucide-react payload tiny (tree-shaken to ~25 glyphs).
+ * the lucide-react payload tiny (tree-shaken to ~33 glyphs).
  */
 import {
-  AudioLines,
   ArrowRight,
+  AudioLines,
   Bot,
   Boxes,
   BrainCircuit,
+  Captions,
   Check,
   Clapperboard,
   Cog,
+  Eraser,
+  Image,
+  Languages,
+  Layers,
+  Link,
   Mail,
   Menu,
   MessageCircle,
+  Mic,
   MonitorSmartphone,
   Package,
   Palette,
@@ -25,6 +32,7 @@ import {
   Send,
   ShoppingBag,
   Sparkles,
+  Type,
   User,
   Users,
   X,
@@ -32,17 +40,24 @@ import {
 } from 'lucide-react';
 
 const registry = {
-  AudioLines,
   ArrowRight,
+  AudioLines,
   Bot,
   Boxes,
   BrainCircuit,
+  Captions,
   Check,
   Clapperboard,
   Cog,
+  Eraser,
+  Image,
+  Languages,
+  Layers,
+  Link,
   Mail,
   Menu,
   MessageCircle,
+  Mic,
   MonitorSmartphone,
   Package,
   Palette,
@@ -53,6 +68,7 @@ const registry = {
   Send,
   ShoppingBag,
   Sparkles,
+  Type,
   User,
   Users,
   X,

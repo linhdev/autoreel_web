@@ -17,7 +17,7 @@ accessibility and performance.
 | ---------- | ------------------------------------------ |
 | Framework  | React 19 + Vite 8 (Rolldown)               |
 | Styling    | Tailwind CSS v4 + a small `ar-*` component layer |
-| Icons      | lucide-react (tree-shaken, ~25 glyphs)     |
+| Icons      | lucide-react (tree-shaken, ~33 glyphs)     |
 | Motion     | Framer Motion via `LazyMotion` + `domAnimation`, plus CSS keyframes for ambient glow |
 | Build      | `vite build` → `dist/` (static, no backend) |
 
