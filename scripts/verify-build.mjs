@@ -20,6 +20,7 @@ import {
   ui,
 } from '../src/data/site.js';
 import { benefits, benefitsSection } from '../src/data/features.js';
+import { allFeatures, allFeaturesSection } from '../src/data/allFeatures.js';
 import { workflows, workflowSection } from '../src/data/workflows.js';
 import { plans, pricingSection } from '../src/data/pricing.js';
 import { faqHeadline, faqs } from '../src/data/faq.js';
@@ -167,6 +168,8 @@ async function main() {
     workflowSection,
     benefits,
     benefitsSection,
+    allFeatures,
+    allFeaturesSection,
     pricingSection,
     plans,
     faqs,
@@ -386,6 +389,17 @@ async function main() {
       if (!(await exists(drawing))) {
         blogProblems.push(`${post.slug} figure MISSING ${one.figure.src}`);
       }
+    }
+    // And a body block may not carry `**`.
+    //
+    // The one-pager renders emphasis through `RichText`; an article's renderer
+    // escapes every string it is handed, on purpose, so a `**` in a paragraph
+    // ships as two literal asterisks. The smoke test already catches that on
+    // the app's own markup, and an article is not part of that markup —
+    // measured: the first draft of the newest article printed
+    // `**ghi lại một dòng**` on the published page and every check passed.
+    if (JSON.stringify(post.body).includes('**')) {
+      blogProblems.push(`${post.slug} has ** in a body block, which is escaped, not rendered`);
     }
   }
   if (blogProblems.length) fail(`blog: ${blogProblems.join(', ')}`);

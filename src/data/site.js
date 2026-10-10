@@ -51,6 +51,7 @@ export const businessInfo = {
 export const navLinks = {
   vi: [
     { label: 'Workflow', to: 'workflow' },
+    { label: 'Tính năng', to: 'features' },
     { label: 'Lợi ích', to: 'benefits' },
     { label: 'Demo', to: 'demo' },
     { label: 'Bảng giá', to: 'pricing' },
@@ -58,6 +59,7 @@ export const navLinks = {
   ],
   en: [
     { label: 'Workflow', to: 'workflow' },
+    { label: 'Features', to: 'features' },
     { label: 'Benefits', to: 'benefits' },
     { label: 'Demo', to: 'demo' },
     { label: 'Pricing', to: 'pricing' },

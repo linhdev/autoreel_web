@@ -7,6 +7,7 @@ import Hero from './components/sections/Hero.jsx';
 import WorkflowSection from './components/sections/WorkflowSection.jsx';
 import HowItWorks from './components/sections/HowItWorks.jsx';
 import Benefits from './components/sections/Benefits.jsx';
+import FeatureList from './components/sections/FeatureList.jsx';
 import DemoSection from './components/sections/DemoSection.jsx';
 import ProofSection from './components/sections/ProofSection.jsx';
 import Pricing from './components/sections/Pricing.jsx';
@@ -39,6 +40,7 @@ export default function App({ initialPath }) {
               <WorkflowSection />
               <HowItWorks />
               <Benefits />
+              <FeatureList />
               <DemoSection />
               <ProofSection />
               <Pricing />

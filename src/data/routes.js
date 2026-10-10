@@ -108,6 +108,23 @@ export const routes = [
     },
   },
   {
+    key: 'features',
+    section: 'features',
+    slug: { vi: '/tat-ca-tinh-nang/', en: '/en/all-features/' },
+    meta: {
+      vi: {
+        title: 'Toàn bộ tính năng của AutoReel | Danh sách đầy đủ',
+        description:
+          'Mọi thứ AutoReel làm được: ba luồng trọn gói Affiliate, Reup và Review, mười ba màn làm từng việc lẻ, cùng hàng đợi chạy song song và giọng đọc tiếng Việt.',
+      },
+      en: {
+        title: 'All AutoReel features | The complete list',
+        description:
+          'Everything AutoReel does: the Affiliate, Reup and Review flows, thirteen single-job screens, plus a parallel job queue and Vietnamese AI voices.',
+      },
+    },
+  },
+  {
     key: 'demo',
     section: 'demo',
     slug: { vi: '/video-demo-thuc-te/', en: '/en/video-demo/' },

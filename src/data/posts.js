@@ -56,6 +56,7 @@ import chonNgonNguTheoTang from './posts/chon-ngon-ngu-lap-trinh-cho-tung-tang.j
 import tanDungEngine from './posts/tan-dung-engine-thay-vi-tu-viet.js';
 import maNguonMo from './posts/ma-nguon-mo-dung-va-tra-lai.js';
 import aiDieuPhoiAi from './posts/ai-dieu-phoi-ai.js';
+import benTrongMotJob from './posts/ben-trong-mot-job-bon-tang-engine-va-hai-cho-goi-ai.js';
 
 // Doing the work: picking products, writing, voice, subtitles, reuse.
 import chonSanPhamAffiliate from './posts/chon-san-pham-affiliate-shopee-de-lam-video.js';
@@ -86,6 +87,7 @@ import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
  * the blog opened with at the bottom.
  */
 export const posts = [
+  benTrongMotJob,
   kienTrucTachTienTrinh,
   chonNgonNguTheoTang,
   tanDungEngine,
