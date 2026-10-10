@@ -20,7 +20,7 @@
 <rect x="382" y="228" width="176" height="66" rx="8" fill="#11172d"/>
 <rect x="564" y="228" width="176" height="66" rx="8" fill="#11172d"/>
 <rect x="200" y="300" width="540" height="66" rx="10" fill="#11172d" stroke="#55e6a5" stroke-width="1.4"/>
-<text x="470" y="338" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#55e6a5" text-anchor="middle">dữ liệu có cấu trúc — không phải ngôn ngữ lập trình</text>
+<text x="470" y="338" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#55e6a5" text-anchor="middle">cấu hình là dữ liệu, không phải mã</text>
 <rect x="234" y="104" width="108" height="26" rx="13" fill="#151d38" stroke="#37d9ff" stroke-width="1.4"/>
 <text x="288" y="122" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#37d9ff" text-anchor="middle">TypeScript</text>
 <rect x="428" y="104" width="84" height="26" rx="13" fill="#151d38" stroke="#5b78ff" stroke-width="1.4"/>
