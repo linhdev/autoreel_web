@@ -127,6 +127,25 @@ function footer() {
       </footer>`;
 }
 
+/**
+ * An illustration: a diagram drawn by hand in `public/blog/`, which Vite copies
+ * to the site root, so the article names it as `/blog/<name>.svg`.
+ *
+ * The one block whose markup is not entirely escaped. `src` is written through
+ * as-is, because it is a path in this repo rather than text a reader supplied,
+ * and escaping it would only turn a `&` in a file name into `&amp;` and 404 the
+ * image. `alt` and `caption` are prose and are escaped like everything else.
+ */
+function figure(one) {
+  const { src, alt, caption } = one;
+  if (!src || !alt) {
+    throw new Error(`a figure needs a src and an alt: ${JSON.stringify(one).slice(0, 80)}`);
+  }
+  const image = `          <img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async" />`;
+  const text = caption ? `\n          <figcaption>${esc(caption)}</figcaption>` : '';
+  return `        <figure class="ar-post-figure">\n${image}${text}\n        </figure>`;
+}
+
 /** One block of an article's body. Every string is escaped on the way in. */
 function block(one) {
   if (one.h2) return `        <h2>${esc(one.h2)}</h2>`;
@@ -145,6 +164,7 @@ function block(one) {
     return `        <ol>\n${one.ol.map((item) => `          <li>${esc(item)}</li>`).join('\n')}\n        </ol>`;
   }
   if (one.note) return `        <div class="ar-post-note">${esc(one.note)}</div>`;
+  if (one.figure) return figure(one.figure);
   throw new Error(`unknown article block: ${JSON.stringify(one).slice(0, 80)}`);
 }
 

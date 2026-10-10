@@ -1021,6 +1021,33 @@
     color: #e7eeff;
   }
 
+  /* A diagram, hand-drawn as SVG in `public/blog/`. The drawing brings its own
+     dark panel and its own literal colours rather than the page's tokens: an
+     SVG loaded through `<img>` is a document of its own, and a `var(--cyan)`
+     inside it resolves to nothing. That is also what keeps the figure legible
+     if the page behind it ever stops being dark. */
+  .ar-post-figure {
+    margin: 26px 0;
+  }
+
+  .ar-post-figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .ar-post-figure figcaption {
+    max-width: 640px;
+    margin: 12px auto 0;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--muted);
+    text-align: center;
+  }
+
   .ar-post-faq {
     max-width: 780px;
     margin: 46px auto 0;

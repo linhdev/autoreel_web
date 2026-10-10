@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" width="760" height="470" role="img" aria-labelledby="ttl">
+<title id="ttl">Kiến trúc tách tiến trình: giao diện, bộ điều phối và ba tiến trình làm việc riêng</title>
+<rect x="0" y="0" width="760" height="470" fill="#0b1024"/>
+<rect x="10" y="10" width="740" height="450" rx="14" fill="none" stroke="#2b3557"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5b78ff"/></marker></defs>
+<rect x="24" y="28" width="712" height="74" rx="12" fill="#11172d"/>
+<rect x="24" y="126" width="712" height="76" rx="12" fill="#11172d"/>
+<rect x="150" y="36" width="480" height="58" rx="10" fill="#151d38" stroke="#37d9ff" stroke-width="1.6"/>
+<text x="390" y="60" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" fill="#e7eeff" text-anchor="middle">Giao diện người dùng</text>
+<text x="390" y="80" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">luôn mở, không làm việc nặng</text>
+<text x="38" y="56" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#37d9ff">MẶT TIỀN</text>
+<line x1="24" y1="118" x2="640" y2="118" stroke="#3b477a" stroke-width="1.4" stroke-dasharray="6 6"/>
+<text x="640" y="111" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="end">ranh giới chịu lỗi</text>
+<rect x="150" y="134" width="480" height="60" rx="10" fill="#151d38" stroke="#5b78ff" stroke-width="1.6"/>
+<text x="390" y="160" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" fill="#e7eeff" text-anchor="middle">Hàng đợi công việc</text>
+<text x="390" y="180" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">một hàng đợi, nhiều người nghe</text>
+<text x="38" y="156" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#5b78ff">BỘ ĐIỀU PHỐI</text>
+<path d="M390 194V216M186 216H594" stroke="#5b78ff" stroke-width="1.6" fill="none"/>
+<path d="M186 216V236M390 216V236M594 216V236" stroke="#5b78ff" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+<rect x="96" y="238" width="180" height="82" rx="10" fill="#151d38" stroke="#2b3557" stroke-width="1.4"/>
+<text x="186" y="268" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#e7eeff" text-anchor="middle">Tiến trình dựng</text>
+<circle cx="186" cy="296" r="10" fill="none" stroke="#55e6a5" stroke-width="1.5"/>
+<text x="186" y="301" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#55e6a5" text-anchor="middle">✓</text>
+<rect x="300" y="238" width="180" height="82" rx="10" fill="#151d38" stroke="#2b3557" stroke-width="1.4"/>
+<text x="390" y="268" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#e7eeff" text-anchor="middle">Tiến trình giọng đọc</text>
+<circle cx="390" cy="296" r="10" fill="none" stroke="#55e6a5" stroke-width="1.5"/>
+<text x="390" y="301" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#55e6a5" text-anchor="middle">✓</text>
+<rect x="504" y="238" width="180" height="82" rx="10" fill="#151d38" stroke="#ef4fc4" stroke-width="1.6"/>
+<text x="594" y="268" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#aeb8d4" text-anchor="middle">Tiến trình đăng bài</text>
+<line x1="524" y1="264" x2="664" y2="264" stroke="#ef4fc4" stroke-width="1.6"/>
+<circle cx="594" cy="296" r="10" fill="none" stroke="#ef4fc4" stroke-width="1.5"/>
+<text x="594" y="301" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#ef4fc4" text-anchor="middle">✗</text>
+<text x="566" y="344" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#ff7a8a" text-anchor="middle">chỉ việc này dừng</text>
+<path d="M150 320V364M390 320V364M630 320V364" stroke="#5b78ff" stroke-width="1.4" opacity="0.6" stroke-dasharray="6 6" fill="none" marker-end="url(#arrow)"/>
+<rect x="96" y="366" width="588" height="60" rx="10" fill="#11172d" stroke="#2b3557" stroke-width="1.4"/>
+<text x="390" y="392" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="15" fill="#e7eeff" text-anchor="middle">Kho dữ liệu cục bộ</text>
+<text x="390" y="412" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">trạng thái từng việc</text>
+<path d="M48 222V334M39 222H57M39 334H57" stroke="#3b477a" stroke-width="1.4" fill="none"/>
+<text x="30" y="278" transform="rotate(-90 30 278)" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">tiến trình riêng</text>
+<path d="M666 36V194M657 36H675M657 194H675" stroke="#3b477a" stroke-width="1.4" fill="none"/>
+<text x="688" y="115" transform="rotate(-90 688 115)" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">giao diện không chờ</text>
+</svg>

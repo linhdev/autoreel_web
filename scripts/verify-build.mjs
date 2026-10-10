@@ -376,6 +376,17 @@ async function main() {
     // The stylesheet is the site's own, hash and all: a blog page that links a
     // stylesheet this build did not produce renders as unstyled text.
     if (!/assets\/index-[\w-]+\.css/.test(page)) blogProblems.push(`${post.slug} stylesheet`);
+    // An illustration is a drawing in `public/`, copied to `dist/` by Vite,
+    // which the article names by path — so a diagram that never shipped is a
+    // broken image on a published page, and nothing else in the article's own
+    // markup would show it.
+    for (const one of post.body) {
+      if (!one.figure) continue;
+      const drawing = path.join(dist, String(one.figure.src).replace(/^\//, ''));
+      if (!(await exists(drawing))) {
+        blogProblems.push(`${post.slug} figure MISSING ${one.figure.src}`);
+      }
+    }
   }
   if (blogProblems.length) fail(`blog: ${blogProblems.join(', ')}`);
   else pass(`blog: ${posts.length} article(s) + index, each with its own head`);

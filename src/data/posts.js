@@ -14,12 +14,16 @@
  * link to `/blog/` is a normal link that loads a normal page.
  *
  * The `body` of an article is an array of small objects (`{ h2 }`, `{ p }`,
- * `{ ul }`, `{ ol }`, `{ note }`) rather than one HTML string or one Markdown
- * blob. Three reasons, in order of how much they matter: the build script and
- * any future renderer get the structure without parsing anything; nothing can
- * put a raw `<script>` on the page by accident, because the renderer escapes
- * every string it is handed; and an author cannot invent markup that the page
- * has no styles for.
+ * `{ ul }`, `{ ol }`, `{ note }`, `{ figure }`) rather than one HTML string or
+ * one Markdown blob. Three reasons, in order of how much they matter: the build
+ * script and any future renderer get the structure without parsing anything;
+ * nothing can put a raw `<script>` on the page by accident, because the renderer
+ * escapes every string it is handed; and an author cannot invent markup that the
+ * page has no styles for.
+ *
+ * `{ figure }` is the one block whose markup is not entirely escaped — its
+ * `src` is a path in `public/blog/`, written through as-is — which is exactly
+ * why it is a block type here rather than something an author can type.
  */
 
 import cachTaoVideoAffiliate from './posts/tao-video-affiliate-shopee-hang-loat.js';
@@ -41,6 +45,17 @@ import hangDoiVaChaySongSong from './posts/hang-doi-job-va-chay-song-song.js';
 import motLoiNhieuCuaRa from './posts/mot-loi-nhieu-cua-ra.js';
 import giamSatHeThong from './posts/lam-sao-biet-he-thong-dang-chay-hay-da-dung.js';
 import dangBaiKhongApi from './posts/tu-dong-dang-bai-khi-nen-tang-khong-mo-api.js';
+
+// The engine room: the same subject one level down, written for the reader who
+// wants to know how a system like this is put together — process boundaries,
+// language choices, engines, licences, and what the AI is allowed to decide.
+// Still nothing internal: `scripts/verify-build.mjs` keeps its list of words
+// these articles may not contain, and these five live closest to that line.
+import kienTrucTachTienTrinh from './posts/kien-truc-tach-tien-trinh-va-chiu-loi.js';
+import chonNgonNguTheoTang from './posts/chon-ngon-ngu-lap-trinh-cho-tung-tang.js';
+import tanDungEngine from './posts/tan-dung-engine-thay-vi-tu-viet.js';
+import maNguonMo from './posts/ma-nguon-mo-dung-va-tra-lai.js';
+import aiDieuPhoiAi from './posts/ai-dieu-phoi-ai.js';
 
 // Doing the work: picking products, writing, voice, subtitles, reuse.
 import chonSanPhamAffiliate from './posts/chon-san-pham-affiliate-shopee-de-lam-video.js';
@@ -66,11 +81,16 @@ import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
 /**
  * Everything above, newest first — the order the index and the footer draw.
  *
- * Thirty articles share one date, and `posts.sort` is stable, so the order
+ * Thirty-five articles share one date, and `posts.sort` is stable, so the order
  * written here is the order the index shows: the newer groups first, the ten
  * the blog opened with at the bottom.
  */
 export const posts = [
+  kienTrucTachTienTrinh,
+  chonNgonNguTheoTang,
+  tanDungEngine,
+  maNguonMo,
+  aiDieuPhoiAi,
   kienTrucHeThong,
   hangDoiVaChaySongSong,
   motLoiNhieuCuaRa,

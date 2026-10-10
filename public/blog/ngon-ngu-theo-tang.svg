@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 430" width="760" height="430" role="img" aria-labelledby="ttl">
+<title id="ttl">Ngôn ngữ theo tầng: mỗi tầng một ngôn ngữ, trao đổi bằng dữ liệu có cấu trúc</title>
+<rect x="0" y="0" width="760" height="430" fill="#0b1024"/>
+<rect x="10" y="10" width="740" height="410" rx="14" fill="none" stroke="#2b3557"/>
+<rect x="200" y="44" width="540" height="34" rx="8" fill="#151d38" stroke="#2b3557"/>
+<text x="288" y="66" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#e7eeff" text-anchor="middle">Giao diện</text>
+<text x="470" y="66" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#e7eeff" text-anchor="middle">Điều phối</text>
+<text x="652" y="66" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="14" fill="#e7eeff" text-anchor="middle">Engine nặng</text>
+<text x="24" y="122" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#e7eeff">Xử lý chuỗi, API</text>
+<text x="24" y="194" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#e7eeff">Dữ liệu &amp; trạng thái</text>
+<text x="24" y="266" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#e7eeff">Dựng video, giọng đọc</text>
+<text x="24" y="338" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#e7eeff">Cấu hình chung</text>
+<rect x="200" y="84" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="382" y="84" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="564" y="84" width="176" height="66" rx="8" fill="none" stroke="#3b477a" stroke-width="1.2" stroke-dasharray="5 5" opacity="0.55"/>
+<rect x="200" y="156" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="382" y="156" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="564" y="156" width="176" height="66" rx="8" fill="none" stroke="#3b477a" stroke-width="1.2" stroke-dasharray="5 5" opacity="0.55"/>
+<rect x="200" y="228" width="176" height="66" rx="8" fill="none" stroke="#3b477a" stroke-width="1.2" stroke-dasharray="5 5" opacity="0.55"/>
+<rect x="382" y="228" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="564" y="228" width="176" height="66" rx="8" fill="#11172d"/>
+<rect x="200" y="300" width="540" height="66" rx="10" fill="#11172d" stroke="#55e6a5" stroke-width="1.4"/>
+<text x="470" y="338" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#55e6a5" text-anchor="middle">dữ liệu có cấu trúc — không phải ngôn ngữ lập trình</text>
+<rect x="234" y="104" width="108" height="26" rx="13" fill="#151d38" stroke="#37d9ff" stroke-width="1.4"/>
+<text x="288" y="122" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#37d9ff" text-anchor="middle">TypeScript</text>
+<rect x="428" y="104" width="84" height="26" rx="13" fill="#151d38" stroke="#5b78ff" stroke-width="1.4"/>
+<text x="470" y="122" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#5b78ff" text-anchor="middle">Python</text>
+<rect x="234" y="176" width="108" height="26" rx="13" fill="#151d38" stroke="#37d9ff" stroke-width="1.4"/>
+<text x="288" y="194" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#37d9ff" text-anchor="middle">TypeScript</text>
+<rect x="428" y="176" width="84" height="26" rx="13" fill="#151d38" stroke="#5b78ff" stroke-width="1.4"/>
+<text x="470" y="194" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#5b78ff" text-anchor="middle">Python</text>
+<rect x="428" y="248" width="84" height="26" rx="13" fill="#151d38" stroke="#5b78ff" stroke-width="1.4"/>
+<text x="470" y="266" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#5b78ff" text-anchor="middle">Python</text>
+<rect x="610" y="236" width="84" height="22" rx="11" fill="#151d38" stroke="#5b78ff" stroke-width="1.4"/>
+<text x="652" y="251" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#5b78ff" text-anchor="middle">Python</text>
+<rect x="572" y="264" width="160" height="22" rx="11" fill="#151d38" stroke="#55e6a5" stroke-width="1.4"/>
+<text x="652" y="279" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#55e6a5" text-anchor="middle">C / C++ (thư viện)</text>
+<text x="470" y="398" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="13" fill="#aeb8d4" text-anchor="middle">một tầng một ngôn ngữ · trao đổi bằng dữ liệu có cấu trúc</text>
+</svg>
