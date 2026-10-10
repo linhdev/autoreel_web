@@ -29,6 +29,7 @@ import { fileURLToPath } from 'node:url';
 
 import { LOCALES, LOCALE_TAGS, SITE_URL, absolute, routes } from '../src/data/routes.js';
 import { plans } from '../src/data/pricing.js';
+import { BLOG, postPath, posts } from '../src/data/posts.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -291,6 +292,20 @@ async function writeManifest() {
 
 function sitemap(stamp) {
   const urls = [];
+  /**
+   * One URL's entry.
+   *
+   * `lastmod` is passed in rather than always being today's date, because the
+   * only thing it is good for is telling a crawler what changed. A stamp that
+   * moves on every build says every page changed on every deploy, which is the
+   * same as saying nothing - so the sections get the build date (the markup
+   * around them is regenerated) and an article gets the date it was written.
+   */
+  const entry = (loc, lastmod, priority, links = '') =>
+    `  <url>\n    <loc>${esc(loc)}</loc>\n${links}${links ? '\n' : ''}` +
+    `    <lastmod>${lastmod}</lastmod>\n` +
+    `    <changefreq>weekly</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+
   for (const route of routes) {
     for (const lang of LOCALES) {
       // Self-referencing alternates on a one-language site are noise; they only
@@ -304,13 +319,20 @@ function sitemap(stamp) {
         )
         .join('\n');
       urls.push(
-        `  <url>\n    <loc>${esc(absolute(route.slug[lang]))}</loc>\n${links}${links ? '\n' : ''}` +
-          `    <lastmod>${stamp}</lastmod>\n` +
-          `    <changefreq>weekly</changefreq>\n` +
-          `    <priority>${route.key === 'home' ? '1.0' : '0.8'}</priority>\n  </url>`,
+        entry(absolute(route.slug[lang]), stamp, route.key === 'home' ? '1.0' : '0.8', links),
       );
     }
   }
+
+  // The blog, which `routes` deliberately does not hold: those are the
+  // one-pager's section URLs and these are pages of their own, written by
+  // `build-posts.mjs`. They belong in the map all the same, and they get no
+  // `hreflang` alternates because there is no English half of them.
+  urls.push(entry(absolute(BLOG.path), stamp, '0.7'));
+  for (const post of posts) {
+    urls.push(entry(absolute(postPath(post.slug)), post.date, '0.6'));
+  }
+
   return (
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n' +

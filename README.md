@@ -58,6 +58,8 @@ src/
     head.js                keeps <title>/canonical in step after a click
   data/                    ← all editable content lives here
     routes.js              ← every URL, and its title + description
+    posts.js               ← the blog index: the list of articles (see "The blog")
+    posts/                 ← one file per article
     site.js                brand, nav, hero, steps, demo, proof, CTA, footer, UI strings
     workflows.js           the 3 flows + section heading
     features.js            the 8 benefits
@@ -67,6 +69,7 @@ src/
 scripts/
   generate-assets.mjs      image pipeline (sharp) → public/
   build-routes.mjs         one HTML file per route + sitemap + 404, after vite build
+  build-posts.mjs          one HTML file per blog article + the /blog/ index
   verify-build.mjs         post-build assertions on dist/
   ssr-smoke.jsx            renders the app to catch runtime errors
 public/                    favicons, OG images, _headers, _redirects, robots.txt
@@ -111,6 +114,42 @@ describing the same page: a missing key, a short list, a renamed plan id, an emp
 used to be three separate fields (`titleBefore` / `titleHighlight` / `titleAfter`), which
 only worked while the sentence was Vietnamese — English puts the emphasis somewhere else,
 and the translator could not move it. A `**` count that comes out odd is a `verify` failure.
+
+### The blog
+
+`/blog/` and its articles are **not part of the one-pager**. The sections are one page with
+seven URLs; an article is a page of its own with its own body, so it is written out as real
+static HTML by `scripts/build-posts.mjs` — no React, and the app's router deliberately knows
+nothing about it. That is why the Blog links in the navbar and footer are plain `<a href>`
+and not the router's `<Link>`: a `Link` to a path no route claims would render the home page
+and put `/` back in the address bar.
+
+One article is one file, `src/data/posts/<slug>.js`, and `src/data/posts.js` imports them.
+The body is an array of small blocks rather than one HTML or Markdown string:
+
+```js
+body: [
+  { h2: 'Một mục lớn' },
+  { p: 'Một đoạn văn.' },
+  { ul: ['ý một', 'ý hai'] },
+  { ol: ['bước một', 'bước hai'] },
+  { note: 'Một lưu ý, in nổi bật.' },
+],
+faq: [{ q: '…', a: '…' }],
+```
+
+The renderer escapes every string it is handed, so nothing in an article can put markup on
+the page; the FAQ becomes `details/summary` on the page and a `FAQPage` block in the
+structured data.
+
+**Adding an article:** write the file, import it in `posts.js`, then `npm run build`. The
+build fails if a title is over 62 characters, a slug repeats, or a required field is missing,
+and `npm run verify` fails if the page it wrote has no canonical link, no `BlogPosting` data,
+or a stylesheet from an older build. The sitemap is written by `build-routes.mjs`, which
+reads the same list — an article cannot be in one and missing from the other.
+
+Articles are Vietnamese only, on purpose: there is no English half, so they carry no
+`hreflang`, and `/en/` links back to the Vietnamese blog.
 
 ### Adding a language
 

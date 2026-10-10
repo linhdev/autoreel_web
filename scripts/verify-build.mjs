@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
+import { BLOG, postPath, posts } from '../src/data/posts.js';
 import {
   demo,
   finalCta,
@@ -340,10 +341,56 @@ async function main() {
     }
   }
 
+  // ---- The blog: real pages, with their own heads ----
+  //
+  // Checked here rather than in `build-posts.mjs` alone because this is the
+  // script that runs after a build and looks at what is actually on disk: an
+  // article that failed to write, or wrote with the landing page's title, has
+  // to fail the build rather than ship as a URL that ranks for nothing.
+  const blogProblems = [];
+  const blogIndex = path.join(dist, 'blog', 'index.html');
+  if (!(await exists(blogIndex))) {
+    blogProblems.push('no /blog/ index');
+  } else {
+    const page = await readFile(blogIndex, 'utf8');
+    if (!page.includes(`<title>${BLOG.title}</title>`)) blogProblems.push('/blog/ title');
+    for (const post of posts) {
+      if (!page.includes(postPath(post.slug))) {
+        blogProblems.push(`/blog/ does not link to ${post.slug}`);
+      }
+    }
+  }
+  for (const post of posts) {
+    const file = path.join(dist, 'blog', post.slug, 'index.html');
+    if (!(await exists(file))) {
+      blogProblems.push(`${post.slug} MISSING`);
+      continue;
+    }
+    const page = await readFile(file, 'utf8');
+    if (!page.includes(`<title>${post.title}</title>`)) blogProblems.push(`${post.slug} title`);
+    if (!page.includes(`<link rel="canonical" href="${absolute(postPath(post.slug))}" />`)) {
+      blogProblems.push(`${post.slug} canonical`);
+    }
+    if (!page.includes('"BlogPosting"')) blogProblems.push(`${post.slug} structured data`);
+    if (!page.includes(post.description)) blogProblems.push(`${post.slug} description`);
+    // The stylesheet is the site's own, hash and all: a blog page that links a
+    // stylesheet this build did not produce renders as unstyled text.
+    if (!/assets\/index-[\w-]+\.css/.test(page)) blogProblems.push(`${post.slug} stylesheet`);
+  }
+  if (blogProblems.length) fail(`blog: ${blogProblems.join(', ')}`);
+  else pass(`blog: ${posts.length} article(s) + index, each with its own head`);
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
+  //
+  // "Route" here includes the blog, which is not in `routes.js` on purpose -
+  // those are the one-pager's section URLs, and an article is a page of its own.
   const map = await readFile(path.join(dist, 'sitemap.xml'), 'utf8');
   const locs = [...map.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  const want = new Set(routes.flatMap((route) => LOCALES.map((lang) => absolute(route.slug[lang]))));
+  const want = new Set([
+    ...routes.flatMap((route) => LOCALES.map((lang) => absolute(route.slug[lang]))),
+    absolute(BLOG.path),
+    ...posts.map((post) => absolute(postPath(post.slug))),
+  ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {
     fail(`sitemap has ${locs.length} URLs, expected ${want.size}`);

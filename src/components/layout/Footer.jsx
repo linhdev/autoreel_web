@@ -51,6 +51,13 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              {/* The blog is static pages rather than a route of this app —
+                  see the note on the same link in `Navbar.jsx`. */}
+              <li>
+                <a href="/blog/" className="ar-footer-link">
+                  Blog
+                </a>
+              </li>
             </ul>
           </div>
 

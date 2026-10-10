@@ -129,6 +129,15 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            {/* A plain anchor, not the router's `Link`: the blog is not one of
+                this app's routes — its pages are written as static HTML by
+                `scripts/build-posts.mjs`, so this is a normal navigation and
+                the router must not try to answer it. */}
+            <li>
+              <a className="ar-nav-link" href="/blog/">
+                Blog
+              </a>
+            </li>
           </ul>
         </nav>
 
@@ -179,6 +188,14 @@ export default function Navbar() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <a
+                    href="/blog/"
+                    className="block border-b border-[var(--line-soft)] py-3.5 text-[1.02rem] font-bold text-[#dbe3f7]"
+                  >
+                    Blog
+                  </a>
+                </li>
               </ul>
               <Link
                 to={href('contact')}

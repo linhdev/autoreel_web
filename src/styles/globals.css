@@ -939,6 +939,200 @@
     transform-origin: 0 50%;
     background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple), var(--pink));
   }
+
+  /* ---- Blog ----------------------------------------------------------------
+     The articles are static HTML written by `scripts/build-posts.mjs` — not
+     React, and not part of the one-pager — so their styles cannot be Tailwind
+     utilities written in a build script that the compiler may never read. They
+     are ordinary classes here, built from the same tokens as everything else:
+     a blog that looks like a different site is a blog nobody trusts. */
+  .ar-post {
+    padding: 52px 0 76px;
+  }
+
+  .ar-post-head {
+    max-width: 780px;
+    margin: 0 auto 30px;
+  }
+
+  .ar-post-title {
+    margin: 14px 0 16px;
+    font-size: clamp(1.95rem, 4.4vw, 3rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+
+  .ar-post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    color: var(--muted);
+    font-size: 0.94rem;
+  }
+
+  .ar-post-lead {
+    margin: 18px 0 0;
+    font-size: 1.12rem;
+    line-height: 1.7;
+    color: #dbe3f7;
+  }
+
+  .ar-post-body {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .ar-post-body h2 {
+    margin: 40px 0 14px;
+    font-size: clamp(1.32rem, 2.4vw, 1.7rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .ar-post-body p {
+    margin: 0 0 16px;
+    line-height: 1.78;
+    color: #dfe6f7;
+  }
+
+  .ar-post-body ul,
+  .ar-post-body ol {
+    margin: 0 0 18px;
+    padding-left: 20px;
+    display: grid;
+    gap: 10px;
+    line-height: 1.72;
+    color: #dfe6f7;
+  }
+
+  .ar-post-body li::marker {
+    color: var(--cyan);
+    font-weight: 700;
+  }
+
+  .ar-post-note {
+    margin: 22px 0;
+    padding: 15px 18px;
+    border-left: 3px solid var(--cyan);
+    border-radius: 12px;
+    background: rgba(55, 217, 255, 0.08);
+    line-height: 1.7;
+    color: #e7eeff;
+  }
+
+  .ar-post-faq {
+    max-width: 780px;
+    margin: 46px auto 0;
+  }
+
+  .ar-post-faq details {
+    margin-bottom: 10px;
+    padding: 14px 18px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .ar-post-faq summary {
+    cursor: pointer;
+    font-weight: 800;
+  }
+
+  .ar-post-faq summary::marker {
+    color: var(--cyan);
+  }
+
+  .ar-post-faq p {
+    margin: 10px 0 0;
+    line-height: 1.72;
+    color: var(--muted);
+  }
+
+  .ar-post-cta {
+    max-width: 780px;
+    margin: 46px auto 0;
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: linear-gradient(145deg, rgba(91, 120, 255, 0.18), rgba(155, 92, 255, 0.1));
+  }
+
+  .ar-post-cta h2 {
+    margin: 0 0 10px;
+    font-size: 1.24rem;
+    font-weight: 850;
+  }
+
+  .ar-post-cta p {
+    margin: 0 0 16px;
+    line-height: 1.7;
+    color: #e3e9fb;
+  }
+
+  .ar-post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ar-post-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .ar-post-back:hover {
+    color: var(--text);
+  }
+
+  .ar-blog-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  }
+
+  .ar-blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+  }
+
+  .ar-blog-card h3 {
+    margin: 0;
+    font-size: 1.14rem;
+    font-weight: 850;
+    line-height: 1.34;
+  }
+
+  .ar-blog-card h3 a:hover {
+    color: var(--cyan);
+  }
+
+  .ar-blog-card p {
+    margin: 0;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .ar-blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  .ar-post-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 34px;
+  }
 }
 
 /* ==========================================================================
