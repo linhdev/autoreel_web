@@ -30,6 +30,7 @@ import { fileURLToPath } from 'node:url';
 import { LOCALES, LOCALE_TAGS, SITE_URL, absolute, routes } from '../src/data/routes.js';
 import { plans } from '../src/data/pricing.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
+import { DOCS, docPath, docs } from '../src/data/docs.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -331,6 +332,45 @@ function sitemap(stamp) {
   urls.push(entry(absolute(BLOG.path), stamp, '0.7'));
   for (const post of posts) {
     urls.push(entry(absolute(postPath(post.slug)), post.date, '0.6'));
+  }
+
+  // The documentation, which is not in `routes` for the same reason the blog
+  // is not, and is written by `build-docs.mjs`.
+  //
+  // It *does* get `hreflang` alternates, unlike the blog: both languages
+  // exist, and a Vietnamese topic and its English counterpart are the same
+  // document in two languages rather than two documents. Without them Google
+  // picks one and treats the other as a duplicate.
+  const alternatesFor = (pair) =>
+    LOCALES.map(
+      (code) =>
+        `    <xhtml:link rel="alternate" hreflang="${LOCALE_TAGS[code].html}" href="${esc(pair[code])}"/>`,
+    ).join('\n');
+
+  for (const lang of LOCALES) {
+    urls.push(
+      entry(
+        absolute(DOCS.path[lang]),
+        stamp,
+        '0.7',
+        alternatesFor({ vi: absolute(DOCS.path.vi), en: absolute(DOCS.path.en) }),
+      ),
+    );
+  }
+  for (const doc of docs) {
+    for (const lang of LOCALES) {
+      urls.push(
+        entry(
+          absolute(docPath(doc, lang)),
+          doc.updated,
+          '0.6',
+          alternatesFor({
+            vi: absolute(docPath(doc, 'vi')),
+            en: absolute(docPath(doc, 'en')),
+          }),
+        ),
+      );
+    }
   }
 
   return (

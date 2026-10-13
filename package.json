@@ -6,12 +6,13 @@
   "description": "AutoReel landing page - AI Content Automation",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/build-routes.mjs && node scripts/build-posts.mjs",
+    "build": "vite build && node scripts/build-routes.mjs && node scripts/build-posts.mjs && node scripts/build-docs.mjs",
     "build:posts": "node scripts/build-posts.mjs",
     "preview": "vite preview",
     "assets": "node scripts/generate-assets.mjs",
     "smoke": "vite build --ssr scripts/ssr-smoke.jsx --outDir .ssr-tmp --logLevel error && node .ssr-tmp/ssr-smoke.js",
-    "verify": "node scripts/verify-build.mjs"
+    "verify": "node scripts/verify-build.mjs",
+    "docs:shots": "node scripts/optimise-docs-shots.mjs"
   },
   "dependencies": {
     "framer-motion": "^14.0.0",

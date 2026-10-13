@@ -42,6 +42,47 @@ function LanguageSwitch({ className = '' }) {
   );
 }
 
+/**
+ * One entry of `navLinks`, in whichever of the two kinds it is.
+ *
+ * `to` is a route key from `src/data/routes.js` and the router turns it into
+ * the address for the language on screen. `href` is a page that is not a route
+ * at all — `/blog/` and `/tai-lieu/` are written as static HTML after
+ * `vite build`, so they are ordinary anchors and the router must not try to
+ * answer them. `src/data/site.js` carries the argument in full.
+ *
+ * The two are one component rather than a branch at each call site because
+ * there are two call sites — the desktop list and the mobile one — and the
+ * blog link used to be a hard-coded `<li>` repeated in both of them.
+ */
+function NavItem({ link, className, onNavigate, active }) {
+  // Called before the branch, not inside it: a hook behind an `if` is a hook
+  // that is skipped on some renders, and the static entries are exactly the
+  // ones that would skip it.
+  const href = useHref();
+  if (link.href) {
+    return (
+      <li>
+        <a className={className} href={link.href}>
+          {link.label}
+        </a>
+      </li>
+    );
+  }
+  return (
+    <li>
+      <Link
+        to={href(link.to)}
+        onNavigate={onNavigate}
+        className={className}
+        aria-current={active ? 'page' : undefined}
+      >
+        {link.label}
+      </Link>
+    </li>
+  );
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -119,25 +160,13 @@ export default function Navbar() {
         <nav aria-label={ui.mainNav} className="hidden min-[981px]:block">
           <ul className="flex items-center gap-[26px]">
             {navLinks.map((link) => (
-              <li key={link.to}>
-                <Link
-                  to={href(link.to)}
-                  className="ar-nav-link"
-                  aria-current={route.key === link.to ? 'page' : undefined}
-                >
-                  {link.label}
-                </Link>
-              </li>
+              <NavItem
+                key={link.href || link.to}
+                link={link}
+                className="ar-nav-link"
+                active={route.key === link.to}
+              />
             ))}
-            {/* A plain anchor, not the router's `Link`: the blog is not one of
-                this app's routes — its pages are written as static HTML by
-                `scripts/build-posts.mjs`, so this is a normal navigation and
-                the router must not try to answer it. */}
-            <li>
-              <a className="ar-nav-link" href="/blog/">
-                Blog
-              </a>
-            </li>
           </ul>
         </nav>
 
@@ -178,24 +207,14 @@ export default function Navbar() {
             <nav aria-label={ui.mobileNav} className="ar-container py-4">
               <ul className="flex flex-col">
                 {navLinks.map((link) => (
-                  <li key={link.to}>
-                    <Link
-                      to={href(link.to)}
-                      onNavigate={() => setMenuOpen(false)}
-                      className="block border-b border-[var(--line-soft)] py-3.5 text-[1.02rem] font-bold text-[#dbe3f7]"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <a
-                    href="/blog/"
+                  <NavItem
+                    key={link.href || link.to}
+                    link={link}
                     className="block border-b border-[var(--line-soft)] py-3.5 text-[1.02rem] font-bold text-[#dbe3f7]"
-                  >
-                    Blog
-                  </a>
-                </li>
+                    onNavigate={() => setMenuOpen(false)}
+                    active={route.key === link.to}
+                  />
+                ))}
               </ul>
               <Link
                 to={href('contact')}

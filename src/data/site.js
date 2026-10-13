@@ -45,8 +45,26 @@ export const businessInfo = {
 };
 
 /**
+ * **Two kinds of entry, and the shape says which one it is.**
+ *
  * `to` is a key from `src/data/routes.js`, not a URL — the language decides
- * which slug it becomes. See `useHref`.
+ * which slug it becomes, and the router turns it into an address on the page
+ * you are already on. See `useHref`.
+ *
+ * `href` is the other kind, and there is exactly one reason to have it: a page
+ * that is not a route. `/blog/` and `/tai-lieu/` are static HTML written after
+ * `vite build` by `scripts/build-posts.mjs` and `scripts/build-docs.mjs`, so
+ * the address is the whole value and the language is already inside it. They
+ * are plain `<a>` tags in the markup for the same reason — see
+ * `src/data/posts.js`.
+ *
+ * `key` exists for the generated header and footer, which have no router and
+ * no address bar and therefore cannot work out which page they are on.
+ *
+ * Blog used to be a hard-coded `<li>` in five separate places — twice in
+ * `Navbar.jsx`, once in `Footer.jsx`, twice inside `build-posts.mjs`. Adding a
+ * second static page to five places is how two of them end up different, so
+ * both now travel through this list.
  */
 export const navLinks = {
   vi: [
@@ -56,6 +74,8 @@ export const navLinks = {
     { label: 'Demo', to: 'demo' },
     { label: 'Bảng giá', to: 'pricing' },
     { label: 'FAQ', to: 'faq' },
+    { label: 'Blog', href: '/blog/', key: 'blog' },
+    { label: 'Tài liệu', href: '/tai-lieu/', key: 'docs' },
   ],
   en: [
     { label: 'Workflow', to: 'workflow' },
@@ -64,6 +84,8 @@ export const navLinks = {
     { label: 'Demo', to: 'demo' },
     { label: 'Pricing', to: 'pricing' },
     { label: 'FAQ', to: 'faq' },
+    { label: 'Blog', href: '/blog/', key: 'blog' },
+    { label: 'Docs', href: '/en/docs/', key: 'docs' },
   ],
 };
 
@@ -304,6 +326,10 @@ export const footer = {
       { label: 'Bảng giá', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
       { label: 'Liên hệ', to: 'contact' },
+      // The two static pages, as `{ href }` entries for the reason given on
+      // `navLinks` above. Blog was a hard-coded anchor here too.
+      { label: 'Blog', href: '/blog/' },
+      { label: 'Tài liệu', href: '/tai-lieu/' },
     ],
     columns: { links: 'Liên kết', contact: 'Liên hệ' },
     copyright: '© 2026 AutoReel. All rights reserved.',
@@ -315,6 +341,8 @@ export const footer = {
       { label: 'Pricing', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
       { label: 'Contact', to: 'contact' },
+      { label: 'Blog', href: '/blog/' },
+      { label: 'Docs', href: '/en/docs/' },
     ],
     columns: { links: 'Links', contact: 'Contact' },
     copyright: '© 2026 AutoReel. All rights reserved.',

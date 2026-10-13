@@ -3,11 +3,13 @@
  * Fails loudly if dist/ is missing anything the deploy depends on.
  */
 import { readFile, readdir, stat } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
+import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
 import {
   demo,
   finalCta,
@@ -432,6 +434,142 @@ async function main() {
   if (leaks.length) fail(`blog tells the reader what is inside the system: ${leaks.join(', ')}`);
   else pass('no article names anything inside the system');
 
+  // ---- Documentation ------------------------------------------------------
+  //
+  // The pages are written by `scripts/build-docs.mjs` and are the only pages on
+  // the site that are *not* the one-pager and *not* an article: they carry
+  // both languages, they sit in a sidebar, and they must not carry the app's
+  // bundle. Each of those is a check below.
+  const docProblems = [];
+
+  // `**emphasis**` is real markup on a documentation page and a typo if the
+  // markers do not pair — the rest of the sentence would turn bold, or the
+  // asterisks would print. Read off the source rather than the built page, so
+  // it fails when the word is typed rather than at the end of a build.
+  const markers = (value) => (String(value).match(/\*\*/g) || []).length;
+  for (const doc of docs) {
+    for (const lang of LOCALES) {
+      if (!doc.body?.[lang]?.length) docProblems.push(`${doc.key} has no ${lang} body`);
+      const text = JSON.stringify(doc.body[lang]);
+      const count = (text.match(/\*\*/g) || []).length;
+      if (count % 2) docProblems.push(`${doc.key} [${lang}] has unpaired ** markers`);
+      // The description goes into `<meta name="description">`, where `**` is
+      // two asterisks to a search engine rather than emphasis.
+      if (markers(doc.description[lang])) {
+        docProblems.push(`${doc.key} [${lang}] puts ** in its meta description`);
+      }
+      if (doc.title[lang].length > 62) {
+        docProblems.push(`${doc.key} [${lang}] title is over 62 characters`);
+      }
+    }
+    // The invariant is that no two *pages* share an address, not that the two
+    // languages spell a slug differently. `telegram-bot` is the same word in
+    // both - there is nothing to translate, and `/tai-lieu/telegram-bot/` and
+    // `/en/docs/telegram-bot/` are different addresses. Refusing that would be
+    // refusing a correct answer, which is how a check teaches people to work
+    // around it.
+    if (!doc.slug.vi || !doc.slug.en) {
+      docProblems.push(`${doc.key} has a missing slug`);
+    }
+    // The two languages have to be the same *shape*, not the same length.
+    // English sentences run shorter and a paragraph often becomes one where
+    // the Vietnamese is two, so comparing counts would fail on correct work.
+    // What must match is the sequence of block types: a `steps` block that
+    // exists in one language and not the other is a reader being told to do
+    // something the other reader is not.
+    const shape = (blocks) => blocks
+      .map((one) => (one.steps ? 'steps' : Object.keys(one)[0])).join(' ');
+    if (shape(doc.body.vi) !== shape(doc.body.en)) {
+      docProblems.push(`${doc.key}: vi and en bodies are not the same shape`);
+    }
+
+    // The reading order is `order` within `group`, and it is what the sidebar,
+    // the index and the prev/next pager all read. A missing one sorts as `NaN`
+    // - which is not an error, it is an unstable sort, so the sidebar would
+    // come out in a different order on different builds and nothing would say
+    // why. A duplicate is the same problem with a fixture.
+    if (!Number.isInteger(doc.order) || doc.order < 1) {
+      docProblems.push(`${doc.key} has no usable order`);
+    }
+  }
+  for (const group of DOC_GROUPS) {
+    const mine = docs.filter((doc) => doc.group === group.key);
+    const orders = mine.map((doc) => doc.order);
+    if (new Set(orders).size !== orders.length) {
+      docProblems.push(`group ${group.key} has two topics wanting the same slot`);
+    }
+  }
+
+  // Every picture the pages name has to be on disk. A missing screenshot is a
+  // broken image on the one kind of page where a picture is doing the
+  // explaining.
+  const figuresIn = (blocks) => blocks.flatMap((one) => [
+    ...(one.figure ? [one.figure] : []),
+    ...(one.steps ? one.steps.flatMap((step) => (step.figure ? [step.figure] : [])) : []),
+  ]);
+  for (const doc of docs) {
+    for (const lang of LOCALES) {
+      for (const fig of figuresIn(doc.body[lang])) {
+        const src = typeof fig.src === 'string' ? fig.src : fig.src[lang];
+        if (!src) { docProblems.push(`${doc.key} [${lang}] has a figure with no src`); continue; }
+        const onDisk = path.join(dist, src.replace(/^\//, ''));
+        if (!existsSync(onDisk)) docProblems.push(`${doc.key} [${lang}] figure missing: ${src}`);
+      }
+    }
+  }
+
+  // The bundle. A documentation page that boots React makes the router ask
+  // `routeForPath('/tai-lieu/...')`, get `null`, and `replaceState('/')` — the
+  // reader is teleported to the landing page and nothing reports an error.
+  for (const lang of LOCALES) {
+    for (const [where, file] of [
+      ['index', path.join(dist, DOCS.path[lang].replace(/^\//, ''), 'index.html')],
+      ...docs.map((doc) => [
+        doc.key,
+        path.join(dist, DOCS.path[lang].replace(/^\//, ''), doc.slug[lang], 'index.html'),
+      ]),
+    ]) {
+      if (!existsSync(file)) { docProblems.push(`${where} [${lang}] was not written`); continue; }
+      const page = await readFile(file, 'utf8');
+      if (/assets\/index-[\w-]+\.js/.test(page)) {
+        docProblems.push(`${where} [${lang}] carries the app bundle — the router would send it home`);
+      }
+    }
+  }
+
+  // What a topic may not name.
+  //
+  // The blog's list is thirteen words long and bans `docker`, `adb` and
+  // `localhost`; this one is seven and allows all three. The difference is not
+  // a weakening, it is the difference between the two kinds of page. An
+  // article is written for somebody deciding whether to buy, and naming the
+  // machinery tells them - and a competitor - how it is made. A topic is
+  // written for somebody with the app open, and the words it needs are the
+  // words on their screen: the installer runs on Docker, the phone is paired
+  // over adb, the app is at localhost, the branding screen's own subtitle says
+  // "một lượt ffmpeg", and the voice picker says "ZeroTTS (chạy trên máy)".
+  // Telling a reader to look for a word while forbidding us to print it is not
+  // documentation.
+  //
+  // What is left is what appears on no screen anywhere: the renderer's product
+  // name, the library names, the encoder's, the debug channel's. Those are
+  // still nobody's business.
+  const BURIED = [
+    'moneyprinter', 'moviepy', 'nvenc', 'jsonrpc', 'sqlite', 'uiautomator',
+    'gradio',
+  ];
+  const buried_ = [];
+  for (const doc of docs) {
+    const text = JSON.stringify([doc.body, doc.lead, doc.description]).toLowerCase();
+    for (const word of BURIED) {
+      if (text.includes(word)) buried_.push(`${doc.key} names "${word}"`);
+    }
+  }
+  if (buried_.length) docProblems.push(...buried_);
+
+  if (docProblems.length) fail(`docs: ${docProblems.slice(0, 6).join('; ')}`);
+  else pass(`docs: ${docs.length} topic(s) x 2 languages, no bundle, every figure present`);
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
   // "Route" here includes the blog, which is not in `routes.js` on purpose -
@@ -442,6 +580,11 @@ async function main() {
     ...routes.flatMap((route) => LOCALES.map((lang) => absolute(route.slug[lang]))),
     absolute(BLOG.path),
     ...posts.map((post) => absolute(postPath(post.slug))),
+    // The documentation, index and topic pages, both languages. Written by
+    // `build-docs.mjs` and listed by `build-routes.mjs`, and this is the check
+    // that the two agree.
+    ...LOCALES.map((lang) => absolute(DOCS.path[lang])),
+    ...docs.flatMap((doc) => LOCALES.map((lang) => absolute(docPath(doc, lang)))),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {

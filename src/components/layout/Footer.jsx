@@ -45,19 +45,21 @@ export default function Footer() {
             <strong className="text-[var(--text)]">{footer.columns.links}</strong>
             <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-2">
               {footer.links.map((link) => (
-                <li key={link.to}>
-                  <Link to={href(link.to)} className="ar-footer-link">
-                    {link.label}
-                  </Link>
+                <li key={link.href || link.to}>
+                  {/* Same two kinds of entry as the header: a route key the
+                      router resolves, or a literal address for a page that is
+                      static HTML. See `src/data/site.js`. */}
+                  {link.href ? (
+                    <a href={link.href} className="ar-footer-link">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link to={href(link.to)} className="ar-footer-link">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
-              {/* The blog is static pages rather than a route of this app —
-                  see the note on the same link in `Navbar.jsx`. */}
-              <li>
-                <a href="/blog/" className="ar-footer-link">
-                  Blog
-                </a>
-              </li>
             </ul>
           </div>
 

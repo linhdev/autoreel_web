@@ -17,6 +17,28 @@
 /demo/*.mp4
   Cache-Control: public, max-age=604800
 
+# The documentation screenshots, above the `*.webp` rule below.
+#
+# Everything else ending in `.webp` is a logo or an article figure and its
+# contents never change, which is what a year of `immutable` is for. A
+# screenshot is the opposite: it is re-taken when the interface moves, at the
+# same address, and a year of `immutable` means everybody who has been to the
+# docs before keeps being shown the old one and nothing anywhere reports it.
+#
+# **This rule is not verified.** The note above `/demo/*.mp4` says header rules
+# merge rather than override, and two `Cache-Control` values on one response is
+# not a defined thing. It was written without a deploy to check it against, and
+# checking it is one command on the next preview:
+#
+#     curl -sI https://<preview>/docs-img/cai-dat-01-docker.webp | grep -i cache
+#
+# If the answer is a year, the merge went the wrong way and the fix is to stop
+# relying on the header at all: put a content hash in the filename, so a re-shot
+# picture is a new address and `immutable` becomes true rather than merely
+# hoped for. `scripts/optimise-docs-shots.mjs` is where that would go.
+/docs-img/*
+  Cache-Control: public, max-age=86400
+
 /*.webp
   Cache-Control: public, max-age=31536000, immutable
 

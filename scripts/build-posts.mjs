@@ -19,113 +19,20 @@
  *
  * Run: `node scripts/build-posts.mjs` (or `npm run build`, which chains it).
  */
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { BLOG, postPath, posts, relatedPosts } from '../src/data/posts.js';
 import { SITE_URL, absolute, pathFor } from '../src/data/routes.js';
-import { businessInfo, navLinks, site } from '../src/data/site.js';
+import { site } from '../src/data/site.js';
+import {
+  esc, footer, headAssets, nav, shownDate, write,
+} from './lib/site-shell.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
 
-/** Nothing here may put a bare `&` or `<` in the markup. */
-function esc(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-/** One article's date, as a person reads it: `10/10/2026`. */
-function shownDate(iso) {
-  const [year, month, day] = String(iso).split('-');
-  return `${day}/${month}/${year}`;
-}
-
-/**
- * The head elements the landing page already decided on — fonts, icons, the
- * hashed stylesheet — lifted out of the built HTML.
- *
- * Lifted rather than written again because every one of them is a value that
- * changes with a build: the stylesheet's name carries a content hash, and a
- * hand-written `/assets/index.css` would be a 404 on the first deploy after a
- * style change.
- */
-function headAssets(indexHtml) {
-  const links = indexHtml.match(/<link\b[^>]*>/g) || [];
-  const wanted = links.filter(
-    (tag) =>
-      /rel="(stylesheet|preconnect|icon|apple-touch-icon|manifest)"/.test(tag) &&
-      !/rel="canonical"/.test(tag),
-  );
-  return wanted.map((tag) => `    ${tag}`).join('\n');
-}
-
-/** The same navigation the site's own header draws. */
-function nav(active = '') {
-  const links = navLinks.vi
-    .map(
-      (link) =>
-        `          <li><a class="ar-nav-link" href="${pathFor(link.to)}">${esc(link.label)}</a></li>`,
-    )
-    .join('\n');
-  return `      <header class="ar-nav">
-        <div class="ar-container" style="display:flex;height:var(--nav-h);align-items:center;justify-content:space-between;gap:24px">
-          <a href="/" style="display:flex;align-items:center;gap:12px;font-size:1.3rem;font-weight:900;letter-spacing:-0.02em" aria-label="${esc(site.name)}">
-            <img src="/logo-88.webp" alt="" width="44" height="44" style="height:44px;width:44px;border-radius:999px;object-fit:cover" />
-            <span class="ar-brand-text">${esc(site.name)}</span>
-          </a>
-          <nav aria-label="Điều hướng chính">
-            <ul style="display:flex;align-items:center;gap:26px;list-style:none;margin:0;padding:0">
-${links}
-              <li><a class="ar-nav-link" href="${BLOG.path}"${active === 'blog' ? ' aria-current="page"' : ''}>Blog</a></li>
-            </ul>
-          </nav>
-          <a class="ar-btn ar-btn-primary" href="${pathFor('contact')}">Liên hệ tư vấn</a>
-        </div>
-      </header>`;
-}
-
-function footer() {
-  const links = navLinks.vi
-    .map((link) => `<a class="ar-footer-link" href="${pathFor(link.to)}">${esc(link.label)}</a>`)
-    .join('\n            ');
-  const registered = businessInfo.lines.map((line) => `<span>${esc(line)}</span>`).join('\n              ');
-  return `      <footer style="padding:34px 0 56px;color:#c9d3eb;font-size:0.9rem">
-        <div class="ar-container">
-          <div style="border-top:1px solid var(--line);padding-top:26px;display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between">
-            <div style="max-width:22rem">
-              <div style="display:flex;align-items:center;gap:12px;font-size:1.22rem;font-weight:900">
-                <img src="/logo-88.webp" alt="" width="44" height="44" style="height:44px;width:44px;border-radius:999px;object-fit:cover" />
-                <span class="ar-brand-text">${esc(site.name)}</span>
-              </div>
-              <div style="margin-top:8px">${esc(site.tagline)}</div>
-              <div style="margin-top:14px;display:grid;gap:4px;border-top:1px solid var(--line);padding-top:14px;font-size:0.84rem;color:var(--muted)">
-                <strong style="color:var(--text)">${esc(businessInfo.name)}</strong>
-              ${registered}
-              </div>
-            </div>
-            <div>
-              <strong style="color:var(--text)">Liên kết</strong>
-              <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 14px;max-width:20rem">
-            ${links}
-              </div>
-            </div>
-            <div>
-              <strong style="color:var(--text)">Liên hệ</strong>
-              <div style="margin-top:12px;display:grid;gap:6px">
-                <a class="ar-footer-link" href="mailto:${esc(site.email)}">${esc(site.email)}</a>
-                <a class="ar-footer-link" href="${esc(site.zaloUrl)}" rel="noopener">Zalo: ${esc(site.phone)}</a>
-                <a class="ar-footer-link" href="${esc(site.whatsappUrl)}" rel="noopener">WhatsApp: ${esc(site.phone)}</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>`;
-}
 
 /**
  * An illustration: a diagram drawn by hand in `public/blog/`, which Vite copies
@@ -306,7 +213,7 @@ ${body}
 
 function articlePage(post, assets) {
   const url = absolute(postPath(post.slug));
-  const body = `${nav()}
+  const body = `${nav('vi', 'blog')}
 
     <main id="main">
       <article class="ar-post">
@@ -329,7 +236,7 @@ ${cta()}
 ${relatedBlock(post)}
     </main>
 
-${footer()}`;
+${footer('vi')}`;
 
   return document_({
     title: post.title,
@@ -352,7 +259,7 @@ function indexPage(assets) {
     )
     .join('\n');
 
-  const body = `${nav('blog')}
+  const body = `${nav('vi', 'blog')}
 
     <main id="main">
       <section class="ar-section">
@@ -368,7 +275,7 @@ ${cards}
       </section>
     </main>
 
-${footer()}`;
+${footer('vi')}`;
 
   return document_({
     title: BLOG.title,
@@ -392,11 +299,6 @@ ${footer()}`;
       })),
     },
   });
-}
-
-async function write(path, contents) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, contents, 'utf8');
 }
 
 async function main() {

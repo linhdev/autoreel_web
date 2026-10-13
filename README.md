@@ -31,6 +31,7 @@ npm run preview      # serve the built output locally
 npm run verify       # post-build smoke test of dist/
 npm run smoke        # server-render the app to catch runtime errors
 npm run assets       # regenerate logo/favicon/OG images from autoreel-logo.jpg
+npm run docs:shots   # screenshots -> public/docs-img/ (see "The docs")
 ```
 
 `npm run assets` only needs to be re-run when the master logo changes — the generated
@@ -60,6 +61,8 @@ src/
     routes.js              ← every URL, and its title + description
     posts.js               ← the blog index: the list of articles (see "The blog")
     posts/                 ← one file per article
+    docs.js                ← the docs index: groups, slugs, prev/next (see "The docs")
+    docs/                  ← one file per topic, both languages in it
     site.js                brand, nav, hero, steps, demo, proof, CTA, footer, UI strings
     workflows.js           the 3 flows + section heading
     features.js            the 8 benefits
@@ -70,6 +73,9 @@ scripts/
   generate-assets.mjs      image pipeline (sharp) → public/
   build-routes.mjs         one HTML file per route + sitemap + 404, after vite build
   build-posts.mjs          one HTML file per blog article + the /blog/ index
+  build-docs.mjs           one HTML file per doc topic per language + 2 indexes
+  lib/site-shell.mjs       the header, footer and escaper both builders share
+  optimise-docs-shots.mjs  the screenshots -> WebP that the site serves
   verify-build.mjs         post-build assertions on dist/
   ssr-smoke.jsx            renders the app to catch runtime errors
 public/                    favicons, OG images, _headers, _redirects, robots.txt
@@ -156,6 +162,49 @@ something from the code, say what it *does* for the reader instead of what it is
 
 Articles are Vietnamese only, on purpose: there is no English half, so they carry no
 `hreflang`, and `/en/` links back to the Vietnamese blog.
+
+### The docs
+
+`/tai-lieu/` and `/en/docs/`, written by `scripts/build-docs.mjs` from one file per topic
+in `src/data/docs/`. Same architecture as the blog and for the same reason — a topic is a
+document of its own, so it is static HTML and not a route of the one-pager. Three
+differences, and each of them is a rule the build enforces:
+
+- **Both languages, in the same file.** `body.vi` and `body.en` are separate prose, not a
+  translation pass, and `verify` compares the **sequence of block types** between them. It
+  does not compare lengths: English sentences run shorter and a paragraph often becomes one
+  where the Vietnamese is two, and a count would fail on correct work.
+- **`figure.src`, `figure.alt` and `figure.caption` are each either one value or a
+  `{ vi, en }` pair.** A screenshot of this app is language-specific and needs the pair; a
+  picture of somebody else's console needs the string. `verify` checks every `src` on disk.
+- **No bundle.** A docs page that booted React would make the router ask
+  `routeForPath('/tai-lieu/…')`, get `null`, and `replaceState('/')` — the reader lands on
+  the landing page and nothing reports an error. `verify` fails if a bundle tag appears.
+
+The block vocabulary is the blog's (`h2`, `p`, `ul`, `ol`, `note`, `figure`) plus five an
+instruction needs and an article does not: `steps` (numbered, each with an optional
+screenshot), `code`, `check` ("you should see this"), `table`, and `link` (a pointer to
+another topic, looked up by key so it cannot 404). `scripts/build-docs.mjs::block()` is the
+only renderer and it throws on anything else.
+
+**Emphasis is rendered here and escaped in the blog**, which looks inconsistent and is not:
+`rich()` escapes first and then turns `**…**` into `<strong>`, so nothing an author types
+can become markup, and an odd number of markers is a `verify` failure. The blog keeps its
+own rule because an asterisk surviving to an article is a mistake there.
+
+**Screenshots** are captured by `tools/shots-for-docs.mjs` in the ShortGPT repo, which
+drives the running app in both languages and writes PNG into
+`ShortGPT/tools/screenshots/tai-lieu/`. `npm run docs:shots` turns them into the WebP the
+site serves, into `public/docs-img/`, and those are committed — a reader should not wait on
+a build step to see a screenshot. That script **redacts** what the app puts on screen and
+the page should not: the phone's adb serial, the account name inside a path. It masks both
+text nodes and field values, because the serial that started it lives in an `<input>`.
+
+The word list is deliberately **shorter than the blog's** and allows `docker`, `adb`,
+`localhost`, `ffmpeg` and `zerotts` — every one of those is a word the app puts on its own
+screens, and telling a reader to look for something we are forbidden to print is not
+documentation. What stays banned is what appears on no screen anywhere: the renderer's
+product name, the library names, the encoder's.
 
 ### Adding a language
 
