@@ -21,7 +21,8 @@
  * usual knee for user-interface images: large flat areas and hard text edges,
  * where a lower number starts to ring around the letters.
  */
-import { readdirSync, statSync, mkdirSync, existsSync } from 'node:fs';
+import { readdirSync, statSync, mkdirSync, existsSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -54,17 +55,32 @@ let before = 0;
 let after = 0;
 for (const name of files) {
   const src = join(FROM, name);
-  const to = join(OUT, basename(name, '.png') + '.webp');
-  await sharp(src)
+  const stem = basename(name, '.png');
+  const webp = await sharp(src)
     .resize({ width: 1440, withoutEnlargement: true })
     .webp({ quality: 82, effort: 5 })
-    .toFile(to);
+    .toBuffer();
+  // The hash is of the bytes that are written, which is the only thing that
+  // makes the year-long `immutable` in `public/_headers` true rather than
+  // merely hoped for. See `scripts/lib/docs-images.mjs` for what happened when
+  // this was attempted as a cache-header rule instead.
+  const digest = createHash('sha256').update(webp).digest('hex').slice(0, 8);
+  const to = join(OUT, `${stem}.${digest}.webp`);
+  // The previous take of the same picture, under a name nothing links to any
+  // more. Left behind, they would accumulate one per re-shoot and every one of
+  // them would still be downloaded by anybody following an old link.
+  for (const old of readdirSync(OUT)) {
+    if (old.startsWith(`${stem}.`) && old.endsWith('.webp') && old !== `${stem}.${digest}.webp`) {
+      rmSync(join(OUT, old));
+      console.log(`  - ${old} (bản cũ)`);
+    }
+  }
+  writeFileSync(to, webp);
   const was = statSync(src).size;
-  const now = statSync(to).size;
   before += was;
-  after += now;
-  console.log(`  ${basename(to).padEnd(34)} ${(was / 1024).toFixed(0).padStart(5)} KB`
-            + ` -> ${(now / 1024).toFixed(0).padStart(4)} KB`);
+  after += webp.length;
+  console.log(`  ${basename(to).padEnd(42)} ${(was / 1024).toFixed(0).padStart(5)} KB`
+            + ` -> ${(webp.length / 1024).toFixed(0).padStart(4)} KB`);
 }
 console.log(`${files.length} file(s): ${(before / 1048576).toFixed(1)} MB -> `
           + `${(after / 1048576).toFixed(1)} MB, into public/docs-img/`);

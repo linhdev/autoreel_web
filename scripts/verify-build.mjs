@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
+import { resolveDocImage } from './lib/docs-images.mjs';
 import {
   demo,
   finalCta,
@@ -510,8 +511,12 @@ async function main() {
   for (const doc of docs) {
     for (const lang of LOCALES) {
       for (const fig of figuresIn(doc.body[lang])) {
-        const src = typeof fig.src === 'string' ? fig.src : fig.src[lang];
-        if (!src) { docProblems.push(`${doc.key} [${lang}] has a figure with no src`); continue; }
+        const named = typeof fig.src === 'string' ? fig.src : fig.src[lang];
+        if (!named) { docProblems.push(`${doc.key} [${lang}] has a figure with no src`); continue; }
+        // The same hashed-name lookup `build-docs.mjs` does. Two answers to
+        // "does this picture exist" is a build that passes while the page
+        // serves a broken image.
+        const src = resolveDocImage(path.join(root, 'public'), named);
         const onDisk = path.join(dist, src.replace(/^\//, ''));
         if (!existsSync(onDisk)) docProblems.push(`${doc.key} [${lang}] figure missing: ${src}`);
       }

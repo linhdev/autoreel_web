@@ -17,28 +17,21 @@
 /demo/*.mp4
   Cache-Control: public, max-age=604800
 
-# The documentation screenshots, above the `*.webp` rule below.
+# There was a `/docs-img/*` rule here with a short `max-age`, to stop a re-taken
+# screenshot being invisible for a year. It did not work, and it made things
+# worse: rules merge rather than override, and the live response came back
 #
-# Everything else ending in `.webp` is a logo or an article figure and its
-# contents never change, which is what a year of `immutable` is for. A
-# screenshot is the opposite: it is re-taken when the interface moves, at the
-# same address, and a year of `immutable` means everybody who has been to the
-# docs before keeps being shown the old one and nothing anywhere reports it.
+#     Cache-Control: public, max-age=31536000, immutable, public, max-age=86400
 #
-# **This rule is not verified.** The note above `/demo/*.mp4` says header rules
-# merge rather than override, and two `Cache-Control` values on one response is
-# not a defined thing. It was written without a deploy to check it against, and
-# checking it is one command on the next preview:
+# which is two `max-age` directives on one response — not a valid header, and
+# browsers take the first. Measured with `curl -I` against autoreelvn.com on
+# 2026-10-13, which is the check the rule's own comment said to make and which
+# had not been made before it shipped.
 #
-#     curl -sI https://<preview>/docs-img/cai-dat-01-docker.webp | grep -i cache
-#
-# If the answer is a year, the merge went the wrong way and the fix is to stop
-# relying on the header at all: put a content hash in the filename, so a re-shot
-# picture is a new address and `immutable` becomes true rather than merely
-# hoped for. `scripts/optimise-docs-shots.mjs` is where that would go.
-/docs-img/*
-  Cache-Control: public, max-age=86400
-
+# The screenshots do not need a rule any more. Their names carry a content hash
+# (`/docs-img/video-ngan-01-screen-vi.9f3a1c2e.webp`, written by
+# `scripts/optimise-docs-shots.mjs`, resolved by `scripts/lib/docs-images.mjs`),
+# so a re-shot picture is a new address and this rule below is simply true.
 /*.webp
   Cache-Control: public, max-age=31536000, immutable
 

@@ -48,9 +48,11 @@ import { site } from '../src/data/site.js';
 import {
   esc, footer, headAssets, langAssets, nav, shownDate, write,
 } from './lib/site-shell.mjs';
+import { resolveDocImage } from './lib/docs-images.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
+const PUBLIC = join(ROOT, 'public');
 
 const OTHER = { vi: 'en', en: 'vi' };
 
@@ -98,7 +100,9 @@ function figure(one, lang) {
   // does not look like one - the English page rendered a Vietnamese caption
   // under a Vietnamese screenshot and nothing anywhere said so.
   const one_or = (value) => (value && typeof value === 'object' ? value[lang] : value);
-  const src = one_or(one.src);
+  // The name in the topic file is the readable one; what is on disk carries
+  // a content hash. See `scripts/lib/docs-images.mjs` for why.
+  const src = resolveDocImage(PUBLIC, one_or(one.src));
   const alt = one_or(one.alt);
   const caption = one_or(one.caption);
   if (!src) throw new Error(`figure has no src for ${lang}`);
