@@ -66,10 +66,10 @@ export default {
         ],
       },
       {
-        check: 'Bot trả lời `/start` bằng menu có các nút **Reup**, **Review**, **Affiliate**, **Jobs**, **Status**, **Trợ giúp**. Không thấy trả lời thì container chưa chạy — xem `docker logs shortgpt-telegram`.',
+        check: 'Bot trả lời `/start` bằng menu có các nút **Reup**, **Review**, **Affiliate**, **Jobs**, **Status**, **Trợ giúp**. Không thấy trả lời thì container chưa chạy — xem `docker logs autoreel-telegram`.',
       },
       {
-        note: 'Danh sách **ID NGƯỜI ĐƯỢC DÙNG** để trống thì bot **từ chối chạy** chứ không chạy nửa vời, và in lý do ra `docker logs shortgpt-telegram`. Danh sách rỗng nghĩa là ai nhắn cũng đăng được lên tài khoản thật của bạn.',
+        note: 'Danh sách **ID NGƯỜI ĐƯỢC DÙNG** để trống thì bot **từ chối chạy** chứ không chạy nửa vời, và in lý do ra `docker logs autoreel-telegram`. Danh sách rỗng nghĩa là ai nhắn cũng đăng được lên tài khoản thật của bạn.',
       },
 
       { h2: 'Những câu lệnh' },
@@ -163,10 +163,10 @@ export default {
         ],
       },
       {
-        check: '`/start` is answered with the menu carrying **Reup**, **Review**, **Affiliate**, **Jobs**, **Status** and **Trợ giúp**. No answer means the container is not running — check `docker logs shortgpt-telegram`.',
+        check: '`/start` is answered with the menu carrying **Reup**, **Review**, **Affiliate**, **Jobs**, **Status** and **Trợ giúp**. No answer means the container is not running — check `docker logs autoreel-telegram`.',
       },
       {
-        note: 'An empty **ID NGƯỜI ĐƯỢC DÙNG** list makes the bot **refuse to run** rather than run half-safe, and prints the reason to `docker logs shortgpt-telegram`. An empty list would mean anyone who messages it can post to your real accounts.',
+        note: 'An empty **ID NGƯỜI ĐƯỢC DÙNG** list makes the bot **refuse to run** rather than run half-safe, and prints the reason to `docker logs autoreel-telegram`. An empty list would mean anyone who messages it can post to your real accounts.',
       },
 
       { h2: 'The commands' },

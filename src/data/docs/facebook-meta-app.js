@@ -47,7 +47,7 @@ export default {
           },
           {
             title: 'Tạo app mới',
-            body: 'Bấm **Create app**, chọn loại **Other** (một số giao diện gọi là **Business**), đặt tên gì cũng được — `ShortGPT của <tên bạn>` chẳng hạn — rồi bấm **Create app**.',
+            body: 'Bấm **Create app**, chọn loại **Other** (một số giao diện gọi là **Business**), đặt tên gì cũng được — `AutoReel của <tên bạn>` chẳng hạn — rồi bấm **Create app**.',
           },
           {
             title: 'Ghi lại App ID và App Secret',
@@ -190,7 +190,7 @@ export default {
           },
           {
             title: 'Create the app',
-            body: 'Press **Create app**, choose the type **Other** (some interfaces call it **Business**), give it any name — `ShortGPT của <your name>` will do — and press **Create app**.',
+            body: 'Press **Create app**, choose the type **Other** (some interfaces call it **Business**), give it any name — `AutoReel của <your name>` will do — and press **Create app**.',
           },
           {
             title: 'Note the App ID and App Secret',

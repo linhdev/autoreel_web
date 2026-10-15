@@ -18,16 +18,16 @@ export default {
   key: 'chen-chu-va-logo',
   group: 'rework',
   slug: { vi: 'chen-chu-va-logo', en: 'branding' },
-  updated: '2026-10-13',
+  updated: '2026-10-15',
   order: 4,
   title: { vi: 'Chèn chữ & logo', en: 'Adding text and logos' },
   description: {
-    vi: 'Đóng dấu chữ và logo lên video: chọn template, hai dòng chữ, logo ở góc, xem trước bằng khung hình thật rồi đóng dấu.',
-    en: 'Stamp text and a logo onto a video: pick a template, two lines of text, a logo in the corner, preview a real frame, then apply it.',
+    vi: 'Đóng dấu chữ và logo lên video: 13 template dựng sẵn, hai dòng chữ, màu và font, logo ở góc, xem trước bằng khung hình thật rồi đóng dấu.',
+    en: 'Stamp text and a logo onto a video: 13 ready-made templates, two lines of text, colours and fonts, a logo in the corner, a real-frame preview, then apply it.',
   },
   lead: {
-    vi: '**Một lượt ffmpeg**: chèn khung 9:16, hai dòng chữ, tên kênh hoặc logo vào góc. Tiếng được sao chép nguyên chứ không encode lại.',
-    en: '**One ffmpeg pass**: pad to 9:16, draw two lines of text, put a name or a logo in the corner. The sound is copied rather than re-encoded.',
+    vi: '**Một lượt ffmpeg**: vẽ hai dòng chữ và tên kênh hoặc logo lên video, theo đúng tỷ lệ của video đó. Tiếng được sao chép nguyên chứ không encode lại.',
+    en: '**One ffmpeg pass**: draw two lines of text and a name or a logo onto a video, at the video’s own shape. The sound is copied rather than re-encoded.',
   },
 
   body: {
@@ -63,11 +63,15 @@ export default {
           },
           {
             title: 'Template',
-            body: 'Ô **Template đóng dấu** có **Không — giữ nguyên video** đứng đầu, rồi tám template: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast. Thư viện bên dưới vẽ từng template thành một khung 9:16 để bạn nhìn trước.',
+            body: 'Ô **Template đóng dấu** có **Không — giữ nguyên video** đứng đầu, rồi **13 template**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Điện ảnh, Tối giản, Hiện đại, Hợp phụ đề và Bán hàng. Thư viện bên dưới vẽ từng template thành một khung để bạn nhìn trước — và mỗi khung vẽ **bằng chính chữ mẫu của template đó**, nên nhìn là biết ngay look đó chữ to nhỏ, đặt trên hay dưới, có nền hay không.',
           },
           {
             title: 'Chữ, logo và màu',
-            body: 'Khối **Chữ, logo và màu**: gõ **Chữ trên** và **Chữ dưới** (để trống nếu không muốn dòng nào). Ô **Logo / watermark** chọn **Chữ** — gõ tên vào **Tên hiện** — hoặc **Ảnh** — chọn **Tệp logo**. Ô **Vị trí** đặt nó vào **Trái trên**, **Phải trên**, **Trái dưới** hoặc **Phải dưới**.',
+            body: 'Khối **Chữ, logo và màu**: gõ **Chữ trên** và **Chữ dưới** — hai ô này **đã điền sẵn chữ mẫu của template đang chọn**, cứ thế sửa lại theo ý mình. Xoá trắng một ô thì template **không vẽ dòng đó**, chứ không phải vẽ chữ mẫu. Ô **Logo / watermark** chọn **Chữ** — gõ tên vào **Tên hiện** — hoặc **Ảnh** — chọn **Tệp logo**. Ô **Vị trí** đặt nó vào **Trái trên**, **Phải trên**, **Trái dưới** hoặc **Phải dưới**.',
+          },
+          {
+            title: 'Màu cho template',
+            body: 'Mở **Màu cho template**: mỗi ô màu **bắt đầu bằng màu gốc của chính template đó**, và app chỉ hiện những ô mà template này thật sự vẽ (template không có dải nền thì không có ô màu dải). Đổi màu nào cũng được; nút **Về mặc định của template** trả hết về màu gốc, kể cả hai dòng chữ.',
           },
           {
             title: 'Cỡ, màu và font',
@@ -86,7 +90,60 @@ export default {
         note: 'Ô **Font** ghi rõ từng font có **đủ dấu** hay **thiếu dấu**. Font **thiếu dấu** không có chữ Việt, nên tiêu đề tiếng Việt sẽ ra ô vuông hoặc mất chữ. Khi tới lúc xuất mà font không vẽ được ký tự nào, app báo thẳng tên font, ký tự hỏng và dòng chữ nào.',
       },
 
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-03-chu-logo-mau-vi.webp',
+          alt: 'Khối chữ, logo và màu — hai dòng chữ đã điền sẵn chữ mẫu của template',
+          width: 1193,
+          height: 560,
+        },
+      },
+
+      { h2: 'Mười ba template, và chúng khác nhau ở chỗ nào' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-02-template-vi.webp',
+          alt: 'Thư viện 13 template dựng sẵn trong màn Chèn chữ & logo',
+          width: 1193,
+          height: 620,
+        },
+      },
+      {
+        p: 'Một template không phải cái khung rỗng — nó là cả một look: chữ nằm ở đâu, cỡ bao nhiêu, màu gì, có nền hay không, có viền chữ hay không, dòng dưới đặt ở đâu. Chọn xong là xong, không phải tự canh.',
+      },
+      {
+        ul: [
+          '**Viral Movie** — phim/trailer: tiêu đề lớn trên nền tối, dòng nguồn ở dưới.',
+          '**Affiliate** — bán hàng: nền vàng, dòng chốt đơn trên nền đỏ.',
+          '**News** — tin tức: bảng đỏ trên, dòng nguồn dưới.',
+          '**Review** — review: nền sáng, chữ đặt trên bảng trắng cho dễ đọc.',
+          '**TikTok** — chữ trắng đổ bóng, không nền, hợp mọi khung hình.',
+          '**Flash Sale** — flash sale: nền đỏ, dòng giảm giá trên bảng vàng.',
+          '**Trailer** — tên phim trắng trên, ngày chiếu vàng dưới, mỗi dòng trên một panel đen.',
+          '**Podcast** — chữ serif trên nền nâu đen, hợp câu trích dẫn.',
+          '**Điện ảnh** — tên phim lớn màu ngà, dòng vàng kim ở dưới, viền đen giữ chữ đọc được trên mọi khung hình.',
+          '**Tối giản** — chữ nhỏ, không nền, không huy hiệu.',
+          '**Hiện đại** — tiêu đề lớn, một khối vàng ôm dòng dưới.',
+          '**Hợp phụ đề** — dòng chữ cùng cỡ với phụ đề, nằm ngay trên dải phụ đề cháy sẵn.',
+          '**Bán hàng** — nhãn đỏ trên, tên và giá trên nền trắng, nằm trên dải chú thích của nền tảng.',
+        ],
+      },
+      {
+        note: '**Khung ra đúng tỷ lệ của video, không phải 9:16 ép sẵn.** Video 16:9 đóng dấu xong vẫn là 16:9, hình phủ kín khung, không thêm dải nào. Chữ và lề tự co theo chiều cao khung, nên look giữ nguyên tỷ lệ trên mọi hình dạng video.',
+      },
+      {
+        note: 'Không template nào vẽ chữ bạn chưa gõ. Ô **Chữ trên** và **Chữ dưới** điền sẵn chữ mẫu để bạn thấy ngay look đó trông thế nào — xoá trắng là dòng đó biến mất khỏi video.',
+      },
+
       { h2: 'Hai khung xem trước, đừng lẫn' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-04-xem-truoc-vi.webp',
+          alt: 'Khối Xem trước — khung dựng bằng CSS, đổi ngay khi gõ',
+          width: 1193,
+          height: 520,
+        },
+      },
       {
         p: 'Khung bên trái là CSS — nhanh, đổi theo từng phím gõ, nhưng không phải thứ ffmpeg sẽ vẽ. Nút **Xem bằng khung hình thật** dựng một khung thật qua đúng filter graph dùng khi xuất, nên nó mới là thứ trả lời được câu hỏi chữ rơi vào đâu. Nút này chậm hơn, và chỉ chạy được khi đã chọn video và template.',
       },
@@ -151,11 +208,15 @@ export default {
           },
           {
             title: 'Template',
-            body: '**Branding template** starts with **None - leave the video alone**, followed by eight templates: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast. The gallery underneath draws each one as a 9:16 frame so you can see it first.',
+            body: '**Branding template** starts with **None - leave the video alone**, followed by **13 templates**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Cinematic, Minimal, Modern, With subtitles and Product. The gallery underneath draws each one so you can see it first — and each card is drawn **with that look’s own sample words**, so one glance tells you how big its type is, whether it sits top or bottom, and whether it has a ground behind it.',
           },
           {
             title: 'Text, logo and colour',
-            body: 'In **Text, logo and colour**: fill **Top line** and **Bottom line** (leave either empty for none). **Logo / watermark** is either **A name** — type it into **The name** — or **A picture** — choose a **Logo file**. **Position** puts it **Top left**, **Top right**, **Bottom left** or **Bottom right**.',
+            body: 'In **Text, logo and colour**: **Top line** and **Bottom line** **arrive already filled with the chosen template’s own sample words** — edit them to say what you want. Emptying a box means the template **draws no line there**, rather than falling back to the sample. **Logo / watermark** is either **A name** — type it into **The name** — or **A picture** — choose a **Logo file**. **Position** puts it **Top left**, **Top right**, **Bottom left** or **Bottom right**.',
+          },
+          {
+            title: 'Template colours',
+            body: 'Open **Template colours**: every swatch **starts at that template’s own colour**, and only the parts this template actually draws are offered (a look with no band has no band colour to change). Change any of them; **Back to the template** puts every colour back, the two lines of words included.',
           },
           {
             title: 'Size, colour and font',
@@ -174,7 +235,60 @@ export default {
         note: '**Font** marks every font **all marks** or **missing marks**. A font that is missing marks has no Vietnamese letters, so a Vietnamese title comes out as empty boxes or drops characters. If a font cannot draw something at export time, the app names the font, the letters and the line they were on.',
       },
 
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-03-chu-logo-mau-en.webp',
+          alt: 'The text, logo and colour block — both lines arrive filled with the template’s own sample',
+          width: 1193,
+          height: 560,
+        },
+      },
+
+      { h2: 'Thirteen templates, and how they differ' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-02-template-en.webp',
+          alt: 'The gallery of 13 ready-made templates on the Add text & logo screen',
+          width: 1193,
+          height: 620,
+        },
+      },
+      {
+        p: 'A template is not an empty frame — it is a whole look: where the words sit, how big they are, what colour, whether there is a ground behind them, whether the type has an outline, and where the second line goes. Pick one and you are done; there is nothing to line up by hand.',
+      },
+      {
+        ul: [
+          '**Viral Movie** — a big title on a dark band, with a source line below.',
+          '**Affiliate** — a yellow ground, and the closing line on a red plate.',
+          '**News** — a red tag on top, a source line below.',
+          '**Review** — a light ground, with the words on white plates so they read.',
+          '**TikTok** — white type with a shadow and no ground, which suits any frame.',
+          '**Flash Sale** — a red ground, with the discount line on a yellow plate.',
+          '**Trailer** — a white film title above and a yellow release date below, each on its own black panel.',
+          '**Podcast** — serif type on a brown-black panel, made for a pulled quote.',
+          '**Cinematic** — a large warm-white title with a gold line under it and a black outline that holds on any frame.',
+          '**Minimal** — small type, no ground, no badge.',
+          '**Modern** — a big title, with a yellow block around the line below it.',
+          '**With subtitles** — a line the size of a subtitle, sitting just above the burned-in subtitle band.',
+          '**Product** — a red tag on top and the name and price on white, above the platform’s caption rail.',
+        ],
+      },
+      {
+        note: '**The frame is the video’s own shape, not 9:16 forced on it.** A 16:9 video comes back 16:9 with the picture filling it and no bands added. The type and margins scale with the frame’s height, so the look keeps its proportions whatever shape the video is.',
+      },
+      {
+        note: 'No template draws words you did not type. **Top line** and **Bottom line** arrive filled with the sample so you can see what the look does — empty one and that line is simply not drawn.',
+      },
+
       { h2: 'Two preview frames, and the difference matters' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-04-xem-truoc-en.webp',
+          alt: 'The Preview block — a frame built in CSS, changing as you type',
+          width: 1193,
+          height: 520,
+        },
+      },
       {
         p: 'The frame on the left is CSS — quick, updating on every keystroke, but not what ffmpeg will draw. **Draw a real frame** renders one real frame through the same graph the export runs, which makes it the one that can tell you where the words actually land. It is slower, and it needs both a video and a template chosen first.',
       },
