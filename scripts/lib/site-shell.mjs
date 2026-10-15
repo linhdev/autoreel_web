@@ -42,9 +42,19 @@ export function esc(value) {
     .replace(/"/g, '&quot;');
 }
 
-/** One date, as a person reads it: `10/10/2026`. */
-export function shownDate(iso) {
+/**
+ * One date, as a person reads it: `10/10/2026` in Vietnamese, `10 Oct 2026` in
+ * English.
+ *
+ * The English pages used to print the Vietnamese form, which is not a style
+ * difference but a wrong date: `03/11/2026` reads as 3 November to one reader
+ * and 11 March to the other, and a blog's whole surface is dates.
+ */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export function shownDate(iso, lang = 'vi') {
   const [year, month, day] = String(iso).split('-');
+  if (lang === 'en') return `${Number(day)} ${MONTHS[Number(month) - 1]} ${year}`;
   return `${day}/${month}/${year}`;
 }
 

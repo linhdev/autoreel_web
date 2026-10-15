@@ -12,7 +12,8 @@
     "assets": "node scripts/generate-assets.mjs",
     "smoke": "vite build --ssr scripts/ssr-smoke.jsx --outDir .ssr-tmp --logLevel error && node .ssr-tmp/ssr-smoke.js",
     "verify": "node scripts/verify-build.mjs",
-    "docs:shots": "node scripts/optimise-docs-shots.mjs"
+    "docs:shots": "node scripts/optimise-docs-shots.mjs",
+    "check:posts": "node scripts/check-posts.mjs"
   },
   "dependencies": {
     "framer-motion": "^14.0.0",

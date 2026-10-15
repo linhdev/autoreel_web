@@ -13,6 +13,13 @@
  * `routes.js`, and the app's router deliberately knows nothing about them: a
  * link to `/blog/` is a normal link that loads a normal page.
  *
+ * **Both languages, like the documentation.** An article carries `{ vi, en }`
+ * at every prose field and a slug per language, so `/blog/meo-dang-shopee-video-hieu-qua/`
+ * and `/en/blog/shopee-video-posting-tips/` are the same document in two
+ * languages — `hreflang` alternates both ways, and the reader gets a link
+ * across. Vietnamese slugs are kept exactly as they were: those URLs are
+ * published and indexed, and a slug is a promise.
+ *
  * The `body` of an article is an array of small objects (`{ h2 }`, `{ p }`,
  * `{ ul }`, `{ ol }`, `{ note }`, `{ figure }`) rather than one HTML string or
  * one Markdown blob. Three reasons, in order of how much they matter: the build
@@ -24,6 +31,9 @@
  * `{ figure }` is the one block whose markup is not entirely escaped — its
  * `src` is a path in `public/blog/`, written through as-is — which is exactly
  * why it is a block type here rather than something an author can type.
+ *
+ * `posts/VOICE.md` is how an article in this folder is written. Read it before
+ * adding one; the folder's own exemplar is `meo-dang-shopee-video-hieu-qua.js`.
  */
 
 import cachTaoVideoAffiliate from './posts/tao-video-affiliate-shopee-hang-loat.js';
@@ -127,31 +137,53 @@ export const posts = [
 
 /** The blog's own URL, its name in the nav, and what its index says in a search result. */
 export const BLOG = {
-  path: '/blog/',
-  title: 'Blog AutoReel | Kinh nghiệm làm video bán hàng và affiliate',
-  description:
-    'Hướng dẫn và kinh nghiệm làm video affiliate Shopee, reup video, đăng Reels hàng loạt và tự động hoá sản xuất video — viết cho người làm nghề.',
-  heading: 'Blog AutoReel',
-  lede:
-    'Kinh nghiệm làm video bán hàng, affiliate Shopee và tự động hoá — viết cho người đang làm, không phải để lấp đầy trang.',
+  path: { vi: '/blog/', en: '/en/blog/' },
+  title: {
+    vi: 'Blog AutoReel | Kinh nghiệm làm video bán hàng và affiliate',
+    en: 'AutoReel blog | Sales video, Shopee affiliate and automation',
+  },
+  description: {
+    vi: 'Hướng dẫn và kinh nghiệm làm video affiliate Shopee, reup video, đăng Reels hàng loạt và tự động hoá sản xuất video — viết cho người làm nghề.',
+    en: 'Guides and field notes on Shopee affiliate video, reusing footage, posting Reels in bulk and automating video production — written for people doing the work.',
+  },
+  heading: { vi: 'Blog AutoReel', en: 'The AutoReel blog' },
+  lede: {
+    vi: 'Kinh nghiệm làm video bán hàng, affiliate Shopee và tự động hoá — viết cho người đang làm, không phải để lấp đầy trang.',
+    en: 'Notes on sales video, Shopee affiliate and automation — written for people doing the work, not to fill a page.',
+  },
 };
 
-/** `/blog/<slug>/` — the only place an article's URL is spelled. */
-export function postPath(slug) {
-  return `/blog/${slug}/`;
+/**
+ * `/blog/<slug>/` and `/en/blog/<slug>/` — the only place an article's URL is
+ * spelled.
+ *
+ * It takes the article rather than a slug string, because there is no such
+ * thing as "the" slug any more: two languages means two addresses, and a
+ * caller passing the wrong one would produce a link into the other language's
+ * blog with no error anywhere.
+ */
+export function postPath(post, lang = 'vi') {
+  return `${BLOG.path[lang]}${post.slug[lang]}/`;
 }
 
-export function postBySlug(slug) {
-  return posts.find((post) => post.slug === slug) || null;
+/** Look an article up by the slug in the address bar. */
+export function postBySlug(slug, lang = 'vi') {
+  return posts.find((post) => post.slug[lang] === slug) || null;
 }
 
 /** The articles to show under one article: the next few, and never itself. */
-export function relatedPosts(slug, count = 3) {
-  const others = posts.filter((post) => post.slug !== slug);
+export function relatedPosts(post, lang = 'vi', count = 3) {
+  const others = posts.filter((one) => one !== post);
   if (!others.length) return [];
   // Starting where this article sits in the list, rather than always at the
   // top: otherwise every page in the blog ends with the same three links, and
   // the oldest article is the one nobody ever reaches.
-  const at = Math.max(0, posts.findIndex((post) => post.slug === slug));
+  const at = Math.max(0, posts.indexOf(post));
   return [...others.slice(at % others.length), ...others].slice(0, count);
+}
+
+/** The same article in the other language, for `hreflang` and the switch link. */
+export function alternatePost(post, lang) {
+  const other = lang === 'vi' ? 'en' : 'vi';
+  return { lang: other, path: postPath(post, other) };
 }

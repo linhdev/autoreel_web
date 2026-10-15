@@ -1,5 +1,6 @@
 /**
- * Write the blog: one real HTML file per article, and the index that lists them.
+ * Write the blog: one real HTML file per article per language, and the two
+ * indexes that list them.
  *
  * `vite build` knows nothing about these pages. They are not React and they are
  * not the one-pager — an article is a document, and the reason it is written out
@@ -17,6 +18,11 @@
  *     appears here too;
  *   - the contact details and the registered business lines, from the same file.
  *
+ * And what it borrows from `build-docs.mjs`, which is the sibling it grew into:
+ * the header, the footer, the escaper, the hashed stylesheet and the language
+ * dimension all come from `scripts/lib/site-shell.mjs`. The blog used to carry
+ * its own copy of the first four, which was fine while it was Vietnamese-only.
+ *
  * Run: `node scripts/build-posts.mjs` (or `npm run build`, which chains it).
  */
 import { readFile } from 'node:fs/promises';
@@ -24,15 +30,52 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { BLOG, postPath, posts, relatedPosts } from '../src/data/posts.js';
-import { SITE_URL, absolute, pathFor } from '../src/data/routes.js';
+import { LOCALE_TAGS, SITE_URL, absolute, pathFor } from '../src/data/routes.js';
 import { site } from '../src/data/site.js';
 import {
-  esc, footer, headAssets, nav, shownDate, write,
+  esc, footer, headAssets, langAssets, nav, shownDate, write,
 } from './lib/site-shell.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
 
+const OTHER = { vi: 'en', en: 'vi' };
+
+/**
+ * The handful of strings the page's own chrome needs, which belong to the
+ * blog's layout rather than to any article.
+ *
+ * They live here rather than in `posts.js` because nothing else reads them:
+ * the React app never renders a blog page, and a reader never sees them
+ * anywhere but on one. An article's own `tag` is different — it is content, it
+ * is different for each article, and it belongs in the article's file.
+ */
+const CHROME = {
+  vi: {
+    faq: 'Câu hỏi thường gặp',
+    more: 'Bài khác',
+    minRead: 'phút đọc',
+    ctaTitle: 'Tự động hoá phần lặp lại',
+    ctaBody:
+      'AutoReel làm phần lớn công đoạn trong các bài trên: đọc sản phẩm, viết kịch bản, dựng video, rồi đăng lên Shopee Video và Facebook/Reels. Giá thuê từ 159.000đ một tháng, hoặc mua một lần dùng vĩnh viễn.',
+    ctaPrimary: 'Xem bảng giá',
+    ctaSecondary: 'Nhận tư vấn',
+    home: 'Trang chủ',
+    other: 'English',
+  },
+  en: {
+    faq: 'Frequently asked questions',
+    more: 'More articles',
+    minRead: 'min read',
+    ctaTitle: 'Automate the repetitive part',
+    ctaBody:
+      'AutoReel does most of what these articles describe: reads the product, writes the script, builds the video, then publishes it to Shopee Video and Facebook/Reels. Rent it from $6.12 a month, or buy it once and keep it.',
+    ctaPrimary: 'See pricing',
+    ctaSecondary: 'Talk to us',
+    home: 'Home',
+    other: 'Tiếng Việt',
+  },
+};
 
 /**
  * An illustration: a diagram drawn by hand in `public/blog/`, which Vite copies
@@ -42,6 +85,14 @@ const DIST = join(ROOT, 'dist');
  * as-is, because it is a path in this repo rather than text a reader supplied,
  * and escaping it would only turn a `&` in a file name into `&amp;` and 404 the
  * image. `alt` and `caption` are prose and are escaped like everything else.
+ *
+ * Every diagram in this folder has its labels drawn into the SVG, so there is
+ * no such thing as one picture of it: the English half is a second file beside
+ * the Vietnamese one, named `<stem>-en.svg`, and a reader on `/en/blog/` would
+ * otherwise be shown a diagram that said `Bộ điều phối`. The two bodies are
+ * separate prose already, so the paths are written separately too — and
+ * `verify-build.mjs` fails if the English one was left pointing at the
+ * Vietnamese drawing.
  */
 function figure(one) {
   const { src, alt, caption } = one;
@@ -75,35 +126,36 @@ function block(one) {
   throw new Error(`unknown article block: ${JSON.stringify(one).slice(0, 80)}`);
 }
 
-function faqBlock(post) {
-  if (!post.faq?.length) return '';
-  const items = post.faq
+function faqBlock(post, lang) {
+  const items = post.faq?.[lang];
+  if (!items?.length) return '';
+  const rendered = items
     .map(
       (one) =>
         `          <details>\n            <summary>${esc(one.q)}</summary>\n            <p>${esc(one.a)}</p>\n          </details>`,
     )
     .join('\n');
   return `        <div class="ar-post-faq">
-          <h2>Câu hỏi thường gặp</h2>
-${items}
+          <h2>${esc(CHROME[lang].faq)}</h2>
+${rendered}
         </div>`;
 }
 
-function relatedBlock(post) {
-  const others = relatedPosts(post.slug);
+function relatedBlock(post, lang) {
+  const others = relatedPosts(post, lang);
   if (!others.length) return '';
   const cards = others
     .map(
       (one) => `            <article class="ar-card ar-blog-card">
-              <div class="ar-blog-meta"><span>${esc(one.tag)}</span><span>${esc(shownDate(one.date))}</span></div>
-              <h3><a href="${postPath(one.slug)}">${esc(one.title)}</a></h3>
-              <p>${esc(one.description)}</p>
+              <div class="ar-blog-meta"><span>${esc(one.tag[lang])}</span><span>${esc(shownDate(one.date, lang))}</span></div>
+              <h3><a href="${postPath(one, lang)}">${esc(one.title[lang])}</a></h3>
+              <p>${esc(one.description[lang])}</p>
             </article>`,
     )
     .join('\n');
   return `      <section class="ar-section" style="padding-top:0">
         <div class="ar-container">
-          <h2 style="font-size:1.5rem;font-weight:850;margin:0 0 18px">Bài khác</h2>
+          <h2 style="font-size:1.5rem;font-weight:850;margin:0 0 18px">${esc(CHROME[lang].more)}</h2>
           <div class="ar-blog-grid">
 ${cards}
           </div>
@@ -112,45 +164,57 @@ ${cards}
 }
 
 /** The band every page ends with, so an article can be acted on where it ends. */
-function cta() {
+function cta(lang) {
+  const copy = CHROME[lang];
   return `        <div class="ar-post-cta">
-          <h2>Tự động hoá phần lặp lại</h2>
-          <p>AutoReel làm phần lớn công đoạn trong các bài trên: đọc sản phẩm, viết kịch bản, dựng video, rồi đăng lên Shopee Video và Facebook/Reels. Giấy phép vĩnh viễn, không phí thuê bao hàng tháng.</p>
+          <h2>${esc(copy.ctaTitle)}</h2>
+          <p>${esc(copy.ctaBody)}</p>
           <div class="ar-post-actions">
-            <a class="ar-btn ar-btn-primary" href="${pathFor('pricing')}">Xem bảng giá</a>
-            <a class="ar-btn ar-btn-secondary" href="${pathFor('contact')}">Nhận tư vấn</a>
+            <a class="ar-btn ar-btn-primary" href="${pathFor('pricing', lang)}">${esc(copy.ctaPrimary)}</a>
+            <a class="ar-btn ar-btn-secondary" href="${pathFor('contact', lang)}">${esc(copy.ctaSecondary)}</a>
           </div>
         </div>`;
 }
 
-function structuredData(post, url) {
+function structuredData(post, lang, url) {
   const graph = [
     {
       '@type': 'BlogPosting',
-      headline: post.title,
-      description: post.description,
+      headline: post.title[lang],
+      description: post.description[lang],
       datePublished: post.date,
       dateModified: post.date,
-      inLanguage: 'vi',
-      articleSection: post.tag,
+      inLanguage: LOCALE_TAGS[lang].html,
+      articleSection: post.tag[lang],
       mainEntityOfPage: { '@type': 'WebPage', '@id': url },
       author: { '@type': 'Organization', name: site.name, url: SITE_URL },
       publisher: { '@type': 'Organization', name: site.name, url: SITE_URL },
-      image: `${SITE_URL}/og-image.png`,
+      image: `${SITE_URL}/${lang === 'en' ? 'og-image-en.png' : 'og-image.png'}`,
     },
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: `${SITE_URL}/` },
-        { '@type': 'ListItem', position: 2, name: BLOG.heading, item: absolute(BLOG.path) },
-        { '@type': 'ListItem', position: 3, name: post.title, item: url },
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: CHROME[lang].home,
+          item: `${SITE_URL}${lang === 'en' ? '/en/' : '/'}`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: BLOG.heading[lang],
+          item: absolute(BLOG.path[lang]),
+        },
+        { '@type': 'ListItem', position: 3, name: post.title[lang], item: url },
       ],
     },
   ];
-  if (post.faq?.length) {
+  const faq = post.faq?.[lang];
+  if (faq?.length) {
     graph.push({
       '@type': 'FAQPage',
-      mainEntity: post.faq.map((one) => ({
+      mainEntity: faq.map((one) => ({
         '@type': 'Question',
         name: one.q,
         acceptedAnswer: { '@type': 'Answer', text: one.a },
@@ -160,9 +224,27 @@ function structuredData(post, url) {
   return { '@context': 'https://schema.org', '@graph': graph };
 }
 
-function document_({ title, description, url, assets, body, ld }) {
+/**
+ * The `hreflang` links, written here rather than borrowed from
+ * `build-routes.mjs`: that one builds them for the one-pager, whose URLs are
+ * known to both languages in advance. Here the two addresses come from the
+ * article's own slugs, and an article is free to have an English slug that
+ * looks nothing like its Vietnamese one — which is the point of having one.
+ */
+function alternates(post, lang) {
+  const other = OTHER[lang];
+  return [
+    `    <link rel="alternate" hreflang="${lang}" href="${esc(absolute(postPath(post, lang)))}" />`,
+    `    <link rel="alternate" hreflang="${other}" href="${esc(absolute(postPath(post, other)))}" />`,
+    `    <link rel="alternate" hreflang="x-default" href="${esc(absolute(postPath(post, 'vi')))}" />`,
+    `    <meta property="og:locale:alternate" content="${LOCALE_TAGS[other].og}" />`,
+  ].join('\n');
+}
+
+function document_({ title, description, url, assets, body, ld, lang, extraHead = '' }) {
+  const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
   return `<!doctype html>
-<html lang="vi">
+<html lang="${LOCALE_TAGS[lang].html}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -173,21 +255,22 @@ function document_({ title, description, url, assets, body, ld }) {
     <link rel="canonical" href="${esc(url)}" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="${esc(site.name)}" />
+${extraHead}
 
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="${esc(site.name)}" />
-    <meta property="og:locale" content="vi_VN" />
+    <meta property="og:locale" content="${LOCALE_TAGS[lang].og}" />
     <meta property="og:url" content="${esc(url)}" />
     <meta property="og:title" content="${esc(title)}" />
     <meta property="og:description" content="${esc(description)}" />
-    <meta property="og:image" content="${SITE_URL}/og-image.png" />
+    <meta property="og:image" content="${SITE_URL}${card}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${esc(title)}" />
     <meta name="twitter:description" content="${esc(description)}" />
-    <meta name="twitter:image" content="${SITE_URL}/og-image.png" />
+    <meta name="twitter:image" content="${SITE_URL}${card}" />
 
 ${assets}
 
@@ -211,62 +294,68 @@ ${body}
 `;
 }
 
-function articlePage(post, assets) {
-  const url = absolute(postPath(post.slug));
-  const body = `${nav('vi', 'blog')}
+function articlePage(post, lang, assets) {
+  const url = absolute(postPath(post, lang));
+  const other = OTHER[lang];
+  const body = `${nav(lang, 'blog')}
 
     <main id="main">
       <article class="ar-post">
         <div class="ar-container">
           <div class="ar-post-head">
-            <a class="ar-post-back" href="${BLOG.path}">← ${esc(BLOG.heading)}</a>
-            <div class="ar-blog-meta"><span>${esc(post.tag)}</span><span>${esc(shownDate(post.date))}</span><span>${post.minutes} phút đọc</span></div>
-            <h1 class="ar-post-title">${esc(post.title)}</h1>
-            <p class="ar-post-lead">${esc(post.lead)}</p>
+            <a class="ar-post-back" href="${BLOG.path[lang]}">← ${esc(BLOG.heading[lang])}</a>
+            <div class="ar-blog-meta"><span>${esc(post.tag[lang])}</span><span>${esc(shownDate(post.date, lang))}</span><span>${post.minutes[lang]} ${esc(CHROME[lang].minRead)}</span></div>
+            <h1 class="ar-post-title">${esc(post.title[lang])}</h1>
+            <p class="ar-post-lead">${esc(post.lead[lang])}</p>
+            <p class="ar-post-lang"><a href="${postPath(post, other)}" hreflang="${other}">${esc(CHROME[lang].other)}</a></p>
           </div>
 
           <div class="ar-post-body">
-${post.body.map(block).join('\n')}
-${faqBlock(post)}
-${cta()}
+${post.body[lang].map(block).join('\n')}
+${faqBlock(post, lang)}
+${cta(lang)}
           </div>
         </div>
       </article>
 
-${relatedBlock(post)}
+${relatedBlock(post, lang)}
     </main>
 
-${footer('vi')}`;
+${footer(lang)}`;
 
   return document_({
-    title: post.title,
-    description: post.description,
+    title: post.title[lang],
+    description: post.description[lang],
     url,
     assets,
     body,
-    ld: structuredData(post, url),
+    ld: structuredData(post, lang, url),
+    lang,
+    extraHead: alternates(post, lang),
   });
 }
 
-function indexPage(assets) {
+function indexPage(lang, assets) {
   const cards = posts
     .map(
       (post) => `            <article class="ar-card ar-blog-card">
-              <div class="ar-blog-meta"><span>${esc(post.tag)}</span><span>${esc(shownDate(post.date))}</span><span>${post.minutes} phút đọc</span></div>
-              <h3><a href="${postPath(post.slug)}">${esc(post.title)}</a></h3>
-              <p>${esc(post.description)}</p>
+              <div class="ar-blog-meta"><span>${esc(post.tag[lang])}</span><span>${esc(shownDate(post.date, lang))}</span><span>${post.minutes[lang]} ${esc(CHROME[lang].minRead)}</span></div>
+              <h3><a href="${postPath(post, lang)}">${esc(post.title[lang])}</a></h3>
+              <p>${esc(post.description[lang])}</p>
             </article>`,
     )
     .join('\n');
 
-  const body = `${nav('vi', 'blog')}
+  const other = OTHER[lang];
+  const body = `${nav(lang, 'blog')}
 
     <main id="main">
       <section class="ar-section">
         <div class="ar-container">
           <div class="ar-section-head">
-            <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.03em;margin:0 0 14px">${esc(BLOG.heading)}</h1>
-            <p style="color:var(--muted);line-height:1.7;margin:0">${esc(BLOG.lede)}</p>
+            <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.03em;margin:0 0 14px">${esc(BLOG.heading[lang])}</h1>
+            <p style="color:var(--muted);line-height:1.7;margin:0">${esc(BLOG.lede[lang])}</p>
+            <p style="margin:14px 0 0"><a class="ar-doc-side-link" href="${BLOG.path[other]}" hreflang="${other}">${esc(CHROME[lang].other)}</a></p>
           </div>
           <div class="ar-blog-grid">
 ${cards}
@@ -275,29 +364,35 @@ ${cards}
       </section>
     </main>
 
-${footer('vi')}`;
+${footer(lang)}`;
 
   return document_({
-    title: BLOG.title,
-    description: BLOG.description,
-    url: absolute(BLOG.path),
+    title: BLOG.title[lang],
+    description: BLOG.description[lang],
+    url: absolute(BLOG.path[lang]),
     assets,
     body,
     ld: {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      name: BLOG.heading,
-      description: BLOG.description,
-      url: absolute(BLOG.path),
-      inLanguage: 'vi',
+      name: BLOG.heading[lang],
+      description: BLOG.description[lang],
+      url: absolute(BLOG.path[lang]),
+      inLanguage: LOCALE_TAGS[lang].html,
       publisher: { '@type': 'Organization', name: site.name, url: SITE_URL },
       blogPost: posts.map((post) => ({
         '@type': 'BlogPosting',
-        headline: post.title,
-        url: absolute(postPath(post.slug)),
+        headline: post.title[lang],
+        url: absolute(postPath(post, lang)),
         datePublished: post.date,
       })),
     },
+    lang,
+    extraHead: [
+      `    <link rel="alternate" hreflang="vi" href="${esc(absolute(BLOG.path.vi))}" />`,
+      `    <link rel="alternate" hreflang="en" href="${esc(absolute(BLOG.path.en))}" />`,
+      `    <link rel="alternate" hreflang="x-default" href="${esc(absolute(BLOG.path.vi))}" />`,
+    ].join('\n'),
   });
 }
 
@@ -308,21 +403,31 @@ async function main() {
     throw new Error('dist/index.html has no stylesheet — run `vite build` first.');
   }
 
-  const slugs = new Set();
-  for (const post of posts) {
-    for (const field of ['slug', 'title', 'description', 'date', 'lead', 'tag']) {
-      if (!post[field]) throw new Error(`${post.slug || '?'} is missing ${field}`);
+  for (const lang of ['vi', 'en']) {
+    const localized = langAssets(assets, lang);
+    const slugs = new Set();
+    for (const post of posts) {
+      // `date` is one date for both languages — an article is published once,
+      // not once per translation — so it is checked on its own rather than
+      // through the `{ vi, en }` lookup every other field uses.
+      if (!post.date) throw new Error(`${post.slug?.vi || '?'} is missing date`);
+      for (const field of ['slug', 'title', 'description', 'lead', 'tag', 'minutes']) {
+        if (!post[field]?.[lang]) throw new Error(`${post.slug?.vi || '?'} is missing ${field}.${lang}`);
+      }
+      const slug = post.slug[lang];
+      if (slugs.has(slug)) throw new Error(`two articles share the ${lang} slug ${slug}`);
+      slugs.add(slug);
+      if (post.title[lang].length > 62) {
+        throw new Error(`${slug}: title is ${post.title[lang].length} characters, over 62`);
+      }
+      if (!post.body[lang]?.length) throw new Error(`${slug} has no ${lang} body`);
+      await write(join(DIST, BLOG.path[lang].replace(/^\//, ''), slug, 'index.html'),
+                  articlePage(post, lang, localized));
     }
-    if (slugs.has(post.slug)) throw new Error(`two articles share the slug ${post.slug}`);
-    slugs.add(post.slug);
-    if (post.title.length > 62) {
-      throw new Error(`${post.slug}: title is ${post.title.length} characters, over 62`);
-    }
-    await write(join(DIST, 'blog', post.slug, 'index.html'), articlePage(post, assets));
+    await write(join(DIST, BLOG.path[lang].replace(/^\//, ''), 'index.html'),
+                indexPage(lang, localized));
   }
-
-  await write(join(DIST, 'blog', 'index.html'), indexPage(assets));
-  console.log(`build-posts: ${posts.length} article(s) + /blog/ index`);
+  console.log(`build-posts: ${posts.length} article(s) x 2 languages + 2 index pages`);
 }
 
 main().catch((error) => {

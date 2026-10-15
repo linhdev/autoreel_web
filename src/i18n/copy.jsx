@@ -34,7 +34,7 @@ import {
 import { benefits, benefitsSection } from '../data/features.js';
 import { allFeatures, allFeaturesSection } from '../data/allFeatures.js';
 import { workflows, workflowSection } from '../data/workflows.js';
-import { CURRENCY_LOCALE, PRICE_SUFFIX, plans, pricingSection } from '../data/pricing.js';
+import { CURRENCY_LOCALE, plans, pricingGroups, pricingSection } from '../data/pricing.js';
 import { faqHeadline, faqs } from '../data/faq.js';
 
 /**
@@ -70,6 +70,7 @@ function bundle(lang) {
     allFeatures: allFeatures[lang],
     allFeaturesSection: allFeaturesSection[lang],
     pricingSection: pricingSection[lang],
+    pricingGroups: pricingGroups[lang],
     plans: plans[lang],
     faqHeadline: faqHeadline[lang],
     faqs: faqs[lang],
@@ -98,20 +99,6 @@ export function CopyProvider({ lang, children }) {
 
 export function useCopy() {
   return useContext(CopyContext);
-}
-
-/**
- * The price as it is written, from the number that also feeds the JSON-LD.
- *
- * `1.490.000đ` and `1,490,000₫` are the same money; a stored string per language
- * would be a second copy of a figure that must never disagree with the one in
- * the structured data.
- */
-export function formatPrice(plan, lang) {
-  const amount = new Intl.NumberFormat(CURRENCY_LOCALE[lang] || CURRENCY_LOCALE.vi).format(
-    plan.priceValue,
-  );
-  return `${amount}${PRICE_SUFFIX[lang] || PRICE_SUFFIX.vi}`;
 }
 
 /** `Intl` locale for the count-up figures, which group digits differently. */

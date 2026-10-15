@@ -295,7 +295,12 @@
     pointer-events: none;
   }
 
-  .ar-card h3 {
+  /* `h4` as well as `h3`: the pricing grid has two levels of heading now — the
+     group ("Thuê bao", "Mua đứt") and the plan under it — and a plan drawn as
+     an `h4` is the correct outline. It is the same heading either way, so it
+     gets the same type. */
+  .ar-card h3,
+  .ar-card h4 {
     margin: 12px 0 10px;
     font-size: 1.28rem;
     font-weight: 800;
@@ -844,9 +849,29 @@
     color: var(--muted);
   }
 
+  /* The computed line: what the pack saves, or how fast the licence pays for
+     itself. Green, because it is the one sentence on the card that is an
+     argument rather than a description — and small, because it is a footnote
+     to the price above it, not a second price. */
+  .ar-pricing-card .ar-pricing-aside {
+    margin: 10px 0 0;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #6ee7b7;
+  }
+
+  /* Pushed to the bottom of the card rather than sitting after the checklist.
+     With two plans of equal length the difference never showed; with five, the
+     cards in a row have different numbers of lines and the buttons landed at
+     five different heights. The checklist keeps its own margin so the gap
+     never closes on the shortest card. */
+  .ar-pricing-card .ar-checklist {
+    margin-bottom: 26px;
+  }
+
   .ar-pricing-card .ar-btn {
     width: 100%;
-    margin-top: 26px;
+    margin-top: auto;
   }
 
   .ar-pricing-popular {
@@ -868,6 +893,18 @@
     letter-spacing: 0.08em;
     color: #fff;
     box-shadow: 0 8px 24px rgba(109, 82, 255, 0.35);
+  }
+
+  /* The same tag carrying a status rather than a recommendation — "Coming
+     soon" on a plan nobody can buy yet. After `.ar-popular-tag` in the file on
+     purpose: it is one class against one class, so the later rule is the one
+     that wins, and putting it first would have left the gradient in place and
+     the badge looking exactly as loud as the promoted plan. */
+  .ar-popular-tag-quiet {
+    background: rgba(155, 92, 255, 0.14);
+    border: 1px solid rgba(155, 92, 255, 0.4);
+    color: #d9c8ff;
+    box-shadow: none;
   }
 
   /* ---- FAQ ---- */
@@ -1175,6 +1212,24 @@
   }
 
   .ar-post-back:hover {
+    color: var(--text);
+  }
+
+  /* The link to the same article in the other language, sitting under the lead
+     where a reader who landed on the wrong half will look for it. */
+  .ar-post-lang {
+    margin: 14px 0 0;
+    font-size: 0.9rem;
+  }
+
+  .ar-post-lang a {
+    color: var(--muted);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ar-post-lang a:hover {
     color: var(--text);
   }
 

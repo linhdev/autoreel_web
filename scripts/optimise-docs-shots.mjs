@@ -45,7 +45,21 @@ if (!existsSync(FROM)) {
 
 mkdirSync(OUT, { recursive: true });
 
-const files = readdirSync(FROM).filter((name) => name.endsWith('.png')).sort();
+// `--only <substring>` re-does one picture instead of all of them.
+//
+// Not an optimisation: a full run rewrites every file in `public/docs-img/`,
+// and a capture that was taken since the last run — somebody re-shot one
+// screen while fixing a single topic — would come along with it and change a
+// hash in a commit that was supposed to be about something else. Naming the
+// picture keeps the diff the size of the change.
+const ONLY = arg('--only', null);
+
+const all = readdirSync(FROM).filter((name) => name.endsWith('.png')).sort();
+const files = ONLY ? all.filter((name) => name.includes(ONLY)) : all;
+if (ONLY && !files.length) {
+  console.error(`no capture matching "${ONLY}" in ${FROM}`);
+  process.exit(1);
+}
 if (!files.length) {
   console.error(`no PNG files in ${FROM}`);
   process.exit(1);

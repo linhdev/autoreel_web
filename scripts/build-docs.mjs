@@ -401,7 +401,7 @@ ${sidebar(doc.key, lang)}
             <h1 class="ar-post-title">${rich(doc.title[lang])}</h1>
             <p class="ar-post-lead">${rich(doc.lead[lang])}</p>
             <div class="ar-doc-meta">
-              <span>${lang === 'vi' ? 'Cập nhật' : 'Updated'} ${esc(shownDate(doc.updated))}</span>
+              <span>${lang === 'vi' ? 'Cập nhật' : 'Updated'} ${esc(shownDate(doc.updated, lang))}</span>
               <a href="${docPath(doc, other)}" hreflang="${other}">${other === 'en' ? 'English' : 'Tiếng Việt'}</a>
             </div>
           </div>

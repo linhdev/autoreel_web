@@ -84,7 +84,7 @@ export const navLinks = {
     { label: 'Demo', to: 'demo' },
     { label: 'Pricing', to: 'pricing' },
     { label: 'FAQ', to: 'faq' },
-    { label: 'Blog', href: '/blog/', key: 'blog' },
+    { label: 'Blog', href: '/en/blog/', key: 'blog' },
     { label: 'Docs', href: '/en/docs/', key: 'docs' },
   ],
 };
@@ -341,7 +341,7 @@ export const footer = {
       { label: 'Pricing', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
       { label: 'Contact', to: 'contact' },
-      { label: 'Blog', href: '/blog/' },
+      { label: 'Blog', href: '/en/blog/' },
       { label: 'Docs', href: '/en/docs/' },
     ],
     columns: { links: 'Links', contact: 'Contact' },

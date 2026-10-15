@@ -86,7 +86,7 @@ export const allFeatures = {
         {
           icon: 'Type',
           name: 'Chèn chữ và logo',
-          line: 'Chọn một trong tám mẫu có sẵn, gõ chữ trên và chữ dưới, và nhìn thấy khung hình sẽ ra sao ngay khi chọn.',
+          line: 'Chọn một trong mười ba mẫu có sẵn, gõ chữ trên và chữ dưới, và nhìn thấy khung hình sẽ ra sao ngay khi chọn.',
         },
         {
           icon: 'Package',
@@ -204,7 +204,7 @@ export const allFeatures = {
         {
           icon: 'Type',
           name: 'Text and logo overlay',
-          line: 'Pick one of eight templates, type the top and bottom lines, and see the frame you will get the moment you choose.',
+          line: 'Pick one of thirteen templates, type the top and bottom lines, and see the frame you will get the moment you choose.',
         },
         {
           icon: 'Package',

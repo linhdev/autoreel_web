@@ -115,12 +115,12 @@ export const routes = [
       vi: {
         title: 'Toàn bộ tính năng của AutoReel | Danh sách đầy đủ',
         description:
-          'Mọi thứ AutoReel làm được: ba luồng trọn gói Affiliate, Reup và Review, mười ba màn làm từng việc lẻ, cùng hàng đợi chạy song song và giọng đọc tiếng Việt.',
+          'Mọi thứ AutoReel làm được: ba luồng trọn gói Affiliate, Reup và Review, mười hai màn làm từng việc lẻ, cùng hàng đợi chạy song song và giọng đọc tiếng Việt.',
       },
       en: {
         title: 'All AutoReel features | The complete list',
         description:
-          'Everything AutoReel does: the Affiliate, Reup and Review flows, thirteen single-job screens, plus a parallel job queue and Vietnamese AI voices.',
+          'Everything AutoReel does: the Affiliate, Reup and Review flows, twelve single-job screens, plus a parallel job queue and Vietnamese AI voices.',
       },
     },
   },
@@ -149,12 +149,12 @@ export const routes = [
       vi: {
         title: 'Bảng giá phần mềm tạo video tự động | AutoReel',
         description:
-          'Gói Personal 1.490.000đ và gói Team 3.990.000đ — license vĩnh viễn, không phí thuê bao hàng tháng.',
+          'Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ. Gói Full 259.000đ/tháng làm video rồi tự đăng lên Shopee và Facebook/Reels.',
       },
       en: {
         title: 'Pricing | AutoReel video automation software',
         description:
-          'Personal at 1,490,000₫ and Team at 3,990,000₫ — lifetime licence, no monthly subscription fee.',
+          'Rent from $6.12 a month, or buy outright for $57.31. Full at $9.96/month makes the video and publishes it to Shopee and Facebook/Reels.',
       },
     },
   },

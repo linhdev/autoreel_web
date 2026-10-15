@@ -28,7 +28,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { LOCALES, LOCALE_TAGS, SITE_URL, absolute, routes } from '../src/data/routes.js';
-import { plans } from '../src/data/pricing.js';
+import { plans, priceIn } from '../src/data/pricing.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, docPath, docs } from '../src/data/docs.js';
 
@@ -94,17 +94,38 @@ function structuredData(existing, route, lang) {
     description: copy.description,
     url: homeUrl,
     inLanguage: LOCALE_TAGS[lang].html,
-    offers: plans[lang].map((plan) => ({
-      '@type': 'Offer',
-      name: plan.name,
-      price: String(plan.priceValue),
-      priceCurrency: 'VND',
-      availability: plan.available
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/PreOrder',
-      url: homeUrl,
-      description: plan.audience,
-    })),
+    // One offer per plan, priced in the currency of the page it is on: a
+    // search result for the English page that quotes đồng is a result nobody
+    // in that market can act on. `priceIn` is the same function the card uses,
+    // so the number Google shows and the number on the page cannot differ.
+    offers: plans[lang].map((plan) => {
+      const { amount, currency } = priceIn(plan, lang);
+      const price = String(amount);
+      return {
+        '@type': 'Offer',
+        name: plan.name,
+        price,
+        priceCurrency: currency,
+        availability: plan.available
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/PreOrder',
+        url: homeUrl,
+        description: plan.audience,
+        // A subscription quoted without a period reads as a one-off charge, and
+        // the difference is the whole point of having both kinds of plan.
+        ...(plan.billing === 'month'
+          ? {
+              priceSpecification: {
+                '@type': 'UnitPriceSpecification',
+                price,
+                priceCurrency: currency,
+                billingDuration: 'P1M',
+                billingIncrement: 1,
+              },
+            }
+          : {}),
+      };
+    }),
   };
 }
 
@@ -325,27 +346,52 @@ function sitemap(stamp) {
     }
   }
 
-  // The blog, which `routes` deliberately does not hold: those are the
-  // one-pager's section URLs and these are pages of their own, written by
-  // `build-posts.mjs`. They belong in the map all the same, and they get no
-  // `hreflang` alternates because there is no English half of them.
-  urls.push(entry(absolute(BLOG.path), stamp, '0.7'));
-  for (const post of posts) {
-    urls.push(entry(absolute(postPath(post.slug)), post.date, '0.6'));
-  }
-
-  // The documentation, which is not in `routes` for the same reason the blog
-  // is not, and is written by `build-docs.mjs`.
-  //
-  // It *does* get `hreflang` alternates, unlike the blog: both languages
-  // exist, and a Vietnamese topic and its English counterpart are the same
-  // document in two languages rather than two documents. Without them Google
-  // picks one and treats the other as a duplicate.
+  /**
+   * The two languages of one document, pointing at each other.
+   *
+   * Both the blog and the documentation are written twice, and in both cases a
+   * Vietnamese page and its English counterpart are the same document rather
+   * than two documents. Without the alternates Google picks one and treats the
+   * other as a duplicate — which for the blog would mean the English half
+   * never ranking at all.
+   */
   const alternatesFor = (pair) =>
     LOCALES.map(
       (code) =>
         `    <xhtml:link rel="alternate" hreflang="${LOCALE_TAGS[code].html}" href="${esc(pair[code])}"/>`,
     ).join('\n');
+
+  // The blog, which `routes` deliberately does not hold: those are the
+  // one-pager's section URLs and these are pages of their own, written by
+  // `build-posts.mjs`.
+  for (const lang of LOCALES) {
+    urls.push(
+      entry(
+        absolute(BLOG.path[lang]),
+        stamp,
+        '0.7',
+        alternatesFor({ vi: absolute(BLOG.path.vi), en: absolute(BLOG.path.en) }),
+      ),
+    );
+  }
+  for (const post of posts) {
+    for (const lang of LOCALES) {
+      urls.push(
+        entry(
+          absolute(postPath(post, lang)),
+          post.date,
+          '0.6',
+          alternatesFor({
+            vi: absolute(postPath(post, 'vi')),
+            en: absolute(postPath(post, 'en')),
+          }),
+        ),
+      );
+    }
+  }
+
+  // The documentation, which is not in `routes` for the same reason the blog
+  // is not, and is written by `build-docs.mjs`.
 
   for (const lang of LOCALES) {
     urls.push(

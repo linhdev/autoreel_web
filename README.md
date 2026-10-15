@@ -60,19 +60,22 @@ src/
   data/                    ← all editable content lives here
     routes.js              ← every URL, and its title + description
     posts.js               ← the blog index: the list of articles (see "The blog")
-    posts/                 ← one file per article
+    posts/                 ← one file per article, both languages in it
+    posts/VOICE.md         ← how an article here is written; read before adding one
     docs.js                ← the docs index: groups, slugs, prev/next (see "The docs")
     docs/                  ← one file per topic, both languages in it
     site.js                brand, nav, hero, steps, demo, proof, CTA, footer, UI strings
     workflows.js           the 3 flows + section heading
     features.js            the 8 benefits
-    pricing.js             2 plans + pricing note + the prices as numbers
+    pricing.js             the subscription tiers + the two lifetime licences, in đồng
     faq.js                 10 questions
   styles/globals.css       design tokens, component classes, keyframes
 scripts/
   generate-assets.mjs      image pipeline (sharp) → public/
   build-routes.mjs         one HTML file per route + sitemap + 404, after vite build
-  build-posts.mjs          one HTML file per blog article + the /blog/ index
+  build-posts.mjs          one HTML file per blog article per language + 2 indexes
+  check-posts.mjs          the article rules against the source, before a build
+  lib/post-rules.mjs       what an article has to be true of, shared by both
   build-docs.mjs           one HTML file per doc topic per language + 2 indexes
   lib/site-shell.mjs       the header, footer and escaper both builders share
   optimise-docs-shots.mjs  the screenshots -> WebP that the site serves
@@ -115,6 +118,17 @@ the brand, the phone number, icon names, route keys — sits outside the split s
 tempted to translate a domain name. `npm run verify` fails when the two languages stop
 describing the same page: a missing key, a short list, a renamed plan id, an empty string.
 
+**A price is written once, in đồng, and the dollar figure is derived from it.** Every plan
+in `pricing.js` carries a `priceValue` in VND; the English page shows `priceValue / 26,000`
+worked out in cents by `formatMoney`, and the JSON-LD block for an English page quotes USD
+while the Vietnamese one quotes VND — all from the one number. Change `VND_PER_USD` and
+every dollar price on the site moves with it, including the ones already in Google's index.
+
+Two cards quote arithmetic rather than a sentence somebody typed: the three-month pack's
+saving is `3 × Full − this pack`, and the lifetime licence's payback is
+`ceil(Personal ÷ Full)` months. Both are declared as `saves` / `paybackAgainst` and filled
+in by `Pricing.jsx`, because a hand-typed "tiết kiệm 78.000đ" is correct exactly once.
+
 **Emphasis lives inside the sentence.** A heading with a highlighted phrase is written
 `'One AutoReel. **Three core workflows.**'` and rendered by `components/ui/RichText.jsx`. It
 used to be three separate fields (`titleBefore` / `titleHighlight` / `titleAfter`), which
@@ -134,34 +148,50 @@ One article is one file, `src/data/posts/<slug>.js`, and `src/data/posts.js` imp
 The body is an array of small blocks rather than one HTML or Markdown string:
 
 ```js
-body: [
-  { h2: 'Một mục lớn' },
-  { p: 'Một đoạn văn.' },
-  { ul: ['ý một', 'ý hai'] },
-  { ol: ['bước một', 'bước hai'] },
-  { note: 'Một lưu ý, in nổi bật.' },
-],
-faq: [{ q: '…', a: '…' }],
+body: {
+  vi: [
+    { h2: 'Một mục lớn' },
+    { p: 'Một đoạn văn.' },
+    { ul: ['ý một', 'ý hai'] },
+    { ol: ['bước một', 'bước hai'] },
+    { note: 'Một lưu ý, in nổi bật.' },
+  ],
+  en: [ /* the same sequence of block types */ ],
+},
+faq: { vi: [{ q: '…', a: '…' }], en: [{ q: '…', a: '…' }] },
 ```
 
 The renderer escapes every string it is handed, so nothing in an article can put markup on
 the page; the FAQ becomes `details/summary` on the page and a `FAQPage` block in the
 structured data.
 
-**Adding an article:** write the file, import it in `posts.js`, then `npm run build`. The
-build fails if a title is over 62 characters, a slug repeats, or a required field is missing,
-and `npm run verify` fails if the page it wrote has no canonical link, no `BlogPosting` data,
-or a stylesheet from an older build. The sitemap is written by `build-routes.mjs`, which
-reads the same list — an article cannot be in one and missing from the other.
+**Adding an article:** read `src/data/posts/VOICE.md` first — it is how an article in this
+folder is written, and `meo-dang-shopee-video-hieu-qua.js` is the exemplar it points at.
+Then write the file, import it in `posts.js`, and run `npm run check:posts` while you work
+and `npm run build && npm run verify` before you commit.
+
+The split matters: everything that can be known from the article's own data — the two
+languages are the same shape, the title fits in 62 characters, the English half was
+actually written, the body names nothing inside the machine — lives in
+`scripts/lib/post-rules.mjs` and runs in a second against the source. `verify` calls the
+same function and then checks what landed in `dist/`: the file exists at the right address,
+with the right canonical, the right `hreflang` pair, and a stylesheet from this build. The
+sitemap is written by `build-routes.mjs`, which reads the same list — an article cannot be
+in one and missing from the other.
 
 **Two subjects, two levels of detail.** The articles about how the system works are written
 for the person using it: layers, principles, trade-offs. They never describe what is inside
-the machine, and `verify-build.mjs` holds the list of words that would (`ffmpeg`, `adb`, a
+the machine, and `post-rules.mjs` holds the list of words that would (`ffmpeg`, `adb`, a
 library name, a loopback address). If you are writing about architecture and reach for
 something from the code, say what it *does* for the reader instead of what it is called.
 
-Articles are Vietnamese only, on purpose: there is no English half, so they carry no
-`hreflang`, and `/en/` links back to the Vietnamese blog.
+**Both languages, like the docs.** `/blog/` and `/en/blog/`, with an English slug per
+article, `hreflang` alternates both ways and a link to the other half under the lead. The
+two bodies must be the **same sequence of block types** — a `{ note }` on one side and not
+the other is a warning the other reader never gets — but not the same length, because
+English sentences run shorter. The English is written, not translated: `check:posts` fails
+while any field in `en` is still identical to `vi`, which is what made it safe to move the
+blog across one article at a time.
 
 ### The docs
 

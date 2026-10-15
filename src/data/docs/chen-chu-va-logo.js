@@ -47,7 +47,7 @@ export default {
       {
         ul: [
           '**Màn này** — **Chèn chữ & logo** trong sidebar — là chỗ thiết kế dấu: chọn template, gõ chữ, chọn logo, chỉnh cỡ và font, xem trước bằng khung hình thật.',
-          '**Bốn màn khác** có sẵn một khối nhỏ cũng tên **Chèn chữ & logo** để dùng lại dấu đó ngay trong lượt chạy của chúng: **Lồng tiếng**, **Cắt highlight**, **Xoá logo** và **Luồng reup**. Khối đó chỉ có ô **Template đóng dấu**, **Chữ trên** và **Chữ dưới**.',
+          '**Bốn màn khác** có sẵn một khối nhỏ cũng tên **Chèn chữ & logo** để dùng lại dấu đó ngay trong lượt chạy của chúng: **Lồng tiếng**, **Cắt highlight**, **Xoá logo** và **Luồng reup**. Khối đó chỉ có ô **Template đóng dấu**, **Chữ trên**, **Chữ dưới** và nút chọn **Chữ nằm ở đâu**.',
         ],
       },
       {
@@ -63,15 +63,15 @@ export default {
           },
           {
             title: 'Template',
-            body: 'Ô **Template đóng dấu** có **Không — giữ nguyên video** đứng đầu, rồi **13 template**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Điện ảnh, Tối giản, Hiện đại, Hợp phụ đề và Bán hàng. Thư viện bên dưới vẽ từng template thành một khung để bạn nhìn trước — và mỗi khung vẽ **bằng chính chữ mẫu của template đó**, nên nhìn là biết ngay look đó chữ to nhỏ, đặt trên hay dưới, có nền hay không.',
+            body: 'Ô **Template đóng dấu** có **Không — giữ nguyên video** đứng đầu, rồi **13 template**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Điện ảnh, Tối giản, Hiện đại, Hợp phụ đề và Bán hàng. Thư viện bên dưới vẽ từng template thành một khung để bạn nhìn trước — và mỗi khung vẽ **bằng chính chữ mẫu của template đó**, nên nhìn là biết ngay look đó chữ to nhỏ, đặt trên hay dưới, có nền hay không. Thư viện luôn vẽ theo kiểu **Giữ chỗ cho chữ**; muốn xem kiểu còn lại thì nhìn khối **Xem trước** bên dưới.',
           },
           {
             title: 'Chữ, logo và màu',
-            body: 'Khối **Chữ, logo và màu**: gõ **Chữ trên** và **Chữ dưới** — hai ô này **đã điền sẵn chữ mẫu của template đang chọn**, cứ thế sửa lại theo ý mình. Xoá trắng một ô thì template **không vẽ dòng đó**, chứ không phải vẽ chữ mẫu. Ô **Logo / watermark** chọn **Chữ** — gõ tên vào **Tên hiện** — hoặc **Ảnh** — chọn **Tệp logo**. Ô **Vị trí** đặt nó vào **Trái trên**, **Phải trên**, **Trái dưới** hoặc **Phải dưới**.',
+            body: 'Khối **Chữ, logo và màu**: gõ **Chữ trên** và **Chữ dưới** — hai ô này **đã điền sẵn chữ mẫu của template đang chọn**, cứ thế sửa lại theo ý mình. Xoá trắng một ô thì template **không vẽ dòng đó**, chứ không phải vẽ chữ mẫu. Ngay dưới hai ô đó là nút **Chữ nằm ở đâu** — nó quyết định chữ lấy chỗ từ đâu, và mục **Chữ nằm ở đâu** bên dưới nói rõ hai kiểu. Ô **Logo / watermark** chọn **Chữ** — gõ tên vào **Tên hiện** — hoặc **Ảnh** — chọn **Tệp logo**. Ô **Vị trí** đặt nó vào **Trái trên**, **Phải trên**, **Trái dưới** hoặc **Phải dưới**.',
           },
           {
             title: 'Màu cho template',
-            body: 'Mở **Màu cho template**: mỗi ô màu **bắt đầu bằng màu gốc của chính template đó**, và app chỉ hiện những ô mà template này thật sự vẽ (template không có dải nền thì không có ô màu dải). Đổi màu nào cũng được; nút **Về mặc định của template** trả hết về màu gốc, kể cả hai dòng chữ.',
+            body: 'Mở **Màu cho template**: mỗi ô màu **bắt đầu bằng màu gốc của chính template đó**, và app chỉ hiện những ô mà template này thật sự vẽ — màu chữ, nền sau chữ, huy hiệu. Riêng **Dải chữ trên** và **Dải chữ dưới** có ở **mọi** template, vì dải thuộc bố cục chứ không thuộc một thiết kế; chúng cũng bắt đầu bằng màu nền của template. Đổi màu nào cũng được; nút **Về mặc định của template** trả hết về màu gốc, kể cả hai dòng chữ.',
           },
           {
             title: 'Cỡ, màu và font',
@@ -129,10 +129,32 @@ export default {
         ],
       },
       {
-        note: '**Khung ra đúng tỷ lệ của video, không phải 9:16 ép sẵn.** Video 16:9 đóng dấu xong vẫn là 16:9, hình phủ kín khung, không thêm dải nào. Chữ và lề tự co theo chiều cao khung, nên look giữ nguyên tỷ lệ trên mọi hình dạng video.',
+        note: '**Khung ra đúng tỷ lệ của video, không phải 9:16 ép sẵn.** Video 16:9 đóng dấu xong vẫn là 16:9. Chữ và lề tự co theo chiều cao khung, nên look giữ nguyên tỷ lệ trên mọi hình dạng video.',
       },
       {
         note: 'Không template nào vẽ chữ bạn chưa gõ. Ô **Chữ trên** và **Chữ dưới** điền sẵn chữ mẫu để bạn thấy ngay look đó trông thế nào — xoá trắng là dòng đó biến mất khỏi video.',
+      },
+
+      { h2: 'Chữ nằm ở đâu: hai kiểu bố cục' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-05-chu-nam-o-dau-vi.webp',
+          alt: 'Nút chọn Chữ nằm ở đâu — Giữ chỗ cho chữ hoặc Đè lên hình',
+          width: 1189,
+          height: 180,
+        },
+      },
+      {
+        p: 'Dòng chữ nào cũng cần một chỗ để đọc được. Nút **Chữ nằm ở đâu** quyết định chỗ đó lấy từ đâu, và đây là lựa chọn làm đổi khung hình nhiều nhất trên màn này:',
+      },
+      {
+        ul: [
+          '**Giữ chỗ cho chữ** (mặc định) — dòng nào có chữ thì được cắt ra một dải ở mép khung: dòng trên lấy dải trên cùng, dòng dưới lấy dải dưới cùng. Hình **nằm gọn** ở giữa hai dải, **không bị cắt mất phần nào**, và hai bên là bản mờ của chính video đó nên khung vẫn đầy hình chứ không có dải đen. Dải lấy màu nền của template, đổi được ở hai ô **Dải chữ trên** và **Dải chữ dưới**.',
+          '**Đè lên hình** — hình giữ nguyên cả khung, chữ viết lên trên. Đây là kiểu cũ, và là kiểu mà vài look vốn được vẽ ra để dùng: **TikTok** và **Tối giản** được định nghĩa bằng chữ trắng nằm trên hình, không nền.',
+        ],
+      },
+      {
+        note: '**Cái giá của kiểu giữ chỗ, nói thẳng.** Hình nhỏ đi: với một video 9:16 và cả hai dòng đều có chữ, hình có thể chỉ còn khoảng một nửa chiều cao khung. Bù lại, chữ không bao giờ che mất thứ đang diễn ra. Dòng nào để trống thì dải của dòng đó biến mất và hình lấy lại chỗ đó — gõ một dòng thôi thì hình to hơn hẳn.',
       },
 
       { h2: 'Hai khung xem trước, đừng lẫn' },
@@ -192,7 +214,7 @@ export default {
       {
         ul: [
           '**This screen** — **Add text & logo** in the sidebar — is where the mark is designed: template, words, logo, size and font, and a preview built from a real frame.',
-          '**Four other screens** carry a small group of the same name, **Add text & logo**, so the same idea can be used inside their own run: **Translate**, **Highlights**, **Remove logo** and **Reup flow**. That group holds only **Branding template**, **Top line** and **Bottom line**.',
+          '**Four other screens** carry a small group of the same name, **Add text & logo**, so the same idea can be used inside their own run: **Translate**, **Highlights**, **Remove logo** and **Reup flow**. That group holds only **Branding template**, **Top line**, **Bottom line** and the **Where the words go** choice.',
         ],
       },
       {
@@ -208,15 +230,15 @@ export default {
           },
           {
             title: 'Template',
-            body: '**Branding template** starts with **None - leave the video alone**, followed by **13 templates**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Cinematic, Minimal, Modern, With subtitles and Product. The gallery underneath draws each one so you can see it first — and each card is drawn **with that look’s own sample words**, so one glance tells you how big its type is, whether it sits top or bottom, and whether it has a ground behind it.',
+            body: '**Branding template** starts with **None - leave the video alone**, followed by **13 templates**: Viral Movie, Affiliate, News, Review, TikTok, Flash Sale, Trailer, Podcast, Cinematic, Minimal, Modern, With subtitles and Product. The gallery underneath draws each one so you can see it first — and each card is drawn **with that look’s own sample words**, so one glance tells you how big its type is, whether it sits top or bottom, and whether it has a ground behind it. The gallery is always drawn in the **Reserved strips** layout; for the other one, look at the **Preview** block below.',
           },
           {
             title: 'Text, logo and colour',
-            body: 'In **Text, logo and colour**: **Top line** and **Bottom line** **arrive already filled with the chosen template’s own sample words** — edit them to say what you want. Emptying a box means the template **draws no line there**, rather than falling back to the sample. **Logo / watermark** is either **A name** — type it into **The name** — or **A picture** — choose a **Logo file**. **Position** puts it **Top left**, **Top right**, **Bottom left** or **Bottom right**.',
+            body: 'In **Text, logo and colour**: **Top line** and **Bottom line** **arrive already filled with the chosen template’s own sample words** — edit them to say what you want. Emptying a box means the template **draws no line there**, rather than falling back to the sample. Right under the two boxes is **Where the words go**, which decides where the words take their room from; the section of that name below lays out the two answers. **Logo / watermark** is either **A name** — type it into **The name** — or **A picture** — choose a **Logo file**. **Position** puts it **Top left**, **Top right**, **Bottom left** or **Bottom right**.',
           },
           {
             title: 'Template colours',
-            body: 'Open **Template colours**: every swatch **starts at that template’s own colour**, and only the parts this template actually draws are offered (a look with no band has no band colour to change). Change any of them; **Back to the template** puts every colour back, the two lines of words included.',
+            body: 'Open **Template colours**: every swatch **starts at that template’s own colour**, and only the parts this template actually draws are offered — the words, the ground behind them, the badge. **Title strip** and **Bottom strip** are offered on **every** template, because a strip belongs to the layout rather than to one design; they too start at the template’s background colour. Change any of them; **Back to the template** puts every colour back, the two lines of words included.',
           },
           {
             title: 'Size, colour and font',
@@ -274,10 +296,32 @@ export default {
         ],
       },
       {
-        note: '**The frame is the video’s own shape, not 9:16 forced on it.** A 16:9 video comes back 16:9 with the picture filling it and no bands added. The type and margins scale with the frame’s height, so the look keeps its proportions whatever shape the video is.',
+        note: '**The frame is the video’s own shape, not 9:16 forced on it.** A 16:9 video comes back 16:9. The type and margins scale with the frame’s height, so the look keeps its proportions whatever shape the video is.',
       },
       {
         note: 'No template draws words you did not type. **Top line** and **Bottom line** arrive filled with the sample so you can see what the look does — empty one and that line is simply not drawn.',
+      },
+
+      { h2: 'Where the words go: two layouts' },
+      {
+        figure: {
+          src: '/docs-img/chen-chu-va-logo-05-chu-nam-o-dau-en.webp',
+          alt: 'The Where the words go choice — Reserved strips or Over the picture',
+          width: 1189,
+          height: 170,
+        },
+      },
+      {
+        p: 'Every line of text needs somewhere it can be read. **Where the words go** decides where that room comes from, and it is the choice on this screen that moves the frame the most:',
+      },
+      {
+        ul: [
+          '**Reserved strips** (the default) — each line with words in it gets a strip cut from the edge of the frame: the top line takes the top strip, the bottom line the strip at the foot. The picture **fits whole** between them, **cropped by nothing**, and what fills the sides is a blurred copy of that same video, so the frame stays full of picture rather than of black bars. The strips take the template’s background colour, which **Title strip** and **Bottom strip** change.',
+          '**Over the picture** — the video keeps the whole frame and the words are written on top of it. This is the older layout, and the one a few looks were drawn for: **TikTok** and **Minimal** are defined by white type on the picture with nothing behind it.',
+        ],
+      },
+      {
+        note: '**What the reserved layout costs, said plainly.** The picture gets smaller: with a 9:16 video and both lines filled in, it can come down to about half the frame’s height. What that buys is text that never covers what is happening. A line you leave empty takes its strip with it and the picture gets that room back — with one line typed, the picture is much bigger.',
       },
 
       { h2: 'Two preview frames, and the difference matters' },

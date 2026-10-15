@@ -11,6 +11,7 @@ import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/ro
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
+import { postContentProblems } from './lib/post-rules.mjs';
 import {
   demo,
   finalCta,
@@ -359,81 +360,125 @@ async function main() {
   // script that runs after a build and looks at what is actually on disk: an
   // article that failed to write, or wrote with the landing page's title, has
   // to fail the build rather than ship as a URL that ranks for nothing.
-  const blogProblems = [];
-  const blogIndex = path.join(dist, 'blog', 'index.html');
-  if (!(await exists(blogIndex))) {
-    blogProblems.push('no /blog/ index');
-  } else {
-    const page = await readFile(blogIndex, 'utf8');
-    if (!page.includes(`<title>${BLOG.title}</title>`)) blogProblems.push('/blog/ title');
-    for (const post of posts) {
-      if (!page.includes(postPath(post.slug))) {
-        blogProblems.push(`/blog/ does not link to ${post.slug}`);
-      }
-    }
-  }
-  for (const post of posts) {
-    const file = path.join(dist, 'blog', post.slug, 'index.html');
-    if (!(await exists(file))) {
-      blogProblems.push(`${post.slug} MISSING`);
-      continue;
-    }
-    const page = await readFile(file, 'utf8');
-    if (!page.includes(`<title>${post.title}</title>`)) blogProblems.push(`${post.slug} title`);
-    if (!page.includes(`<link rel="canonical" href="${absolute(postPath(post.slug))}" />`)) {
-      blogProblems.push(`${post.slug} canonical`);
-    }
-    if (!page.includes('"BlogPosting"')) blogProblems.push(`${post.slug} structured data`);
-    if (!page.includes(post.description)) blogProblems.push(`${post.slug} description`);
-    // The stylesheet is the site's own, hash and all: a blog page that links a
-    // stylesheet this build did not produce renders as unstyled text.
-    if (!/assets\/index-[\w-]+\.css/.test(page)) blogProblems.push(`${post.slug} stylesheet`);
-    // An illustration is a drawing in `public/`, copied to `dist/` by Vite,
-    // which the article names by path — so a diagram that never shipped is a
-    // broken image on a published page, and nothing else in the article's own
-    // markup would show it.
-    for (const one of post.body) {
-      if (!one.figure) continue;
-      const drawing = path.join(dist, String(one.figure.src).replace(/^\//, ''));
-      if (!(await exists(drawing))) {
-        blogProblems.push(`${post.slug} figure MISSING ${one.figure.src}`);
-      }
-    }
-    // And a body block may not carry `**`.
-    //
-    // The one-pager renders emphasis through `RichText`; an article's renderer
-    // escapes every string it is handed, on purpose, so a `**` in a paragraph
-    // ships as two literal asterisks. The smoke test already catches that on
-    // the app's own markup, and an article is not part of that markup —
-    // measured: the first draft of the newest article printed
-    // `**ghi lại một dòng**` on the published page and every check passed.
-    if (JSON.stringify(post.body).includes('**')) {
-      blogProblems.push(`${post.slug} has ** in a body block, which is escaped, not rendered`);
-    }
-  }
-  if (blogProblems.length) fail(`blog: ${blogProblems.join(', ')}`);
-  else pass(`blog: ${posts.length} article(s) + index, each with its own head`);
+  // Everything that can be known about an article without building it —
+  // the language parity, the length limits, the words it may not name — comes
+  // from the same function `npm run check:posts` runs. What is left below is
+  // what only the built pages can answer.
+  const blogProblems = [...postContentProblems(posts, LOCALES)];
 
-  // An article about how the system works is written for the person using it —
-  // layers, principles and trade-offs — and never describes what is inside the
-  // machine. Every word below is a name from the build rather than from the
-  // explanation, and one of them appearing in a published page tells a reader
-  // (or a competitor) more about how this is made than any article intends to.
-  // Read off the source, not the built page, so it fails at the moment the word
-  // is typed rather than at the end of a build.
-  const INTERNAL_WORDS = [
-    'ffmpeg', 'sqlite', 'gradio', 'docker', 'adb', 'uiautomator', 'moviepy',
-    'moneyprinter', 'zerotts', 'nvenc', 'jsonrpc', '127.0.0.1', 'localhost',
-  ];
-  const leaks = [];
-  for (const post of posts) {
-    const text = JSON.stringify(post).toLowerCase();
-    for (const word of INTERNAL_WORDS) {
-      if (text.includes(word)) leaks.push(`${post.slug} names "${word}"`);
+  for (const lang of LOCALES) {
+    const blogIndex = path.join(dist, BLOG.path[lang].replace(/^\//, ''), 'index.html');
+    if (!(await exists(blogIndex))) {
+      blogProblems.push(`no ${BLOG.path[lang]} index`);
+    } else {
+      const page = await readFile(blogIndex, 'utf8');
+      if (!page.includes(`<title>${BLOG.title[lang]}</title>`)) {
+        blogProblems.push(`${BLOG.path[lang]} title`);
+      }
+      if (LOCALES.length > 1 && !page.includes(`hreflang="${lang}"`)) {
+        blogProblems.push(`${BLOG.path[lang]} hreflang`);
+      }
+      for (const post of posts) {
+        if (!page.includes(postPath(post, lang))) {
+          blogProblems.push(`${BLOG.path[lang]} does not link to ${post.slug[lang]}`);
+        }
+      }
     }
   }
-  if (leaks.length) fail(`blog tells the reader what is inside the system: ${leaks.join(', ')}`);
-  else pass('no article names anything inside the system');
+
+  // A diagram whose labels are drawn into the SVG exists twice: `x.svg` and
+  // `x-en.svg`. The English body has to point at the second one, and the
+  // failure if it does not is completely silent — the page renders, the
+  // picture loads, and an English reader is shown Vietnamese words inside the
+  // drawing. Nothing else in this script would notice.
+  for (const post of posts) {
+    const viFigures = post.body.vi.filter((one) => one.figure);
+    const enFigures = post.body.en.filter((one) => one.figure);
+    for (let at = 0; at < Math.min(viFigures.length, enFigures.length); at += 1) {
+      const from = viFigures[at].figure.src;
+      if (from !== enFigures[at].figure.src) continue;
+      const english = String(from).replace(/\.svg$/, '-en.svg');
+      if (english === from) continue;
+      if (await exists(path.join(dist, english.replace(/^\//, '')))) {
+        blogProblems.push(
+          `${post.slug.vi}: the English figure still points at ${from}, and ${english} exists`,
+        );
+      }
+    }
+  }
+
+  for (const lang of LOCALES) {
+    const other = lang === 'vi' ? 'en' : 'vi';
+    for (const post of posts) {
+      const url = absolute(postPath(post, lang));
+      const file = path.join(dist, postPath(post, lang).replace(/^\//, ''), 'index.html');
+      const label = `${post.slug[lang]} [${lang}]`;
+      if (!(await exists(file))) {
+        blogProblems.push(`${label} MISSING`);
+        continue;
+      }
+      const page = await readFile(file, 'utf8');
+      if (!page.includes(`<title>${post.title[lang]}</title>`)) blogProblems.push(`${label} title`);
+      if (!page.includes(`<link rel="canonical" href="${url}" />`)) {
+        blogProblems.push(`${label} canonical`);
+      }
+      if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) {
+        blogProblems.push(`${label} lang`);
+      }
+      if (!page.includes('"BlogPosting"')) blogProblems.push(`${label} structured data`);
+      if (!page.includes(post.description[lang])) blogProblems.push(`${label} description`);
+      // A translated article that still points its reader at the other
+      // language's copy is a page nobody can navigate out of.
+      if (LOCALES.length > 1) {
+        if (!page.includes(`hreflang="${other}"`)) blogProblems.push(`${label} hreflang`);
+        if (!page.includes(`href="${absolute(postPath(post, other))}"`)) {
+          blogProblems.push(`${label} does not link to its other language`);
+        }
+        const wantCard = lang === 'en' ? 'og-image-en.png' : 'og-image.png';
+        if (!page.includes(`content="${SITE_URL}/${wantCard}"`)) blogProblems.push(`${label} og:image`);
+        const wantManifest = lang === 'en' ? '/en/site.webmanifest' : '/site.webmanifest';
+        if (!page.includes(`href="${wantManifest}"`)) blogProblems.push(`${label} manifest`);
+      }
+      // The stylesheet is the site's own, hash and all: a blog page that links a
+      // stylesheet this build did not produce renders as unstyled text.
+      if (!/assets\/index-[\w-]+\.css/.test(page)) blogProblems.push(`${label} stylesheet`);
+      // An illustration is a drawing in `public/`, copied to `dist/` by Vite,
+      // which the article names by path — so a diagram that never shipped is a
+      // broken image on a published page, and nothing else in the article's own
+      // markup would show it.
+      for (const one of post.body[lang]) {
+        if (!one.figure) continue;
+        const drawing = path.join(dist, String(one.figure.src).replace(/^\//, ''));
+        if (!(await exists(drawing))) {
+          blogProblems.push(`${label} figure MISSING ${one.figure.src}`);
+        }
+      }
+      // And a body block may not carry `**`.
+      //
+      // The one-pager renders emphasis through `RichText`; an article's renderer
+      // escapes every string it is handed, on purpose, so a `**` in a paragraph
+      // ships as two literal asterisks. The smoke test already catches that on
+      // the app's own markup, and an article is not part of that markup —
+      // measured: the first draft of the newest article printed
+      // `**ghi lại một dòng**` on the published page and every check passed.
+      if (JSON.stringify(post.body[lang]).includes('**')) {
+        blogProblems.push(`${label} has ** in a body block, which is escaped, not rendered`);
+      }
+      // The meta description is what a search result shows, and a truncated one
+      // loses the half that says what the article is about.
+      if (post.description[lang].length > 165) {
+        blogProblems.push(`${label} description is ${post.description[lang].length} characters`);
+      }
+    }
+  }
+  if (blogProblems.length) fail(`blog: ${blogProblems.slice(0, 8).join('; ')}`);
+  else pass(`blog: ${posts.length} article(s) x 2 languages + 2 index pages`);
+
+  // The "no article names anything inside the system" check lives in
+  // `post-rules.mjs` with the rest of them, so that `npm run check:posts`
+  // catches the word at the moment it is typed rather than at the end of a
+  // build. Nothing is lost here: `blogProblems` above starts from that same
+  // list, so a leak still fails this script.
 
   // ---- Documentation ------------------------------------------------------
   //
@@ -583,8 +628,8 @@ async function main() {
   const locs = [...map.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   const want = new Set([
     ...routes.flatMap((route) => LOCALES.map((lang) => absolute(route.slug[lang]))),
-    absolute(BLOG.path),
-    ...posts.map((post) => absolute(postPath(post.slug))),
+    ...LOCALES.map((lang) => absolute(BLOG.path[lang])),
+    ...posts.flatMap((post) => LOCALES.map((lang) => absolute(postPath(post, lang)))),
     // The documentation, index and topic pages, both languages. Written by
     // `build-docs.mjs` and listed by `build-routes.mjs`, and this is the check
     // that the two agree.
