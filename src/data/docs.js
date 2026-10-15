@@ -34,6 +34,7 @@ import longTieng from './docs/long-tieng.js';
 import catHighlight from './docs/cat-highlight.js';
 import xoaLogo from './docs/xoa-logo.js';
 import chenChuVaLogo from './docs/chen-chu-va-logo.js';
+import taiVideo from './docs/tai-video.js';
 import linkTuKenh from './docs/link-tu-kenh.js';
 import tuLieu from './docs/tu-lieu.js';
 import thuVienVideo from './docs/thu-vien-video.js';
@@ -93,6 +94,7 @@ export const docs = [
   catHighlight,
   xoaLogo,
   chenChuVaLogo,
+  taiVideo,
   linkTuKenh,
   tuLieu,
   thuVienVideo,
