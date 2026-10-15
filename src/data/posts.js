@@ -44,6 +44,7 @@ import videoReviewBangAi from './posts/video-review-san-pham-bang-ai.js';
 import tuDongHoaLaGi from './posts/tu-dong-hoa-video-ban-hang-la-gi.js';
 import kiemTienAffiliate from './posts/kiem-tien-affiliate-shopee-cho-nguoi-moi.js';
 import chayOCauHinhMay from './posts/autoreel-chay-o-dau-can-cau-hinh-may-the-nao.js';
+import chuanBiMay from './posts/chuan-bi-may-toi-thieu-va-chon-windows.js';
 import dieuKhienTuXaTelegram from './posts/dieu-khien-tao-video-tu-xa-bang-telegram.js';
 import tuLamHayDungPhanMem from './posts/tu-lam-video-hay-dung-phan-mem.js';
 
@@ -92,11 +93,14 @@ import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
 /**
  * Everything above, newest first — the order the index and the footer draw.
  *
- * Thirty-five articles share one date, and `posts.sort` is stable, so the order
- * written here is the order the index shows: the newer groups first, the ten
- * the blog opened with at the bottom.
+ * Most of these articles share one date, and `posts.sort` is stable, so the
+ * order written here is the order the index shows among equals: the newer
+ * groups first, the ten the blog opened with at the bottom. An article with a
+ * date of its own sorts by that date instead and ignores its place here —
+ * `chuanBiMay` is the one that does today.
  */
 export const posts = [
+  chuanBiMay,
   benTrongMotJob,
   kienTrucTachTienTrinh,
   chonNgonNguTheoTang,
