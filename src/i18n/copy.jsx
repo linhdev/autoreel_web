@@ -29,6 +29,7 @@ import {
   navLinks,
   proof,
   site,
+  socialLinks,
   ui,
 } from '../data/site.js';
 import { benefits, benefitsSection } from '../data/features.js';
@@ -48,6 +49,7 @@ function bundle(lang) {
     lang,
     site,
     businessInfo,
+    socialLinks,
     navLinks: navLinks[lang],
     hero: hero[lang],
     heroFlow: heroFlow[lang],

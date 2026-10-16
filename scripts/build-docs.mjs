@@ -79,7 +79,14 @@ const OTHER = { vi: 'en', en: 'vi' };
  * bold, or prints the asterisks — so `verify-build.mjs` checks for it.
  */
 function rich(value) {
-  return esc(value).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  return esc(value)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // And the second marker, which is a fix rather than a feature: topics have
+    // always written a file name or a command in prose as `start.bat`, and
+    // until this line the backticks printed — every page said
+    // "run `start.sh`", marks and all. The escape above comes first here too,
+    // so a backtick can only ever pair with another backtick.
+    .replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 
 /* --------------------------------------------------------------- the blocks */

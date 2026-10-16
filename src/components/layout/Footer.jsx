@@ -5,7 +5,7 @@ import { alternateFor, LOCALES, LOCALE_TAGS, pathFor } from '../../data/routes.j
 export default function Footer() {
   const href = useHref();
   const { route, lang } = useRouter();
-  const { businessInfo, footer, site } = useCopy();
+  const { businessInfo, footer, site, socialLinks } = useCopy();
 
   return (
     <footer className="pb-14 pt-9 text-[0.9rem] text-[#c9d3eb]">
@@ -58,6 +58,40 @@ export default function Footer() {
                       {link.label}
                     </Link>
                   )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <strong className="text-[var(--text)]">{footer.columns.follow}</strong>
+            <ul className="mt-3 grid gap-2">
+              {socialLinks.map((one) => (
+                <li key={one.href}>
+                  {/* The mark and the name, and the name is what is clickable:
+                      the address lives in the href and appears nowhere on the
+                      page. The glyph comes from `site.js` rather than from
+                      `Icon.jsx`, which has no brand marks to lend — see the
+                      note on `socialLinks`. */}
+                  <a
+                    href={one.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ar-footer-link inline-flex items-center gap-2"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="18"
+                      height="18"
+                      fill="currentColor"
+                      aria-hidden="true"
+                      focusable="false"
+                      className="shrink-0"
+                    >
+                      <path d={one.path} />
+                    </svg>
+                    {one.label}
+                  </a>
                 </li>
               ))}
             </ul>

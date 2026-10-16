@@ -1486,6 +1486,20 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
 
+  /* A command or a file name written inside a sentence, as opposed to the
+     block above. `:not(pre) > code` is what keeps the two apart: the block's
+     own `<code>` is a child of its `<pre>`, and without this selector it would
+     get a second box drawn inside the first. */
+  .ar-doc-prose :not(pre) > code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: #05070f;
+    color: var(--cyan);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.9em;
+  }
+
   .ar-doc-table-wrap {
     margin: 20px 0;
     overflow-x: auto;

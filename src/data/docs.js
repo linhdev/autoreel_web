@@ -46,6 +46,7 @@ import luongReview from './docs/luong-review.js';
 import linkSanPham from './docs/link-san-pham.js';
 import dangShopee from './docs/dang-shopee.js';
 import dangFacebook from './docs/dang-facebook.js';
+import baoTri from './docs/bao-tri.js';
 
 /** Where the section lives. Trailing slashes, like every other URL here. */
 export const DOCS = {
@@ -77,6 +78,11 @@ export const DOC_GROUPS = [
   { key: 'sell', label: { vi: 'Bán hàng', en: 'Selling' } },
   { key: 'store', label: { vi: 'Kho của bạn', en: 'Your material' } },
   { key: 'app', label: { vi: 'Ứng dụng', en: 'The app' } },
+  // The last group is the only one that is not about using the app but about
+  // keeping it alive: restarting it, freeing disk, reading a log. It has no
+  // counterpart in the app's own sidebar for the same reason the first two do
+  // not - there is no screen in there called "when it breaks".
+  { key: 'care', label: { vi: 'Bảo trì', en: 'Maintenance' } },
 ];
 
 /** Every topic, in the order they are written. `group` places them in the sidebar. */
@@ -106,6 +112,7 @@ export const docs = [
   linkSanPham,
   dangShopee,
   dangFacebook,
+  baoTri,
 ];
 
 /**

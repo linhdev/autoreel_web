@@ -28,7 +28,7 @@ import { dirname } from 'node:path';
 
 import { pathFor } from '../../src/data/routes.js';
 import {
-  businessInfo, footer as footerCopy, navLinks, site, ui,
+  businessInfo, footer as footerCopy, navLinks, site, socialLinks, ui,
 } from '../../src/data/site.js';
 
 /**
@@ -144,6 +144,12 @@ export function footer(lang) {
     .map((link) => `<a class="ar-footer-link" href="${pathFor(link.to)}">${esc(link.label)}</a>`)
     .join('\n            ');
   const registered = businessInfo.lines.map((line) => `<span>${esc(line)}</span>`).join('\n              ');
+  // The same two marks the one-pager's footer draws, from the same `path` in
+  // `site.js` — this footer has no components to render them with, which is
+  // the whole reason the glyph is data rather than a component.
+  const social = socialLinks
+    .map((one) => `<a class="ar-footer-link" href="${esc(one.href)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" focusable="false" style="flex:none"><path d="${esc(one.path)}"/></svg>${esc(one.label)}</a>`)
+    .join('\n                ');
   return `      <footer style="padding:34px 0 56px;color:#c9d3eb;font-size:0.9rem">
         <div class="ar-container">
           <div style="border-top:1px solid var(--line);padding-top:26px;display:flex;flex-wrap:wrap;gap:28px;justify-content:space-between">
@@ -162,6 +168,12 @@ export function footer(lang) {
               <strong style="color:var(--text)">${esc(copy.columns.links)}</strong>
               <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px 14px;max-width:20rem">
             ${links}
+              </div>
+            </div>
+            <div>
+              <strong style="color:var(--text)">${esc(copy.columns.follow)}</strong>
+              <div style="margin-top:12px;display:grid;gap:6px">
+                ${social}
               </div>
             </div>
             <div>
