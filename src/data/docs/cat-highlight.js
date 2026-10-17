@@ -18,7 +18,7 @@ export default {
   key: 'cat-highlight',
   group: 'rework',
   slug: { vi: 'cat-highlight', en: 'highlights' },
-  updated: '2026-10-13',
+  updated: '2026-10-17',
   order: 2,
   title: { vi: 'Cắt highlight', en: 'Cutting highlights' },
   description: {
@@ -85,6 +85,12 @@ export default {
       {
         p: 'Mục **Nâng cao — thế nào là một highlight** giấu sáu thanh trượt quyết định app coi đoạn nào là hay: **Độ to**, **Mức thay đổi**, **Nhịp cắt cảnh**, **Mật độ nói**, **Tốc độ nói**, **Nhiều tín hiệu trùng**. Trong đó còn ô **Ngôn ngữ nói trong video**, mặc định là **Tự nhận biết**, và nút **Chọn lại các đoạn** để xếp hạng lại từ điểm đã lưu mà không phân tích lại từ đầu.',
       },
+      {
+        p: 'Ngay dưới **Khung hình** có hai lựa chọn quyết định **ai nghe và ai chọn**: **Model nghe** — **Nhanh (tiny)**, **Cân bằng (base)** hoặc **Kỹ (medium)** — và **Ai chọn đoạn** — **Máy tự chấm** (mặc định) hoặc **AI đọc lời thoại**. Cả hai nằm trên màn chính, không giấu trong mục Nâng cao.',
+      },
+      {
+        p: 'Với phim tiếng Trung, model nhỏ thường nghe thành một câu lặp đi lặp lại. Đo trên một phim 45 phút: tiny, base và small đều lặp, chỉ **medium** đọc ra lời thoại thật — nên nếu kết quả toàn một câu, đổi **Model nghe** sang **Kỹ** rồi chạy lại. **AI đọc lời thoại** gửi lời thoại của các đoạn ứng viên cho nhà cung cấp đã cấu hình, xếp hạng lại và đặt tiêu đề cùng một câu lý do cho từng đoạn; chậm hơn và tốn một lượt gọi mỗi lần phân tích.',
+      },
 
       { h2: 'Tìm và chọn đoạn' },
       {
@@ -103,7 +109,7 @@ export default {
           },
           {
             title: 'Chọn đoạn muốn giữ',
-            body: 'Xong thì khối **Chọn những đoạn muốn giữ** hiện ra: mỗi đoạn một thẻ có khung xem trước, mốc thời gian, **Độ mạnh** phần trăm, hộp tick **Lấy** và thanh **Vị trí cắt**. Bỏ tick những đoạn không cần; **Vị trí cắt** quyết định phần nào của khung ngang thành clip dọc.',
+            body: 'Xong thì khối **Chọn những đoạn muốn giữ** hiện ra: mỗi đoạn một thẻ có khung xem trước, mốc thời gian, **Độ mạnh** phần trăm, hộp tick **Lấy** và thanh **Vị trí cắt**. Bỏ tick những đoạn không cần; **Vị trí cắt** quyết định phần nào của khung ngang thành clip dọc. Bật **AI đọc lời thoại** thì mỗi thẻ có thêm tiêu đề và một câu lý do vì sao đoạn đó đáng lên — đọc mười hai thẻ là biết nên giữ cái nào, không phải mở từng clip.',
           },
           {
             title: 'Tạo các đoạn đã chọn',
@@ -115,7 +121,7 @@ export default {
         check: 'Sau khi bấm **Tìm highlight** và chờ xong, khối **Chọn những đoạn muốn giữ** có ít nhất một thẻ có ảnh xem trước. Không có thẻ nào thì đọc mục dưới.',
       },
       {
-        note: 'Nếu app báo đã phân tích xong mà **không có gì để cắt**, phần lớn trường hợp là đoán sai ngôn ngữ: nhạc, cảnh quay và im lặng không tính là highlight, còn video có tiếng nói thì phải nhận đúng ngôn ngữ mới nghe ra. Cách sửa nằm ngay trong câu báo — đặt **Ngôn ngữ nói trong video** ở mục **Nâng cao** rồi chạy lại.',
+        note: 'Nếu app báo đã phân tích xong mà **không có gì để cắt**, phần lớn trường hợp là đoán sai ngôn ngữ: nhạc, cảnh quay và im lặng không tính là highlight, còn video có tiếng nói thì phải nhận đúng ngôn ngữ mới nghe ra. Cách sửa nằm ngay trong câu báo — đặt **Ngôn ngữ nói trong video** ở mục **Nâng cao** rồi chạy lại. Đã đúng ngôn ngữ mà vẫn vậy thì đổi **Model nghe** sang **Kỹ (medium)**: model nhỏ nghe tiếng Trung hay lặp, và một bản ghi toàn câu lặp thì bộ lọc coi như không có ai nói.',
       },
 
       { h2: 'Chạy nền, và những gì bị dọn' },
@@ -190,6 +196,12 @@ export default {
       {
         p: '**Advanced — what counts as a highlight** hides the six sliders that decide which moments the app rates: **Loudness**, **Level changes**, **Cut rate**, **Talking**, **Speech pace**, **Agreement**. The same block holds **Spoken language in the video**, which starts at **Detect automatically**, and **Re-pick the moments**, which re-ranks the stored scores without analysing anything again.',
       },
+      {
+        p: 'Directly below **Clip shape** are the two choices that decide **who listens and who chooses**: **Listening model** — **Fast (tiny)**, **Balanced (base)** or **Accurate (medium)** — and **Who picks the moments** — **This machine** (the default) or **AI reads the dialogue**. Both sit on the main screen rather than inside Advanced.',
+      },
+      {
+        p: 'On Chinese footage the small models often hear one phrase over and over. Measured on a 45-minute drama: tiny, base and small all looped, and only **medium** read real dialogue — so if the result is the same sentence repeated, switch **Listening model** to **Accurate** and run it again. **AI reads the dialogue** sends the candidates’ lines to the provider set in Config, ranks them again and gives each one a title and a one-line reason; it is slower and costs one request per analysis.',
+      },
 
       { h2: 'Finding the moments, and choosing' },
       {
@@ -208,7 +220,7 @@ export default {
           },
           {
             title: 'Pick the moments to keep',
-            body: 'When it lands, **Pick the moments to keep** fills in: each moment is a card with a preview frame, its time span, its **Strength** as a percentage, an **Include** tick box and a **Crop position** slider. Untick what you do not want — the crop slider decides which part of the wide frame becomes the vertical clip.',
+            body: 'When it lands, **Pick the moments to keep** fills in: each moment is a card with a preview frame, its time span, its **Strength** as a percentage, an **Include** tick box and a **Crop position** slider. Untick what you do not want — the crop slider decides which part of the wide frame becomes the vertical clip. With **AI reads the dialogue** on, each card also carries a title and a one-line reason, so twelve cards can be judged without opening twelve clips.',
           },
           {
             title: 'Create the selected clips',
@@ -220,7 +232,7 @@ export default {
         check: 'After **Find highlights** has finished, **Pick the moments to keep** holds at least one card with a preview frame. If it holds none, read the note below.',
       },
       {
-        note: 'When it reports that there is **nothing to cut**, the usual cause is a wrong language guess: music, scenery and silence are not highlights, and a video with speech only reads as speech in the right language. The fix is in that same message — set **Spoken language in the video** under **Advanced** and run it again.',
+        note: 'When it reports that there is **nothing to cut**, the usual cause is a wrong language guess: music, scenery and silence are not highlights, and a video with speech only reads as speech in the right language. The fix is in that same message — set **Spoken language in the video** under **Advanced** and run it again. If the language is right and it still happens, move **Listening model** to **Accurate (medium)**: the small models loop on Chinese, and a transcript of nothing but loops reads as nobody speaking.',
       },
 
       { h2: 'Running in the background, and what gets cleared' },

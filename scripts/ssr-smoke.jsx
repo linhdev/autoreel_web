@@ -10,9 +10,20 @@
  */
 import { renderToString } from 'react-dom/server';
 import App from '../src/App.jsx';
+import { formatMoney, plans, pricingSection } from '../src/data/pricing.js';
 import { LOCALES, langOf, pathFor, routeForPath, routes } from '../src/data/routes.js';
 
 const html = renderToString(<App />);
+
+// The two prices are computed from the data rather than typed here. They were
+// typed, and they went stale: the English pass still expected a headline the
+// pricing section had replaced and a đồng price the English page has never
+// shown, so `npm run smoke` failed for a reason that had nothing to do with
+// the app. A check whose expected value is a second copy of a fact is a check
+// that fails the day the fact changes.
+const personal = plans.vi.find((plan) => plan.id === 'personal');
+const team = plans.vi.find((plan) => plan.id === 'team');
+const personalEn = plans.en.find((plan) => plan.id === 'personal');
 
 const required = [
   'Tạo video hàng loạt.',
@@ -26,8 +37,8 @@ const required = [
   'Local-first',
   'DEMO THỰC TẾ',
   'Video đã tạo',
-  '1.490.000đ',
-  '3.990.000đ',
+  formatMoney(personal.priceValue, 'vi'),
+  formatMoney(team.priceValue, 'vi'),
   'Coming soon',
   'Đăng ký nhận thông báo',
   'Câu hỏi thường gặp',
@@ -52,13 +63,13 @@ const enHtml = renderToString(<App initialPath="/en/pricing/" />);
 
 const enRequired = [
   'Create video in bulk.',
-  'Simple pricing, from one person to a small team',
+  pricingSection.en.headline,
   'Choose Personal',
   'Coming soon',
   'Notify me',
   'Frequently asked questions',
   'Videos created',
-  '1,490,000₫',
+  formatMoney(personalEn.priceValue, 'en'),
 ];
 const enMissing = enRequired.filter((token) => !enHtml.includes(token));
 const leaks = ['Bảng giá đơn giản', 'Câu hỏi thường gặp', 'Video đã tạo'].filter((token) =>

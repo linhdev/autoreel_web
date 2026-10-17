@@ -1877,6 +1877,282 @@
 }
 
 /* ==========================================================================
+   A pricing card, opened — the plan detail dialog
+   ========================================================================== */
+
+/* The whole card is the target. The cursor and the focus ring are the two
+ * things that tell a visitor that before they click: a card with neither is a
+ * card nobody discovers is clickable. */
+.ar-plan-openable {
+  cursor: pointer;
+}
+
+.ar-plan-openable:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+}
+
+.ar-plan-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.25s var(--ease-out);
+}
+
+.ar-plan-more svg {
+  transition: transform 0.25s var(--ease-out);
+}
+
+.ar-plan-openable:hover .ar-plan-more,
+.ar-plan-openable:focus-visible .ar-plan-more {
+  color: var(--text);
+}
+
+.ar-plan-openable:hover .ar-plan-more svg {
+  transform: translateX(3px);
+}
+
+.ar-plan-dialog {
+  width: min(880px, calc(100vw - 32px));
+  max-height: min(88vh, 920px);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  overflow: visible;
+  /* The browser centres a modal dialog with `margin: auto`, and the CSS reset
+   * sets `margin: 0` on everything - which is the author winning against the
+   * UA and the dialog landing in the top-left corner. Said out loud here
+   * rather than left to the reset to get wrong. */
+  margin: auto;
+  inset: 0;
+}
+
+/* Two stops rather than a flat wash: the same brand light the cards sit in,
+ * dimmed far enough that the panel in front of it is the only thing in focus. */
+.ar-plan-dialog::backdrop {
+  background: rgba(4, 7, 18, 0.76);
+  backdrop-filter: blur(7px);
+}
+
+.ar-plan-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 920px);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 90% at 12% 0%, rgba(91, 120, 255, 0.2), transparent 60%),
+    radial-gradient(90% 70% at 100% 0%, rgba(239, 79, 196, 0.14), transparent 55%),
+    var(--bg-2);
+  box-shadow: var(--shadow-panel);
+}
+
+.ar-plan-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 26px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ar-plan-kicker {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ar-plan-title {
+  margin: 6px 0 0;
+  font-size: 1.7rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.ar-plan-price {
+  margin-top: 4px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ar-plan-price span {
+  margin-left: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
+}
+
+.ar-plan-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ar-plan-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ar-plan-scroll {
+  overflow-y: auto;
+  padding: 22px 26px 8px;
+  overscroll-behavior: contain;
+}
+
+.ar-plan-headline {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.ar-plan-intro {
+  margin: 0 0 20px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.ar-plan-h3 {
+  margin: 22px 0 10px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ar-plan-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ar-plan-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.55;
+}
+
+.ar-plan-list svg {
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--green);
+}
+
+.ar-plan-benefits {
+  display: grid;
+  gap: 12px;
+}
+
+.ar-plan-benefit {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ar-plan-benefit strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.95rem;
+}
+
+.ar-plan-benefit p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.ar-plan-evidence {
+  display: grid;
+  gap: 14px;
+}
+
+.ar-plan-evidence figure {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.ar-plan-evidence img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.ar-plan-evidence figcaption {
+  padding: 10px 14px 12px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted);
+  border-top: 1px solid var(--line-soft);
+}
+
+.ar-plan-foot {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 16px 26px 20px;
+  border-top: 1px solid var(--line);
+}
+
+.ar-plan-foot .ar-btn {
+  width: auto;
+}
+
+@media (min-width: 760px) {
+  .ar-plan-benefits,
+  .ar-plan-evidence {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .ar-plan-head,
+  .ar-plan-scroll,
+  .ar-plan-foot {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .ar-plan-foot {
+    flex-direction: column-reverse;
+  }
+
+  .ar-plan-foot .ar-btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
    Reduced motion — drop every decorative animation
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {

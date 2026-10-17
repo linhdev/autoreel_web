@@ -123,6 +123,15 @@ export const pricingSection = {
     saveTemplate: 'Tiết kiệm {amount} so với trả từng tháng',
     paybackTemplate: 'So với thuê theo tháng, gói này hoàn vốn sau {months} tháng',
     note: 'Thuê bao gia hạn theo tháng và dừng lúc nào cũng được. Giá niêm yết bằng VND; bản tiếng Anh quy đổi theo tỷ giá 26.000đ = 1 USD. Chi phí AI/API hoặc dịch vụ bên thứ ba, nếu sử dụng, thanh toán riêng theo nhà cung cấp.',
+    // The card opens into a panel; these are its own words. They live here
+    // rather than in the plan data because they are the same for every plan -
+    // a heading repeated six times is six chances to drift.
+    detailCta: 'Xem chi tiết gói',
+    detailClose: 'Đóng',
+    detailKicker: 'Chi tiết gói',
+    detailCanDo: 'Bạn làm được gì',
+    detailBenefits: 'Vì sao đáng tiền',
+    detailEvidence: 'Màn hình thật trong app',
   },
   en: {
     headline: 'Pricing: rent by the month or buy outright',
@@ -131,6 +140,12 @@ export const pricingSection = {
     saveTemplate: 'Save {amount} against paying monthly',
     paybackTemplate: 'Against the monthly plans, this pays for itself in {months} months',
     note: 'Subscriptions renew monthly and can be stopped at any time. Prices are in US dollars, converted at 26,000₫ = $1. Any AI/API or third-party service you use is paid separately to that provider.',
+    detailCta: 'See what is in this plan',
+    detailClose: 'Close',
+    detailKicker: 'Plan details',
+    detailCanDo: 'What you can do',
+    detailBenefits: 'Why it is worth it',
+    detailEvidence: 'Real screens from the app',
   },
 };
 

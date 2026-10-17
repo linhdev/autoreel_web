@@ -1,7 +1,11 @@
+import { useState } from 'react';
+
+import { planDetails } from '../../data/plan-details.js';
 import { formatMoney, paybackMonths, savingFor } from '../../data/pricing.js';
 import { useCopy } from '../../i18n/copy.jsx';
 import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from '../ui/Icon.jsx';
+import PlanDetail from '../ui/PlanDetail.jsx';
 import SectionHeading from '../ui/SectionHeading.jsx';
 import Reveal, { RevealGroup, RevealItem } from '../ui/Reveal.jsx';
 
@@ -35,6 +39,11 @@ function gridFor(count) {
 export default function Pricing() {
   const href = useHref();
   const { plans, pricingGroups, pricingSection, lang } = useCopy();
+  // Which card is open, by id. `null` is closed - and the dialog reads that
+  // as "not mounted", so a closed page holds no modal at all.
+  const [openId, setOpenId] = useState(null);
+  const details = planDetails[lang] || planDetails.vi;
+  const openPlan = plans.find((plan) => plan.id === openId) || null;
 
   return (
     <section id="pricing" className="ar-section" aria-labelledby="pricing-title">
@@ -64,9 +73,24 @@ export default function Pricing() {
                     <RevealItem
                       as="article"
                       key={plan.id}
-                      className={`ar-card ar-card-glow ar-pricing-card ${
+                      className={`ar-card ar-card-glow ar-pricing-card ar-plan-openable ${
                         plan.popular ? 'ar-pricing-popular' : ''
                       }`}
+                      // The whole card opens the detail: a card this size is
+                      // the target, not a 14px text link at its foot. It is a
+                      // button for the keyboard and a dialog for the screen
+                      // reader, because it does the same thing as one.
+                      role="button"
+                      tabIndex={0}
+                      aria-haspopup="dialog"
+                      aria-label={`${plan.name} — ${pricingSection.detailCta}`}
+                      onClick={() => setOpenId(plan.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          setOpenId(plan.id);
+                        }
+                      }}
                     >
                       {plan.badge ? (
                         // A badge on a card that is not the promoted one is a
@@ -101,12 +125,22 @@ export default function Pricing() {
                         ))}
                       </ul>
 
+                      {/* The one click inside the card that must NOT open
+                          the card: going to the contact form is already the
+                          next step, and a modal on top of it would be a
+                          second one. */}
                       <Link
                         to={href(plan.cta.to)}
                         className={`ar-btn ${plan.popular ? 'ar-btn-primary' : 'ar-btn-secondary'}`}
+                        onClick={(event) => event.stopPropagation()}
                       >
                         {plan.cta.label}
                       </Link>
+
+                      <span className="ar-plan-more">
+                        {pricingSection.detailCta}
+                        <Icon name="ArrowRight" size={14} />
+                      </span>
                     </RevealItem>
                   );
                 })}
@@ -118,6 +152,12 @@ export default function Pricing() {
         <Reveal delay={0.1}>
           <p className="ar-note mx-auto mt-6 max-w-[860px] text-center">{pricingSection.note}</p>
         </Reveal>
+
+        <PlanDetail
+          plan={openPlan}
+          detail={openPlan ? details[openPlan.id] : null}
+          onClose={() => setOpenId(null)}
+        />
       </div>
     </section>
   );
