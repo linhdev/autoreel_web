@@ -4,8 +4,10 @@
  * The one thing this topic has to make plain is that the source is read and
  * never reposted, which is the difference between it and the reup flow next
  * door; `review.source_hint` says it in one line and the lead picks that up.
- * The two picture modes are a table because the choice changes what the rest
+ * The three picture modes are a table because the choice changes what the rest
  * of the screen means — the frame options and the language both depend on it.
+ * The third one is the recap pipeline in this screen's clothes: it makes one
+ * video, keeps it in the library, and ignores the count and the posting boxes.
  *
  * Every label is a key from `translations.py`; the count limit (20) is
  * `MAX_PER_RUN` in `shortGPT/review/flow.py`.
