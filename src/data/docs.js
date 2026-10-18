@@ -30,6 +30,7 @@ import facebookDanToken from './docs/facebook-dan-token.js';
 import ghepDienThoaiShopee from './docs/ghep-dien-thoai-shopee.js';
 import videoNgan from './docs/video-ngan.js';
 import videoTuDong from './docs/video-tu-dong.js';
+import tomTatPhim from './docs/tom-tat-phim.js';
 import longTieng from './docs/long-tieng.js';
 import catHighlight from './docs/cat-highlight.js';
 import xoaLogo from './docs/xoa-logo.js';
@@ -96,6 +97,7 @@ export const docs = [
   ghepDienThoaiShopee,
   videoNgan,
   videoTuDong,
+  tomTatPhim,
   longTieng,
   catHighlight,
   xoaLogo,

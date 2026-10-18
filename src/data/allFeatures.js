@@ -51,6 +51,11 @@ export const allFeatures = {
           name: 'AI Review Flow',
           line: 'Đưa một video, AI đọc lời thoại và viết lại thành nhiều kịch bản khác nhau. Mỗi kịch bản ra một video riêng, có giọng đọc và caption.',
         },
+        {
+          icon: 'BrainCircuit',
+          name: 'Tóm tắt phim',
+          line: 'Đưa một hoặc nhiều phim — hoặc cả bộ phim theo series. App nghe lời thoại, viết lời bình tiếng Việt, cắt hình, lồng tiếng, thêm phụ đề và đóng dấu; mỗi phim một video.',
+        },
       ],
     },
     {
@@ -169,6 +174,11 @@ export const allFeatures = {
           name: 'AI Review Flow',
           line: 'Give it one video; the AI reads the spoken words and rewrites them into as many scripts as you ask for. Each script becomes its own video, with a voice and a caption.',
         },
+        {
+          icon: 'BrainCircuit',
+          name: 'Movie recap',
+          line: 'Give it one film or several — or a whole series. The app listens to the dialogue, writes a Vietnamese narration, cuts the picture, voices it, adds subtitles and branding; one video per film.',
+        },
       ],
     },
     {
@@ -272,11 +282,11 @@ export const allFeaturesSection = {
   vi: {
     title: 'Toàn bộ tính năng **đang có**.',
     subtitle:
-      'Xếp theo việc bạn cần làm: ba luồng chạy trọn gói, mười hai màn làm từng việc lẻ, và phần nền có mặt ở mọi màn.',
+      'Xếp theo việc bạn cần làm: bốn luồng chạy trọn gói, mười hai màn làm từng việc lẻ, và phần nền có mặt ở mọi màn.',
   },
   en: {
     title: 'Every feature **in the app**.',
     subtitle:
-      'Sorted by the job in front of you: three end-to-end flows, twelve single-job screens, and the platform underneath all of them.',
+      'Sorted by the job in front of you: four end-to-end flows, twelve single-job screens, and the platform underneath all of them.',
   },
 };

@@ -47,7 +47,7 @@ export default {
         note: 'Video gốc chỉ được đọc để lấy nội dung. Kể cả khi bạn tick đăng, thứ được đăng là video app dựng ra, không phải nguồn.',
       },
 
-      { h2: 'Hai nguồn hình' },
+      { h2: 'Ba nguồn hình' },
       {
         p: 'Khối **Làm ra gì** có một lựa chọn đổi nghĩa cả phần còn lại của màn: **Hình lấy từ đâu**.',
       },
@@ -57,11 +57,15 @@ export default {
           rows: [
             ['**Tư liệu tải từ Internet, đọc lời tự động**', 'Các cảnh tải từ Internet, do bên render chọn', '**Số giây mỗi cảnh** — mỗi cảnh dài bao lâu'],
             ['**Cắt từ video gốc, máy này đọc lời**', 'Một đoạn của chính video đang review, đọc kịch bản mới lên trên', '**Khung nguyên bản**, và chỉ ở chế độ này mới có'],
+            ['**Tóm tắt phim thành một video**', 'Cả bộ phim được đọc rồi kể lại thành một video tiếng Việt', 'Chạy pipeline **Tóm tắt phim**: một video, lưu vào Thư viện, không tự đăng'],
           ],
         },
       },
       {
         note: 'Chế độ **Cắt từ video gốc, máy này đọc lời** chỉ đọc được **tiếng Việt**. Chọn **Khung nguyên bản** ở chế độ tư liệu thì app từ chối: tư liệu là nhiều cảnh rời ghép lại, không có khung nào là khung gốc.',
+      },
+      {
+        note: 'Chế độ **Tóm tắt phim** không dùng **Làm mấy video**, kịch bản hay mục đăng: nó nhận cả nguồn, viết lời bình và ra đúng một video. Các mục đó được bỏ qua trong lượt chạy này.',
       },
 
       { h2: 'Chạy một lượt' },
@@ -73,7 +77,7 @@ export default {
           },
           {
             title: 'Chọn Làm mấy video và Hình lấy từ đâu',
-            body: '**Làm mấy video** nhận **tối đa 20** một lượt; quá số đó app bảo chạy hai lượt. Rồi chọn một trong hai chế độ hình ở bảng trên.',
+            body: '**Làm mấy video** nhận **tối đa 20** một lượt; quá số đó app bảo chạy hai lượt. Rồi chọn một trong ba chế độ hình ở bảng trên — chế độ **Tóm tắt phim** bỏ qua số lượng và mục đăng.',
           },
           {
             title: 'Chọn giọng và dạng khung',
@@ -144,7 +148,7 @@ export default {
         note: 'The source is read for what it says and nothing else. Even when you tick posting, what goes up is the video the app made, never the source.',
       },
 
-      { h2: 'Two sources of picture' },
+      { h2: 'Three sources of picture' },
       {
         p: 'One choice under **What to make** changes what the rest of the screen means: **Where the picture comes from**.',
       },
@@ -154,11 +158,15 @@ export default {
           rows: [
             ['**Footage from the internet, voiced automatically**', 'Shots downloaded from the internet, chosen by the renderer', '**Seconds per shot** — how long one shot lasts'],
             ['**A window of the source, spoken here**', 'A stretch of the very video being reviewed, with the new script spoken over it', '**Original frame**, and only in this mode'],
+            ['**Recap the film into one video**', 'The whole film is read and retold as one Vietnamese video', 'Runs the **Movie recap** pipeline: one video, saved in the Video library, never posted automatically'],
           ],
         },
       },
       {
         note: '**A window of the source, spoken here** can only speak **Vietnamese**. Choosing **Original frame** while in the footage mode is refused: footage is several shots cut together, and none of them is the original frame.',
+      },
+      {
+        note: '**Recap the film into one video** ignores **How many videos**, the scripts and the posting targets: it reads the whole source, writes a narration and makes exactly one video. Those fields are skipped by that run.',
       },
 
       { h2: 'Running one' },
@@ -170,7 +178,7 @@ export default {
           },
           {
             title: 'Choose How many videos and Where the picture comes from',
-            body: '**How many videos** takes **at most 20** in a run; past that the app tells you to run it twice. Then pick one of the two modes above.',
+            body: '**How many videos** takes **at most 20** in a run; past that the app tells you to run it twice. Then pick one of the three modes above — the **Recap** mode ignores the count and the posting targets.',
           },
           {
             title: 'Choose the voice and the frame',
