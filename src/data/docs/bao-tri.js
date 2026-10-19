@@ -24,12 +24,12 @@ export default {
   key: 'bao-tri',
   group: 'care',
   slug: { vi: 'bao-tri', en: 'maintenance' },
-  updated: '2026-10-16',
+  updated: '2026-10-19',
   order: 1,
   title: { vi: 'Bảo trì và khắc phục sự cố', en: 'Maintenance and troubleshooting' },
   description: {
-    vi: 'Giữ AutoReel chạy êm: khởi động lại app trên Docker Desktop, dọn đĩa, sao lưu dữ liệu, và cách xử lý bảy lỗi hay gặp.',
-    en: 'Keeping AutoReel running: restarting it on Docker Desktop, clearing disk space, backing up, and what to do about the seven failures people hit.',
+    vi: 'Giữ AutoReel chạy êm: khởi động lại app bằng nút trong sidebar hoặc trên Docker Desktop, dọn đĩa, sao lưu dữ liệu, và cách xử lý bảy lỗi hay gặp.',
+    en: 'Keeping AutoReel running: restarting it from the sidebar button or Docker Desktop, clearing disk space, backing up, and what to do about the seven failures people hit.',
   },
   lead: {
     vi: 'Phần lớn sự cố của AutoReel là sự cố của **Docker Desktop** — thứ chạy bên dưới nó. Bài này nói về việc bảo trì định kỳ, cách khởi động lại, và những lỗi gặp nhiều nhất.',
@@ -62,6 +62,9 @@ export default {
       },
       {
         note: '**Nhưng đừng khởi động lại giữa lúc đang chạy.** Việc dựng video chạy bên trong app chứ không chạy trong trình duyệt — nên đóng tab thì không sao, còn khởi động lại thì việc đang chạy bị huỷ và hàng đợi phía sau bị xoá sạch. Chạy xong rồi hãy khởi động lại.',
+      },
+      {
+        note: '**Cách nhanh nhất: bấm nút ↻ Khởi động lại ở góc dưới sidebar.** App hỏi xác nhận, khởi động lại container rồi tự mở lại sau khoảng nửa phút. Cách này chỉ dùng được khi app còn mở — app không mở được thì làm theo các bước Docker Desktop bên dưới.',
       },
       {
         steps: [
@@ -152,6 +155,9 @@ export default {
       },
       {
         note: '**Do not restart in the middle of a run, though.** A render runs inside the app, not in your browser — so closing the tab is fine, while a restart cancels the job that is running and clears the queue behind it. Restart once the queue is empty.',
+      },
+      {
+        note: '**The quickest way: press ↻ Restart at the foot of the sidebar.** The app asks for confirmation, restarts the container and opens itself again in about half a minute. That needs the app to be open — when it will not open at all, use the Docker Desktop steps below.',
       },
       {
         steps: [
