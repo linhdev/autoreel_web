@@ -13,7 +13,7 @@ export default {
   key: 'telegram-bot',
   group: 'app',
   slug: { vi: 'telegram-bot', en: 'telegram-bot' },
-  updated: '2026-10-13',
+  updated: '2026-10-19',
   order: 2,
   title: { vi: 'Bot Telegram', en: 'The Telegram bot' },
   description: {
@@ -36,6 +36,9 @@ export default {
       },
       {
         p: 'Menu của bot là các nút, và mỗi nút đứng cho một câu lệnh: **Reup**, **Review**, **Affiliate**, **Jobs**, **Status**, **Trợ giúp**. Bấm nút hay gõ câu lệnh đều ra cùng một việc.',
+      },
+      {
+        note: 'Phiếu **Review** có thêm chế độ thứ ba **Tóm tắt phim**: bot đọc cả phim rồi kể lại thành **một** video tiếng Việt. Chế độ này **không đăng** — video nằm trong Thư viện video, và phiếu không hỏi số lượng hay nơi đăng.',
       },
 
       { h2: 'Bật bot' },
@@ -80,7 +83,7 @@ export default {
             ['**/start** hoặc **/menu**', 'Mở menu. Hai lệnh này trả lời giống nhau.'],
             ['**/help**', 'Các dòng hướng dẫn.'],
             ['**/reup**', 'Mở phiếu chạy luồng reup.'],
-            ['**/review**', 'Mở phiếu chạy luồng review.'],
+            ['**/review**', 'Mở phiếu chạy luồng review, gồm cả chế độ **Tóm tắt phim**.'],
             ['**/affiliate**', 'Mở phiếu chạy luồng affiliate.'],
             ['**/cancel**', 'Bỏ phiếu đang điền dở.'],
             ['**/jobs**', 'Hỏi app xem đang có gì trong hàng đợi.'],
@@ -110,7 +113,7 @@ export default {
 
       { h2: 'Ba câu lệnh có thể đăng thật' },
       {
-        p: '`/affiliate`, `/reup` và `/review` **đăng bài thật**, không phải bản xem thử.',
+        p: '`/affiliate`, `/reup` và `/review` **đăng bài thật**, không phải bản xem thử — trừ khi `/review` chạy ở chế độ **Tóm tắt phim**. Chế độ đó chỉ dựng **một** video và **không đăng**; video nằm trong **Thư viện video**.',
       },
       {
         p: 'Phiếu của mỗi luồng có phần tóm tắt nói rõ **sẽ dựng mấy video và đăng lên đâu**. **Chưa bấm Chạy thì chưa có gì xảy ra** — nút **Chạy** ở cuối phiếu là thứ duy nhất bắt đầu, và cạnh nó là nút **Huỷ**.',
@@ -133,6 +136,9 @@ export default {
       },
       {
         p: 'The bot\'s menu is buttons, and each stands for a command: **Reup**, **Review**, **Affiliate**, **Jobs**, **Status**, **Trợ giúp**. A pressed button and a typed command do the same thing.',
+      },
+      {
+        note: 'The **Review** card has a third mode, **Recap the film**: the bot reads the whole film and retells it as **one** Vietnamese video. That mode **never posts** — the video lands in the Video library, and the card does not ask for a count or a destination.',
       },
 
       { h2: 'Turning it on' },
@@ -177,7 +183,7 @@ export default {
             ['**/start** or **/menu**', 'Open the menu. Both answer the same way.'],
             ['**/help**', 'The help lines.'],
             ['**/reup**', 'Open the card for the reup flow.'],
-            ['**/review**', 'Open the card for the review flow.'],
+            ['**/review**', 'Open the card for the review flow, including the **Recap the film** mode.'],
             ['**/affiliate**', 'Open the card for the affiliate flow.'],
             ['**/cancel**', 'Drop the card you are filling in.'],
             ['**/jobs**', 'Ask the app what is in the queue.'],
@@ -207,7 +213,7 @@ export default {
 
       { h2: 'Three commands that can really post' },
       {
-        p: '`/affiliate`, `/reup` and `/review` **post for real**. They are not a preview.',
+        p: '`/affiliate`, `/reup` and `/review` **post for real**. They are not a preview — except `/review` in **Recap the film** mode. That one makes **one** video and **never posts**; the video lands in the **Video library**.',
       },
       {
         p: 'Each flow\'s card carries a summary saying plainly **how many videos it will make and where they will go**. **Nothing happens until Chạy is pressed** — the **Chạy** ("run") button at the foot of the card is the only thing that starts it, with **Huỷ** ("cancel") beside it.',
