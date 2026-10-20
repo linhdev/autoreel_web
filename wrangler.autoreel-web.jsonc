@@ -1,0 +1,18 @@
+{
+  // The landing is served by the `autoreel-web` Worker on the apex domain.
+  // This file exists so a deploy is `wrangler deploy --config` rather than a
+  // set of remembered CLI flags. It is not a Pages project: the Worker owns
+  // the custom domain, and `assets` replaces the old upload.
+  "name": "autoreel-web",
+  "compatibility_date": "2026-10-19",
+  "main": "src/worker.js",
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Assets are served before the Worker by default, which would skip the
+    // http -> https redirect for every page that exists. The Worker is cheap
+    // here: it either redirects or hands the request straight back.
+    "run_worker_first": true
+  }
+}

@@ -387,6 +387,7 @@ export const footer = {
       // `navLinks` above. Blog was a hard-coded anchor here too.
       { label: 'Blog', href: '/blog/' },
       { label: 'Tài liệu', href: '/tai-lieu/' },
+      { label: 'Điều khoản', href: '/dieu-khoan/' },
     ],
     columns: { links: 'Liên kết', contact: 'Liên hệ', follow: 'Theo dõi' },
     copyright: '© 2026 AutoReel. All rights reserved.',
@@ -400,6 +401,7 @@ export const footer = {
       { label: 'Contact', to: 'contact' },
       { label: 'Blog', href: '/en/blog/' },
       { label: 'Docs', href: '/en/docs/' },
+      { label: 'Terms', href: '/en/terms/' },
     ],
     columns: { links: 'Links', contact: 'Contact', follow: 'Follow' },
     copyright: '© 2026 AutoReel. All rights reserved.',

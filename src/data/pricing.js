@@ -117,7 +117,7 @@ export const pricingSection = {
   vi: {
     headline: 'Bảng giá: thuê theo tháng hoặc mua đứt',
     subheadline:
-      'Bắt đầu từ 159.000đ một tháng. AutoReel không giới hạn số video; khác nhau ở bộ tính năng và số máy được cài.',
+      'AutoReel không giới hạn số video; khác nhau ở bộ tính năng và số máy được cài. Giá hiện tại nằm trên từng gói bên dưới.',
     // `{amount}` and `{months}` are filled in by `Pricing.jsx` from the numbers
     // in this file — see the note on `saves` and `paybackAgainst` below.
     saveTemplate: 'Tiết kiệm {amount} so với trả từng tháng',
@@ -136,7 +136,7 @@ export const pricingSection = {
   en: {
     headline: 'Pricing: rent by the month or buy outright',
     subheadline:
-      'From $6.12 a month. AutoReel does not cap how many videos you make; what differs is which features you get and how many machines you may install on.',
+      'AutoReel does not cap how many videos you make; what differs is which features you get and how many machines you may install on. The current price is on each plan below.',
     saveTemplate: 'Save {amount} against paying monthly',
     paybackTemplate: 'Against the monthly plans, this pays for itself in {months} months',
     note: 'Subscriptions renew monthly and can be stopped at any time. Prices are in US dollars, converted at 26,000₫ = $1. Any AI/API or third-party service you use is paid separately to that provider.',
@@ -514,15 +514,47 @@ export function planById(id, lang) {
 }
 
 /**
+ * The checkout lives on the licence Worker, not on this site.
+ *
+ * Keeping it there means the success page can read a licence key as a
+ * same-origin request, so the licence API never has to answer a browser's
+ * preflight. The landing only has to send the buyer to the right plan.
+ *
+ * `team` is excluded by `available: false`; its CTA stays the contact form.
+ */
+export const CHECKOUT_BASE = 'https://license.autoreelvn.com/buy?plan=';
+
+/**
+ * Where the current prices come from.
+ *
+ * The landing is static, but the price is not: an operator can change it in the
+ * licence dashboard. `Pricing.jsx` reads this endpoint after mount and falls
+ * back to the values in this file if it is unreachable, so the page still
+ * renders offline and still shows a sensible number.
+ */
+export const STORE_PLANS_API = 'https://license.autoreelvn.com/api/v1/store/plans';
+
+/**
+ * The plan chooser. The download button points here rather than at an
+ * installer: the executable is delivered after payment, and the page it lands
+ * on is where the buyer picks a licence.
+ */
+export const BUY_PLANS = 'https://license.autoreelvn.com/buy';
+
+export function checkoutHref(plan) {
+  return plan && plan.available ? `${CHECKOUT_BASE}${encodeURIComponent(plan.id)}` : null;
+}
+
+/**
  * What the three-month pack saves against paying monthly, in đồng.
  *
  * `null` when the plan declares no `saves`, which is every card but one — so
  * the caller asks "is there a saving to show" with a truthiness test rather
  * than by knowing which card it is.
  */
-export function savingFor(plan, lang) {
+export function savingFor(plan, lang, lookup = planById) {
   if (!plan.saves) return null;
-  const base = planById(plan.saves.against, lang);
+  const base = lookup(plan.saves.against, lang);
   if (!base) return null;
   return base.priceValue * plan.saves.months - plan.priceValue;
 }
@@ -534,9 +566,9 @@ export function savingFor(plan, lang) {
  * Rounded up because the honest claim is "it is paid off by then", and 5.75
  * months is a figure nobody can act on.
  */
-export function paybackMonths(plan, lang) {
+export function paybackMonths(plan, lang, lookup = planById) {
   if (!plan.paybackAgainst) return null;
-  const base = planById(plan.paybackAgainst, lang);
+  const base = lookup(plan.paybackAgainst, lang);
   if (!base || !base.priceValue) return null;
   return Math.ceil(plan.priceValue / base.priceValue);
 }

@@ -81,6 +81,21 @@ const OTHER = { vi: 'en', en: 'vi' };
 function rich(value) {
   return esc(value)
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Markdown links, because the install guide used them and they were
+    // printing as `[docker.com](https://…)` — an address nobody can click on
+    // the one page where a beginner has to download something. The escape
+    // above runs first, so a URL cannot introduce a quote or a tag; only
+    // http(s) is accepted, and external links open in a new tab.
+    .replace(
+      /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+    )
+    // Internal links look the same in the source, and they were the ones that
+    // still printed as `[hình minh hoạ](/tai-lieu/cai-dat/visual/)`: the rule
+    // above only accepts http(s), so a path that starts with "/" fell through.
+    // Same-tab is deliberate — these are pages of this site, not someone
+    // else's. The escape already ran, so the path cannot close the attribute.
+    .replace(/\[([^\]]+)\]\((\/[^\s)]+)\)/g, '<a href="$2">$1</a>')
     // And the second marker, which is a fix rather than a feature: topics have
     // always written a file name or a command in prose as `start.bat`, and
     // until this line the backticks printed — every page said

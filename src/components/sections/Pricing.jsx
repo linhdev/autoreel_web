@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { planDetails } from '../../data/plan-details.js';
-import { formatMoney, paybackMonths, savingFor } from '../../data/pricing.js';
+import {
+  BUY_PLANS,
+  checkoutHref,
+  formatMoney,
+  paybackMonths,
+  planById,
+  savingFor,
+  STORE_PLANS_API,
+} from '../../data/pricing.js';
 import { useCopy } from '../../i18n/copy.jsx';
 import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from '../ui/Icon.jsx';
@@ -20,12 +28,88 @@ import Reveal, { RevealGroup, RevealItem } from '../ui/Reveal.jsx';
  *
  * At most one of the two applies to any card, and most cards get neither.
  */
-function asideFor(plan, { saveTemplate, paybackTemplate }, lang) {
-  const saving = savingFor(plan, lang);
+function asideFor(plan, { saveTemplate, paybackTemplate }, lang, lookup) {
+  const saving = savingFor(plan, lang, lookup);
   if (saving) return saveTemplate.replace('{amount}', formatMoney(saving, lang));
-  const months = paybackMonths(plan, lang);
+  const months = paybackMonths(plan, lang, lookup);
   if (months) return paybackTemplate.replace('{months}', String(months));
   return '';
+}
+
+/**
+ * Current prices from the licence dashboard, keyed by plan id.
+ *
+ * `null` means "not loaded yet", which is not the same as "loaded and empty":
+ * the cards keep their static price until the request succeeds, and keep it
+ * forever if it fails. A landing page that blanked its prices because an API
+ * was briefly down would be worse than one showing yesterday's number.
+ */
+function useLivePrices() {
+  const [prices, setPrices] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch(STORE_PLANS_API, { cache: 'no-store' })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body) => {
+        if (!alive || !body || !body.success || !Array.isArray(body.data)) return;
+        setPrices(new Map(body.data.map((plan) => [plan.id, plan.price])));
+      })
+      .catch(() => {
+        // Static prices remain in place; a price list is not worth an error UI.
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  return prices;
+}
+
+/**
+ * The download strip.
+ *
+ * It does **not** link to an installer. The executable is shown only on the
+ * success page after payment, so this points at the plan chooser: a visitor
+ * picks a licence first, and the download link is one of the things the
+ * purchase delivers. That order is deliberate — a free download button beside
+ * a paid product is a checkout with a side exit.
+ */
+function DownloadBar({ lang }) {
+  const vi = lang !== 'en';
+
+  return (
+    <Reveal delay={0.05}>
+      <div
+        id="download"
+        className="ar-card ar-card-glow mx-auto mb-10 flex max-w-[1180px] flex-col items-center justify-between gap-5 p-5 text-center min-[760px]:flex-row min-[760px]:text-left"
+      >
+        <div className="max-w-xl">
+          <span className="ar-badge">Windows 10/11</span>
+          <p className="mt-2 text-lg font-black tracking-tight">
+            {vi ? 'Mua license, nhận bộ cài' : 'Buy a licence, get the installer'}
+          </p>
+          <p className="ar-note mt-1">
+            {vi
+              ? 'Sau khi thanh toán, trang cảm ơn hiển thị mã kích hoạt và link tải AutoReel-Setup.exe kèm SHA256. Bộ cài tự lo Docker.'
+              : 'After payment, the success page shows your activation key and the AutoReel-Setup.exe download link with its SHA256. The installer handles Docker.'}
+          </p>
+          <a href="/tai-lieu/cai-dat/" className="ar-footer-link mt-2 inline-block text-sm">
+            {vi ? 'Xem hướng dẫn cài đặt →' : 'Read the installation guide →'}
+          </a>
+        </div>
+
+        <div className="flex flex-col items-center gap-2">
+          <a href={BUY_PLANS} className="ar-btn ar-btn-primary ar-btn-lg">
+            {vi ? 'Chọn gói để tải' : 'Choose a plan'}
+          </a>
+          <span className="ar-note">
+            {vi ? 'Thanh toán an toàn qua PayOS' : 'Secure payment via PayOS'}
+          </span>
+        </div>
+      </div>
+    </Reveal>
+  );
 }
 
 /** Three cards or more go three wide; two stay two, centred and narrower. */
@@ -38,11 +122,30 @@ function gridFor(count) {
 
 export default function Pricing() {
   const href = useHref();
-  const { plans, pricingGroups, pricingSection, lang } = useCopy();
+  const { plans: basePlans, pricingGroups, pricingSection, lang } = useCopy();
   // Which card is open, by id. `null` is closed - and the dialog reads that
   // as "not mounted", so a closed page holds no modal at all.
   const [openId, setOpenId] = useState(null);
   const details = planDetails[lang] || planDetails.vi;
+
+  // The price is the one field an operator can change in the dashboard. The
+  // cards, the savings line and the payback line all read the merged value,
+  // so a price change cannot leave one sentence quoting the old number.
+  const livePrices = useLivePrices();
+  const plans = useMemo(
+    () =>
+      basePlans.map((plan) =>
+        livePrices && livePrices.has(plan.id)
+          ? { ...plan, priceValue: livePrices.get(plan.id) }
+          : plan,
+      ),
+    [basePlans, livePrices],
+  );
+  const lookup = useMemo(() => {
+    const byId = new Map(plans.map((plan) => [plan.id, plan]));
+    return (id, language) => byId.get(id) || planById(id, language);
+  }, [plans]);
+
   const openPlan = plans.find((plan) => plan.id === openId) || null;
 
   return (
@@ -53,6 +156,8 @@ export default function Pricing() {
           title={pricingSection.headline}
           subtitle={pricingSection.subheadline}
         />
+
+        <DownloadBar lang={lang} />
 
         {pricingGroups.map((group) => {
           const mine = plans.filter((plan) => plan.group === group.key);
@@ -68,7 +173,7 @@ export default function Pricing() {
 
               <RevealGroup className={gridFor(mine.length)}>
                 {mine.map((plan) => {
-                  const aside = asideFor(plan, pricingSection, lang);
+                  const aside = asideFor(plan, pricingSection, lang, lookup);
                   return (
                     <RevealItem
                       as="article"
@@ -130,7 +235,7 @@ export default function Pricing() {
                           next step, and a modal on top of it would be a
                           second one. */}
                       <Link
-                        to={href(plan.cta.to)}
+                        to={checkoutHref(plan) || href(plan.cta.to)}
                         className={`ar-btn ${plan.popular ? 'ar-btn-primary' : 'ar-btn-secondary'}`}
                         onClick={(event) => event.stopPropagation()}
                       >

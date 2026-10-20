@@ -187,10 +187,15 @@ export function useHref() {
  */
 export function Link({ to, onNavigate, children, ...rest }) {
   const { navigate } = useRouter();
+  // Absolute URLs are somebody else's page. The router only knows this site's
+  // section slugs, so handing it `https://…` would push a path the router then
+  // rewrites to `/`.
+  const external = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(to);
 
   const onClick = (event) => {
     if (onNavigate) onNavigate(event);
     if (event.defaultPrevented) return;
+    if (external) return;
     // Leave modified clicks and non-left buttons to the browser.
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
       return;
