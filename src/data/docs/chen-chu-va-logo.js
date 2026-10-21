@@ -94,7 +94,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-03-chu-logo-mau-vi.webp',
           alt: 'Khối chữ, logo và màu — hai dòng chữ đã điền sẵn chữ mẫu của template',
-          width: 1193,
+          width: 1189,
           height: 560,
         },
       },
@@ -104,7 +104,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-02-template-vi.webp',
           alt: 'Thư viện 13 template dựng sẵn trong màn Chèn chữ & logo',
-          width: 1193,
+          width: 1189,
           height: 620,
         },
       },
@@ -141,7 +141,7 @@ export default {
           src: '/docs-img/chen-chu-va-logo-05-chu-nam-o-dau-vi.webp',
           alt: 'Nút chọn Chữ nằm ở đâu — Giữ chỗ cho chữ hoặc Đè lên hình',
           width: 1189,
-          height: 180,
+          height: 170,
         },
       },
       {
@@ -162,7 +162,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-04-xem-truoc-vi.webp',
           alt: 'Khối Xem trước — khung dựng bằng CSS, đổi ngay khi gõ',
-          width: 1193,
+          width: 1189,
           height: 520,
         },
       },
@@ -261,7 +261,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-03-chu-logo-mau-en.webp',
           alt: 'The text, logo and colour block — both lines arrive filled with the template’s own sample',
-          width: 1193,
+          width: 1189,
           height: 560,
         },
       },
@@ -271,7 +271,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-02-template-en.webp',
           alt: 'The gallery of 13 ready-made templates on the Add text & logo screen',
-          width: 1193,
+          width: 1189,
           height: 620,
         },
       },
@@ -329,7 +329,7 @@ export default {
         figure: {
           src: '/docs-img/chen-chu-va-logo-04-xem-truoc-en.webp',
           alt: 'The Preview block — a frame built in CSS, changing as you type',
-          width: 1193,
+          width: 1189,
           height: 520,
         },
       },

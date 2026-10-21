@@ -24,7 +24,7 @@ export default {
   key: 'bao-tri',
   group: 'care',
   slug: { vi: 'bao-tri', en: 'maintenance' },
-  updated: '2026-10-19',
+  updated: '2026-10-21',
   order: 1,
   title: { vi: 'Bảo trì và khắc phục sự cố', en: 'Maintenance and troubleshooting' },
   description: {
@@ -46,7 +46,7 @@ export default {
         table: {
           head: ['Việc', 'Bao lâu một lần', 'Cách làm'],
           rows: [
-            ['Xem chỗ trống trên ổ đĩa', 'Mỗi tháng', 'Vào **Thư viện video**, xoá những video đã đăng và không dùng nữa'],
+            ['Xem chỗ trống trên ổ đĩa', 'Mỗi tháng', 'Vào **Thư viện video**, tick những video đã đăng và không dùng nữa, rồi bấm **Xoá mục đã chọn** — file được xoá khỏi đĩa và dung lượng được giải phóng ngay'],
             ['Lấy bản mới', 'Mỗi lần mở app', 'Không phải làm gì — `start.bat` và `start.sh` tự kiểm tra bản mới mỗi lần khởi động'],
             ['Sao lưu', 'Trước khi cài lại máy', 'Chép cả thư mục **`data`** trong thư mục AutoReel sang một ổ khác'],
           ],
@@ -112,7 +112,7 @@ export default {
           rows: [
             ['Mở địa chỉ app mà trang trắng, hoặc không mở được', 'Docker Desktop chưa chạy', 'Mở Docker Desktop, chờ cá voi đứng yên, rồi mở lại **http://localhost:31415**'],
             ['Màn nào cũng báo **AutoReel Engine: không kết nối được**', 'Bộ dựng video chưa chạy', 'Khởi động lại như mục trên. Vẫn vậy thì bộ dựng video đang lỗi — lấy log ở mục cuối'],
-            ['Đang dựng thì render hỏng, không có câu nào nói hết chỗ', 'Ổ đĩa đầy', 'Xoá bớt video cũ trong **Thư viện video**. Máy cài nhiều thứ thì thêm `docker system df` rồi `docker builder prune`'],
+            ['Đang dựng thì render hỏng, không có câu nào nói hết chỗ', 'Ổ đĩa đầy', 'Vào **Thư viện video**, tick những video không còn dùng — lọc **Cũ nhất trước** nếu muốn chọn nhanh — rồi bấm **Xoá mục đã chọn** và bấm lần nữa để xác nhận. Dòng trạng thái cho biết đã giải phóng bao nhiêu dung lượng'],
             ['Việc đang chạy tự nhiên mất, và bị đánh dấu là lỗi', 'Vừa khởi động lại giữa lúc nó đang chạy', 'Chạy lại khi hàng đợi trống. Việc dở không tự chạy tiếp — chạy tiếp có thể đăng hai lần, nên app cố ý để nguyên như vậy'],
             ['Báo **cổng 31415 đang bận**', 'Một chương trình khác đang giữ cổng đó', 'Mở file `.env`, đổi thành `SHORTGPT_PORT=31416`, rồi chạy lại `start.bat`'],
             ['Container không chịu khởi động, báo `could not select device driver`', 'Đang dùng file compose có khai GPU trên máy chưa có driver NVIDIA', 'Quay lại **`docker-compose.yml`** gốc. File `docker-compose.nvidia.yml` chỉ dành cho máy đã cài driver NVIDIA đủ mới'],
@@ -139,7 +139,7 @@ export default {
         table: {
           head: ['What', 'How often', 'How'],
           rows: [
-            ['Check the free space', 'Once a month', 'Open the **Video library** and delete videos you have already posted and no longer need'],
+            ['Check the free space', 'Once a month', 'Open the **Video library**, tick the videos you have already posted and no longer need, then press **Delete selected** — the files leave the disk and the space is freed at once'],
             ['Take the new version', 'Every time you start it', 'Nothing to do — `start.bat` and `start.sh` check for a new version on every start'],
             ['Back up', 'Before reinstalling the machine', 'Copy the **`data`** folder out of the AutoReel folder onto another drive'],
           ],
@@ -205,7 +205,7 @@ export default {
           rows: [
             ['The app address opens a blank page, or will not open at all', 'Docker Desktop is not running', 'Start Docker Desktop, wait for the whale to settle, then open **http://localhost:31415** again'],
             ['Every screen says **AutoReel Engine: không kết nối được**', 'The video renderer is not up', 'Restart as above. If it stays that way the renderer is failing — take the log, last section'],
-            ['A render fails out of nowhere, with nothing saying the disk is full', 'The disk is full', 'Delete old videos in the **Video library**. On a machine with more installed: `docker system df`, then `docker builder prune`'],
+            ['A render fails out of nowhere, with nothing saying the disk is full', 'The disk is full', 'Open the **Video library**, tick the videos you no longer need — filter by **Oldest first** to pick them quickly — then press **Delete selected** and press it once more to confirm. The status line says how much space was freed'],
             ['A job disappears on its own and is marked failed', 'It was running when you restarted', 'Run it again with an empty queue. A half-finished job never resumes by itself — resuming can post twice, which is why the app leaves it failed on purpose'],
             ['It reports **port 31415 is already in use**', 'Something else holds that port', 'Open `.env`, set `SHORTGPT_PORT=31416`, and start again with `start.bat`'],
             ['A container refuses to start: `could not select device driver`', 'A compose file with a GPU in it, on a machine with no NVIDIA driver', 'Go back to the plain **`docker-compose.yml`**. `docker-compose.nvidia.yml` is for machines with a recent NVIDIA driver only'],

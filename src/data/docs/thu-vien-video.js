@@ -6,19 +6,22 @@
  * kiếm** and it really does wait for Enter, the two dropdowns really do fire
  * on change, and the table pages at 50 rows.
  *
- * The screen deliberately has no clear button, which is worth one note: the
- * list is the whole point of the screen, so hiding it would leave nothing.
+ * The screen deletes in two ways, both confirmed with a second press: the rows
+ * ticked in the table, and everything the current filters match. Deleting a
+ * row deletes the file on disk — that is the point, since this is where disk
+ * space is cleared — and a file outside the app's videos folder is refused
+ * rather than removed.
  */
 export default {
   key: 'thu-vien-video',
   group: 'store',
   slug: { vi: 'thu-vien-video', en: 'video-library' },
-  updated: '2026-10-17',
+  updated: '2026-10-21',
   order: 3,
   title: { vi: 'Thư viện video', en: 'Video library' },
   description: {
-    vi: 'Mọi video đã dựng xong nằm ở đây: tìm theo tên, lọc theo loại, sắp xếp, xem trước, tải về và đưa thẳng sang màn đăng bài.',
-    en: 'Every finished video lives here: search by name, filter by kind, sort, preview, download, and hand straight to a posting screen.',
+    vi: 'Mọi video đã dựng xong nằm ở đây: tìm theo tên, lọc theo loại, sắp xếp, xem trước, tải về, xoá để giải phóng dung lượng và đưa thẳng sang màn đăng bài.',
+    en: 'Every finished video lives here: search by name, filter by kind, sort, preview, download, delete to free space, and hand straight to a posting screen.',
   },
   lead: {
     vi: 'Đây là chỗ **duy nhất** để tìm lại một video đã dựng. Không có nó thì file nằm đâu đó trên đĩa mà bạn không biết đường.',
@@ -43,7 +46,7 @@ export default {
         p: 'Cột **Thư mục** ghi đường dẫn **trên máy bạn**, không phải đường dẫn bên trong app. **Bấm vào đường đó** để mở **trang thư mục**: danh sách file trong đúng thư mục ấy, kèm nút sao chép đường dẫn. App chạy trong Docker nên không mở được File Explorer trên máy bạn, và một liên kết file:/// bị trình duyệt chặn khi trang đến từ http:// — nên đây là cách mở thư mục chạy được ở mọi máy.',
       },
       {
-        note: 'Màn này **không có nút xoá file**. Muốn xoá thì xoá trong thư mục, rồi bấm **Làm mới** — dòng của nó sẽ được đánh dấu là file đã mất.',
+        note: 'Màn này **xoá được file ngay trong danh sách**. Tick ô ở đầu mỗi dòng rồi bấm **Xoá mục đã chọn** — xem mục **Xoá video để giải phóng dung lượng** bên dưới. Xoá file bằng tay trong thư mục rồi bấm **Làm mới** cũng được: dòng của nó sẽ được đánh dấu **file không còn**.',
       },
 
       { h2: 'Tìm và lọc' },
@@ -53,7 +56,7 @@ export default {
       {
         ul: [
           '**Tìm kiếm** nhận một phần tên file hoặc link nguồn. Ô này chỉ chạy khi bạn **bấm Enter**.',
-          '**Loại video** để lọc: **Tất cả**, hoặc **Video ngắn**, **Video tự động**, **Lồng tiếng**, **Cắt highlight**, **Đã đóng dấu**, **Reup**, **Review**.',
+          '**Loại video** để lọc: **Tất cả**, hoặc **Video ngắn**, **Video tự động**, **Tóm tắt phim**, **Lồng tiếng**, **Cắt highlight**, **Đã đóng dấu**, **Reup**, **Review**.',
           '**Sắp xếp**: **Mới nhất trước** (mặc định), **Cũ nhất trước**, hoặc **Tên file**.',
           '**Làm mới** đọc lại đĩa và dựng lại danh sách — dùng sau khi bạn vừa xoá hay chép file bằng tay.',
         ],
@@ -67,13 +70,40 @@ export default {
 
       { h2: 'Đọc bảng' },
       {
-        p: 'Bốn cột: **Loại video**, **Tên file**, **Thư mục** và **Ngày tạo**. Cột **Loại video** là một nhãn màu để liếc nhanh; cột **Thư mục** bấm được; cột **Ngày tạo** canh số thẳng hàng.',
+        p: 'Sáu cột: ô tick để chọn, **Loại video**, **Tên file**, **Dung lượng**, **Thư mục** và **Ngày tạo**. Cột **Loại video** là một nhãn màu để liếc nhanh; cột **Dung lượng** cho biết file nặng bao nhiêu; cột **Thư mục** bấm được; cột **Ngày tạo** canh số thẳng hàng.',
       },
       {
         p: 'File bị xoá hoặc bị chuyển đi khỏi đĩa thì dòng đó mang nhãn **file không còn**. Danh sách vẫn giữ dòng ấy — nó chỉ nói rằng file đã đi chỗ khác.',
       },
       {
         note: 'Lọc không ra gì thì bảng nói **Không có video nào khớp bộ lọc này.** Còn khi chưa dựng được video nào thì nó nói **Chưa tạo video nào**. Hai câu khác nhau cho hai chuyện khác nhau — câu thứ hai nghĩa là đi dựng video đã.',
+      },
+
+      { h2: 'Xoá video để giải phóng dung lượng' },
+      {
+        p: 'Đây là chỗ dọn đĩa: xoá ở đây là **xoá file thật trên ổ đĩa**, không chỉ ẩn khỏi danh sách. Có hai cách, và cả hai đều hỏi lại một lần trước khi xoá.',
+      },
+      {
+        steps: [
+          {
+            title: 'Tick những video cần xoá',
+            body: 'Ô tick nằm ở đầu mỗi dòng. Muốn chọn nhanh video cũ, đặt **Sắp xếp** thành **Cũ nhất trước** rồi tick từ trên xuống.',
+          },
+          {
+            title: 'Bấm Xoá mục đã chọn',
+            body: 'Lần bấm đầu **chưa xoá gì** — app hỏi lại số video và tổng dung lượng, ví dụ **Xoá 12 video đã chọn (3,4 GB)? Bấm Xoá mục đã chọn lần nữa để xác nhận.** Bấm lần thứ hai mới xoá.',
+          },
+          {
+            title: 'Đọc dòng trạng thái',
+            body: 'Xong, app báo **Đã xoá … video, giải phóng …** và dựng lại bảng. Dòng nào file đã mất từ trước cũng được dọn khỏi danh sách.',
+          },
+        ],
+      },
+      {
+        note: '**Xoá tất cả đang lọc** xoá mọi dòng khớp bộ lọc hiện tại, không chỉ trang đang xem — hữu ích khi đã lọc theo loại hoặc theo từ khoá. Nếu để **Loại video** là **Tất cả** và ô **Tìm kiếm** trống, nút này xoá **cả thư viện**, và app cảnh báo đúng như vậy trước khi làm.',
+      },
+      {
+        note: 'Video nằm **ngoài thư mục videos** của app sẽ được giữ lại và báo rõ — app không xoá file ở nơi khác trên máy bạn. File đang mở hoặc đang được dùng cũng có thể bị từ chối; đóng video rồi thử lại.',
       },
 
       { h2: 'Xem trước và tải về' },
@@ -87,7 +117,7 @@ export default {
         note: 'Bấm **Xem trước** mà chưa chọn video nào thì app nhắc **Hãy chọn một video trong danh sách trước.**',
       },
       {
-        note: 'Màn này không có nút **Xoá kết quả trên màn hình** như những màn khác. Danh sách chính là cả màn này, nên xoá đi thì không còn gì để xem — và tải về xong thì file vẫn nằm nguyên trong thư mục.',
+        note: '**Tải tất cả không xoá gì** — file vẫn nằm trong thư mục và trong danh sách. Nút **Xoá kết quả trên màn hình** chỉ ẩn phần đang xem, không xoá file; muốn xoá file thật thì tick dòng rồi bấm **Xoá mục đã chọn**.',
       },
 
       { h2: 'Đưa thẳng sang màn đăng bài' },
@@ -119,7 +149,7 @@ export default {
         p: 'The **Thư mục** column records the path **on your machine**, not a path inside the app. **Click that path** to open the **folder page**: the files in that folder, with a button to copy the path. The app runs in Docker and cannot open Explorer on your machine, and a file:/// link is refused by browsers when the page came from http:// — so this is the version of "open the folder" that works everywhere.',
       },
       {
-        note: 'This screen has **no delete button**. To remove a file, delete it in the folder and press **Làm mới** ("refresh") — its row will be marked as a file that is gone.',
+        note: 'This screen **can delete files from the list itself**. Tick the box at the start of a row and press **Delete selected** — see **Deleting videos to free space** below. Deleting a file by hand in its folder and pressing **Làm mới** ("refresh") still works too: its row gets the **file is gone** mark.',
       },
 
       { h2: 'Searching and filtering' },
@@ -129,7 +159,7 @@ export default {
       {
         ul: [
           '**Tìm kiếm** (search) matches part of a file name or a source link. It only runs when you **press Enter**.',
-          '**Loại video** filters by kind: **Tất cả** (all kinds), or **Video ngắn**, **Video tự động**, **Lồng tiếng**, **Cắt highlight**, **Đã đóng dấu**, **Reup**, **Review**.',
+          '**Loại video** filters by kind: **Tất cả** (all kinds), or **Video ngắn**, **Video tự động**, **Tóm tắt phim**, **Lồng tiếng**, **Cắt highlight**, **Đã đóng dấu**, **Reup**, **Review**.',
           '**Sắp xếp** (sort by): **Mới nhất trước** (the default), **Cũ nhất trước**, or **Tên file**.',
           '**Làm mới** re-reads the disk and rebuilds the list — for after you have deleted or copied files by hand.',
         ],
@@ -143,13 +173,40 @@ export default {
 
       { h2: 'Reading the table' },
       {
-        p: 'Four columns: **Loại video**, **Tên file**, **Thư mục** and **Ngày tạo** (kind, file name, folder, created). The kind is a coloured pill to scan by; the folder is a link; the date lines its digits up so a column of them can be read at a glance.',
+        p: 'Six columns: a tick box to select a row, **Loại video**, **Tên file**, **Dung lượng** (size), **Thư mục** and **Ngày tạo** (kind, file name, size, folder, created). The kind is a coloured pill to scan by; size says how heavy the file is; the folder is a link; the date lines its digits up so a column of them can be read at a glance.',
       },
       {
         p: 'A file that was deleted or moved off the disk gets the **file không còn** mark. The row stays in the list — it is only saying the file has gone elsewhere.',
       },
       {
         note: 'A filter with no matches says **Không có video nào khớp bộ lọc này.** When nothing has been made yet, the table says **Chưa tạo video nào**. Two different sentences for two different things — the second one means it is time to go and make a video.',
+      },
+
+      { h2: 'Deleting videos to free space' },
+      {
+        p: 'This is the place to clear disk space: deleting here **removes the file from the disk**, not just from the list. There are two ways, and both ask once before they delete anything.',
+      },
+      {
+        steps: [
+          {
+            title: 'Tick the videos to remove',
+            body: 'The tick box is at the start of every row. To pick old videos quickly, set **Sắp xếp** to **Cũ nhất trước** ("oldest first") and tick from the top down.',
+          },
+          {
+            title: 'Press Delete selected',
+            body: 'The first press **deletes nothing** — the app repeats the count and the total size, for example **Delete 12 selected videos (3.4 GB)? Press Delete selected again to confirm.** Only the second press deletes.',
+          },
+          {
+            title: 'Read the status line',
+            body: 'When it finishes, the app says **Deleted … videos, freed …** and redraws the table. Rows whose file was already gone are cleared out too.',
+          },
+        ],
+      },
+      {
+        note: '**Delete all filtered** removes every row the current filter matches, not just the page on screen — useful after filtering by kind or by a search term. With **Loại video** on **Tất cả** and the search box empty, it deletes **the whole library**, and the app warns you in exactly those terms first.',
+      },
+      {
+        note: 'A video that lives **outside the app\'s videos folder** is kept and reported — the app will not delete files elsewhere on your machine. A file that is open or in use may also be refused; close the video and try again.',
       },
 
       { h2: 'Previewing and downloading' },
@@ -163,7 +220,7 @@ export default {
         note: 'Pressing **Xem trước** with nothing chosen answers **Hãy chọn một video trong danh sách trước.** ("choose a video from the list first").',
       },
       {
-        note: 'This screen has no **Xoá kết quả trên màn hình** button like the others. The list is the whole screen, so clearing it would leave nothing to look at — and downloading a file leaves it in its folder either way.',
+        note: '**Download all deletes nothing** — the file stays in its folder and in the list. The **Xoá kết quả trên màn hình** button only hides what is on screen; to remove the file itself, tick its row and press **Delete selected**.',
       },
 
       { h2: 'Straight into a posting screen' },

@@ -7,7 +7,7 @@ export default {
   key: 'mo-ung-dung',
   group: 'start',
   slug: { vi: 'mo-ung-dung', en: 'opening-the-app' },
-  updated: '2026-10-13',
+  updated: '2026-10-21',
   order: 2,
   title: { vi: 'Mở app lần đầu', en: 'Opening the app for the first time' },
   description: {
@@ -52,9 +52,9 @@ export default {
             en: '/docs-img/mo-ung-dung-01-sidebar-en.webp',
           },
           alt: { vi: 'Sidebar của AutoReel với năm nhóm màn hình', en: 'The AutoReel sidebar with its five groups' },
-          caption: { vi: 'Năm nhóm, mười sáu màn. Nhóm cuối cùng luôn nằm dưới cùng, cạnh nút đổi ngôn ngữ.', en: 'Five groups, sixteen screens. The last one always sits at the bottom, beside the language switch.' },
+          caption: { vi: 'Năm nhóm, mười tám màn. Nhóm cuối cùng luôn nằm dưới cùng, cạnh nút đổi ngôn ngữ.', en: 'Five groups, eighteen screens. The last one always sits at the bottom, beside the language switch.' },
           width: 228,
-          height: 523,
+          height: 458,
         },
       },
       {
@@ -117,9 +117,9 @@ export default {
             en: '/docs-img/mo-ung-dung-01-sidebar-en.webp',
           },
           alt: { vi: 'Sidebar của AutoReel với năm nhóm màn hình', en: 'The AutoReel sidebar with its five groups' },
-          caption: { vi: 'Năm nhóm, mười sáu màn. Nhóm cuối cùng luôn nằm dưới cùng, cạnh nút đổi ngôn ngữ.', en: 'Five groups, sixteen screens. The last one always sits at the bottom, beside the language switch.' },
+          caption: { vi: 'Năm nhóm, mười tám màn. Nhóm cuối cùng luôn nằm dưới cùng, cạnh nút đổi ngôn ngữ.', en: 'Five groups, eighteen screens. The last one always sits at the bottom, beside the language switch.' },
           width: 228,
-          height: 523,
+          height: 458,
         },
       },
       {

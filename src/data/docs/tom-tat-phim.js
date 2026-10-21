@@ -18,7 +18,7 @@ export default {
   key: 'tom-tat-phim',
   group: 'make',
   slug: { vi: 'tom-tat-phim', en: 'movie-recap' },
-  updated: '2026-10-18',
+  updated: '2026-10-21',
   order: 3,
   title: { vi: 'Tóm tắt phim', en: 'Movie recap' },
   description: {
@@ -32,6 +32,24 @@ export default {
 
   body: {
     vi: [
+      {
+        figure: {
+          src: {
+            vi: '/docs-img/tom-tat-phim-01-screen-vi.webp',
+            en: '/docs-img/tom-tat-phim-01-screen-en.webp',
+          },
+          alt: {
+            vi: 'Màn Tóm tắt phim trong AutoReel',
+            en: 'The Movie recap screen in AutoReel',
+          },
+          caption: {
+            vi: 'Màn **Tóm tắt phim**: ô **Link phim** và **File phim** ở khối 1, cách làm ở khối 2, giọng đọc và template đóng dấu ở các khối dưới.',
+            en: 'The **Movie recap** screen: **Film links** and **Film files** in the first block, the way it works in the second, then the voice and branding blocks below.',
+          },
+          width: 1193,
+          height: 700,
+        },
+      },
       { h2: 'Tóm tắt phim làm gì' },
       {
         p: 'Màn **Tóm tắt phim** nhận một hoặc nhiều phim — **Link phim** hoặc **File phim**. App nghe lời thoại, chia phim thành cảnh, hiểu mạch chuyện, rồi viết một lời bình tiếng Việt. Lời bình được khớp với cảnh, lồng giọng đọc, cắt và ghép hình, thêm phụ đề, và đóng dấu thương hiệu nếu bạn chọn template.',
@@ -138,6 +156,24 @@ export default {
     ],
 
     en: [
+      {
+        figure: {
+          src: {
+            vi: '/docs-img/tom-tat-phim-01-screen-vi.webp',
+            en: '/docs-img/tom-tat-phim-01-screen-en.webp',
+          },
+          alt: {
+            vi: 'Màn Tóm tắt phim trong AutoReel',
+            en: 'The Movie recap screen in AutoReel',
+          },
+          caption: {
+            vi: 'Màn **Tóm tắt phim**: ô **Link phim** và **File phim** ở khối 1, cách làm ở khối 2, giọng đọc và template đóng dấu ở các khối dưới.',
+            en: 'The **Movie recap** screen: **Film links** and **Film files** in the first block, the way it works in the second, then the voice and branding blocks below.',
+          },
+          width: 1193,
+          height: 700,
+        },
+      },
       { h2: 'What movie recap does' },
       {
         p: 'The **Movie recap** screen takes one film or several — **Film links** or **Film files**. The app listens to the dialogue, splits the film into shots, follows the story, and writes a Vietnamese narration. The narration is matched to shots, voiced, cut and joined, given subtitles, and branded if you chose a template.',
