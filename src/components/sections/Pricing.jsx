@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { planDetails } from '../../data/plan-details.js';
 import {
-  BUY_PLANS,
+  buyPlansHref,
   checkoutHref,
   formatMoney,
   paybackMonths,
   planById,
   savingFor,
   STORE_PLANS_API,
+  usdCentsFor,
 } from '../../data/pricing.js';
 import { useCopy } from '../../i18n/copy.jsx';
 import { Link, useHref } from '../../i18n/router.jsx';
@@ -53,7 +54,14 @@ function useLivePrices() {
       .then((response) => (response.ok ? response.json() : null))
       .then((body) => {
         if (!alive || !body || !body.success || !Array.isArray(body.data)) return;
-        setPrices(new Map(body.data.map((plan) => [plan.id, plan.price])));
+        setPrices(
+          new Map(
+            body.data.map((plan) => [
+              plan.id,
+              { price: plan.price, usdCents: plan.usdCents },
+            ]),
+          ),
+        );
       })
       .catch(() => {
         // Static prices remain in place; a price list is not worth an error UI.
@@ -100,11 +108,11 @@ function DownloadBar({ lang }) {
         </div>
 
         <div className="flex flex-col items-center gap-2">
-          <a href={BUY_PLANS} className="ar-btn ar-btn-primary ar-btn-lg">
+          <a href={buyPlansHref(lang)} className="ar-btn ar-btn-primary ar-btn-lg">
             {vi ? 'Chọn gói để tải' : 'Choose a plan'}
           </a>
           <span className="ar-note">
-            {vi ? 'Thanh toán an toàn qua PayOS' : 'Secure payment via PayOS'}
+            {vi ? 'Thanh toán an toàn qua PayOS hoặc PayPal' : 'Secure payment via PayOS or PayPal'}
           </span>
         </div>
       </div>
@@ -134,11 +142,12 @@ export default function Pricing() {
   const livePrices = useLivePrices();
   const plans = useMemo(
     () =>
-      basePlans.map((plan) =>
-        livePrices && livePrices.has(plan.id)
-          ? { ...plan, priceValue: livePrices.get(plan.id) }
-          : plan,
-      ),
+      basePlans.map((plan) => {
+        const live = livePrices?.get(plan.id);
+        return live
+          ? { ...plan, priceValue: live.price, usdCents: live.usdCents }
+          : plan;
+      }),
     [basePlans, livePrices],
   );
   const lookup = useMemo(() => {
@@ -213,7 +222,7 @@ export default function Pricing() {
                       </span>
 
                       <h4>{plan.name}</h4>
-                      <div className="ar-price">{formatMoney(plan.priceValue, lang)}</div>
+                      <div className="ar-price">{formatMoney(plan.priceValue, lang, usdCentsFor(plan))}</div>
                       <div className="ar-subprice">{plan.priceNote}</div>
                       <p className="mt-3">{plan.audience}</p>
                       {aside ? <p className="ar-pricing-aside">{aside}</p> : null}
@@ -235,7 +244,7 @@ export default function Pricing() {
                           next step, and a modal on top of it would be a
                           second one. */}
                       <Link
-                        to={checkoutHref(plan) || href(plan.cta.to)}
+                        to={checkoutHref(plan, lang) || href(plan.cta.to)}
                         className={`ar-btn ${plan.popular ? 'ar-btn-primary' : 'ar-btn-secondary'}`}
                         onClick={(event) => event.stopPropagation()}
                       >

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 import { evidenceFor } from '../../data/plan-evidence.js';
-import { checkoutHref, formatMoney } from '../../data/pricing.js';
+import { checkoutHref, formatMoney, usdCentsFor } from '../../data/pricing.js';
 import { useCopy } from '../../i18n/copy.jsx';
 import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from './Icon.jsx';
@@ -62,7 +62,7 @@ export default function PlanDetail({ plan, detail, onClose }) {
               {plan.name}
             </h2>
             <div className="ar-plan-price">
-              {formatMoney(plan.priceValue, lang)}
+              {formatMoney(plan.priceValue, lang, usdCentsFor(plan))}
               <span>{plan.priceNote}</span>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function PlanDetail({ plan, detail, onClose }) {
 
         <footer className="ar-plan-foot">
           <Link
-            to={checkoutHref(plan) || href(plan.cta.to)}
+            to={checkoutHref(plan, lang) || href(plan.cta.to)}
             className={`ar-btn ${plan.popular ? 'ar-btn-primary' : 'ar-btn-secondary'}`}
             onClick={onClose}
           >

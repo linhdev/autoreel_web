@@ -3,16 +3,16 @@
  * the one place a price is written down.
  *
  * **`priceValue` is đồng, whichever language is reading.** The đồng figure is
- * what the business set, what the invoice quotes and what the JSON-LD block
- * publishes; the dollar figure on the English page is *derived* from it by
- * `priceIn()` at the rate below. Storing a second hand-typed number for the
- * English page would be two numbers that have to agree, and the failure is
- * silent: a page that quotes one price to a Vietnamese reader and another to an
- * English one, with nothing anywhere to say which is right.
+ * what the business set, what the invoice quotes and what the Vietnamese page
+ * shows. The dollar figure on the English page comes from the same explicit
+ * USD table the licence server charges; it is not a straight conversion,
+ * because PayPal adds a cross-border fee, a fixed fee and an FX spread. The
+ * fallback below is only for a plan the API has not priced yet.
  *
- * That derivation is also why `26.000` is a constraint rather than a
- * preference. Change it and every English price on the site moves, including
- * the ones inside structured data that Google may already be showing.
+ * `usdCentsFor()` is the single answer to "what does this plan cost in USD":
+ * the live API's `usdCents` if present, then the table, then the old 26,000₫
+ * conversion for an unknown/coming-soon plan. That is what keeps the price on
+ * the card and the price PayPal charges from being two different numbers.
  *
  * `id`, `group`, `icon`, `billing`, `priceValue`, `saves` and `paybackAgainst`
  * are structural: they pick the layout, split the grid into groups, choose a
@@ -46,14 +46,38 @@ export function usdCents(vnd) {
 }
 
 /**
+ * The USD prices the server charges, for the static build and the first paint.
+ *
+ * These are deliberately not derived from `priceValue`: the licence server
+ * grosses them up for PayPal's fee and FX spread. Keep this table in step with
+ * `packages/shared/src/catalog.ts` in the licence repo; the live API overrides
+ * it in the browser, and `usdCentsFor` uses it only before that request lands.
+ */
+const USD_CENTS_BY_PLAN = {
+  edit: 699,
+  creator: 849,
+  full: 1099,
+  'full-2-may': 1399,
+  'full-3-thang': 2899,
+  personal: 6199,
+};
+
+export function usdCentsFor(plan) {
+  const live = plan && plan.usdCents;
+  if (Number.isSafeInteger(live) && live > 0) return live;
+  const fixed = plan && USD_CENTS_BY_PLAN[plan.id];
+  if (Number.isSafeInteger(fixed) && fixed > 0) return fixed;
+  return usdCents(plan.priceValue);
+}
+
+/**
  * A price in the currency of the language reading it.
  *
- * The whole of the "English prices are in dollars" rule, in four lines: the
- * page, the price formatter and the structured data all ask this question
+ * The page, the price formatter and the structured data all ask this question
  * rather than each deciding for itself.
  */
 export function priceIn(plan, lang) {
-  if (lang === 'en') return { amount: usdCents(plan.priceValue) / 100, currency: 'USD' };
+  if (lang === 'en') return { amount: usdCentsFor(plan) / 100, currency: 'USD' };
   return { amount: plan.priceValue, currency: 'VND' };
 }
 
@@ -68,12 +92,14 @@ export const CURRENCY_LOCALE = { vi: 'vi-VN', en: 'en-US' };
  * amount that belongs to no plan: what the three-month pack saves, and how long
  * the lifetime licence takes to pay for itself.
  */
-export function formatMoney(vnd, lang) {
+export function formatMoney(vnd, lang, usdOverride) {
   if (lang === 'en') {
+    const cents =
+      Number.isSafeInteger(usdOverride) && usdOverride > 0 ? usdOverride : usdCents(vnd);
     return `${PRICE_SUFFIX.en}${new Intl.NumberFormat(CURRENCY_LOCALE.en, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(usdCents(vnd) / 100)}`;
+    }).format(cents / 100)}`;
   }
   return `${new Intl.NumberFormat(CURRENCY_LOCALE.vi).format(vnd)}${PRICE_SUFFIX.vi}`;
 }
@@ -139,7 +165,7 @@ export const pricingSection = {
       'AutoReel does not cap how many videos you make; what differs is which features you get and how many machines you may install on. The current price is on each plan below.',
     saveTemplate: 'Save {amount} against paying monthly',
     paybackTemplate: 'Against the monthly plans, this pays for itself in {months} months',
-    note: 'Subscriptions renew monthly and can be stopped at any time. Prices are in US dollars, converted at 26,000₫ = $1. Any AI/API or third-party service you use is paid separately to that provider.',
+    note: 'Subscriptions renew monthly and can be stopped at any time. Prices are in US dollars; the Vietnamese page shows the đồng price. Any AI/API or third-party service you use is paid separately to that provider.',
     detailCta: 'See what is in this plan',
     detailClose: 'Close',
     detailKicker: 'Plan details',
@@ -541,8 +567,21 @@ export const STORE_PLANS_API = 'https://license.autoreelvn.com/api/v1/store/plan
  */
 export const BUY_PLANS = 'https://license.autoreelvn.com/buy';
 
-export function checkoutHref(plan) {
-  return plan && plan.available ? `${CHECKOUT_BASE}${encodeURIComponent(plan.id)}` : null;
+/**
+ * The plan chooser keeps the reader's language.
+ *
+ * The licence server is a separate origin and cannot read the landing's path,
+ * so the language has to travel in the URL. Without this, an English visitor
+ * clicks a dollar-priced card and lands on a Vietnamese checkout.
+ */
+export function buyPlansHref(lang = 'vi') {
+  return lang === 'en' ? `${BUY_PLANS}?lang=en` : BUY_PLANS;
+}
+
+export function checkoutHref(plan, lang = 'vi') {
+  if (!plan || !plan.available) return null;
+  const suffix = lang === 'en' ? '&lang=en' : '';
+  return `${CHECKOUT_BASE}${encodeURIComponent(plan.id)}${suffix}`;
 }
 
 /**

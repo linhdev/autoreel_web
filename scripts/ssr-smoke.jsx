@@ -10,7 +10,7 @@
  */
 import { renderToString } from 'react-dom/server';
 import App from '../src/App.jsx';
-import { formatMoney, plans, pricingSection } from '../src/data/pricing.js';
+import { formatMoney, plans, pricingSection, usdCentsFor } from '../src/data/pricing.js';
 import { LOCALES, langOf, pathFor, routeForPath, routes } from '../src/data/routes.js';
 
 const html = renderToString(<App />);
@@ -69,7 +69,7 @@ const enRequired = [
   'Notify me',
   'Frequently asked questions',
   'Videos created',
-  formatMoney(personalEn.priceValue, 'en'),
+  formatMoney(personalEn.priceValue, 'en', usdCentsFor(personalEn)),
 ];
 const enMissing = enRequired.filter((token) => !enHtml.includes(token));
 const leaks = ['Bảng giá đơn giản', 'Câu hỏi thường gặp', 'Video đã tạo'].filter((token) =>
