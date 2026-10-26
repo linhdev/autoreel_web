@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
   contentDisposition, isIpLiteral, safeEqual, sanitizeFilename, vnDayStart,
 } from '../src/api/http.js';
+import { batchLimit, requestedUrls } from '../src/api/jobs.js';
 import { normalizeUrl } from '../src/api/urls.js';
 
 const OK = [
@@ -102,4 +103,24 @@ test('vnDayStart is midnight in Vietnam, not UTC', () => {
     vnDayStart(Date.UTC(2026, 9, 26, 16, 59, 59)),
     Date.UTC(2026, 9, 25, 17, 0, 0),
   );
+});
+
+test('the dashboard can lower the batch size but never raise it past five', () => {
+  assert.equal(batchLimit({ batch_max: 5 }), 5);
+  assert.equal(batchLimit({ batch_max: 3 }), 3);
+  assert.equal(batchLimit({ batch_max: 1 }), 1);
+  assert.equal(batchLimit({ batch_max: 0 }), 1);
+  assert.equal(batchLimit({ batch_max: 9 }), 5);
+  assert.equal(batchLimit({}), 5);
+  assert.equal(batchLimit({ batch_max: 'nope' }), 5);
+});
+
+test('a submission may carry one url or a list', () => {
+  assert.deepEqual(requestedUrls({ url: 'https://youtu.be/abc123' }), [
+    'https://youtu.be/abc123',
+  ]);
+  assert.deepEqual(requestedUrls({ urls: ['a', 'b'] }), ['a', 'b']);
+  assert.deepEqual(requestedUrls({ urls: [] }), []);
+  assert.equal(requestedUrls({}), null);
+  assert.equal(requestedUrls({ urls: 'not-a-list' }), null);
 });

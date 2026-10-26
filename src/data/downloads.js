@@ -26,7 +26,7 @@ export const downloads = {
     badge: 'MIỄN PHÍ · KHÔNG CẦN ĐĂNG NHẬP',
     h1: 'Tải video về máy',
     lead:
-      'Dán link video công khai, chờ vài chục giây, tải file MP4 về máy. Không cần cài đặt, không cần đăng nhập.',
+      'Dán một hoặc nhiều link video công khai, chờ vài chục giây, tải file MP4 về máy. Không cần cài đặt, không cần đăng nhập.',
     freeLabel: 'Miễn phí',
     trust: [
       'Không lưu file',
@@ -36,16 +36,17 @@ export const downloads = {
     timeline: ['Xếp hàng', 'Đang tải', 'Hoàn tất'],
     form: {
       heading: 'Dán link video',
-      label: 'Link video',
-      placeholder: 'https://www.tiktok.com/@kenh/video/...',
+      label: 'Link video (mỗi dòng một link)',
+      placeholder: 'Mỗi dòng một link video công khai',
       button: 'Tải video',
-      note: 'Tối đa 20 phút · 95MB',
+      note: 'Mỗi video tối đa 20 phút · 95MB',
+      hint: 'Mỗi dòng một link.',
     },
     stepsTitle: 'Cách dùng',
     steps: [
       {
         title: 'Dán link',
-        text: 'Link video công khai từ một trong sáu nền tảng bên dưới.',
+        text: 'Một hoặc nhiều link công khai từ một trong sáu nền tảng bên dưới.',
       },
       {
         title: 'Xác minh',
@@ -68,7 +69,7 @@ export const downloads = {
     limits: [
       'Video công khai, tối đa 20 phút.',
       'Tối đa 95MB.',
-      '3 video/giờ mỗi IP và 10 video/ngày mỗi IP.',
+      'Tối đa 5 video mỗi lần gửi; 6 video/giờ và 20 video/ngày mỗi IP.',
       'Không nhận playlist, livestream hoặc video riêng tư.',
     ],
     queueTitle: 'Vì sao phải chờ?',
@@ -87,6 +88,10 @@ export const downloads = {
       {
         q: 'Video dài bao lâu thì tải được?',
         a: 'Tối đa 20 phút và 95MB mỗi video.',
+      },
+      {
+        q: 'Có tải được nhiều video một lần không?',
+        a: 'Có. Mỗi lần gửi tối đa 5 link, mỗi dòng một link. Các video được xếp hàng và trả về lần lượt.',
       },
       {
         q: 'Vì sao có video không tải được?',
@@ -119,7 +124,7 @@ export const downloads = {
     badge: 'FREE · NO LOGIN NEEDED',
     h1: 'Download videos to your device',
     lead:
-      'Paste a public video link, wait a few dozen seconds, and save the MP4. No installation, no account.',
+      'Paste one or several public video links, wait a few dozen seconds, and save the MP4 files. No installation, no account.',
     freeLabel: 'Free',
     trust: [
       'No file storage',
@@ -129,16 +134,17 @@ export const downloads = {
     timeline: ['Queued', 'Downloading', 'Ready'],
     form: {
       heading: 'Paste a video link',
-      label: 'Video link',
-      placeholder: 'https://www.tiktok.com/@channel/video/...',
+      label: 'Video links (one per line)',
+      placeholder: 'One public video link per line',
       button: 'Download video',
-      note: 'Up to 20 minutes · 95MB',
+      note: 'Up to 20 minutes · 95MB per video',
+      hint: 'One link per line.',
     },
     stepsTitle: 'How it works',
     steps: [
       {
         title: 'Paste the link',
-        text: 'A public video link from one of the six platforms below.',
+        text: 'One or more public links from one of the six platforms below.',
       },
       {
         title: 'Verify',
@@ -161,7 +167,7 @@ export const downloads = {
     limits: [
       'Public videos, up to 20 minutes.',
       'Up to 95MB.',
-      '3 videos/hour per IP and 10 videos/day per IP.',
+      'Up to 5 videos per submission; 6 videos/hour and 20 videos/day per IP.',
       'No playlists, livestreams or private videos.',
     ],
     queueTitle: 'Why is there a queue?',
@@ -180,6 +186,10 @@ export const downloads = {
       {
         q: 'How long can a video be?',
         a: 'Up to 20 minutes and 95MB per video.',
+      },
+      {
+        q: 'Can I download several videos at once?',
+        a: 'Yes. Send up to 5 links at a time, one per line. They are queued and delivered one after another.',
       },
       {
         q: 'Why did a video fail?',

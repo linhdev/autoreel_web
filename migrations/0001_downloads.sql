@@ -46,8 +46,9 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT OR IGNORE INTO settings (key, value) VALUES
   ('enabled', '1'),
   ('daily_limit', '300'),
-  ('hourly_per_ip', '3'),
-  ('daily_per_ip', '10'),
+  ('hourly_per_ip', '6'),
+  ('daily_per_ip', '20'),
+  ('batch_max', '5'),
   ('queue_limit', '30'),
   ('max_seconds', '1200'),
   ('max_bytes', '99614720');

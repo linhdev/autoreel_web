@@ -44,8 +44,6 @@ const STEP_ICONS = [
   '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/>',
 ];
 
-const FILE_ICON = '<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/>';
-
 const STYLE = `
       .dl-page { max-width: 1080px; margin: 0 auto; }
       .dl-main { padding: 34px 0 82px; }
@@ -58,7 +56,7 @@ const STYLE = `
       .dl-trust li { display: flex; align-items: center; gap: 7px; }
       .dl-trust li::before { content: '✓'; display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border-radius: 50%; background: rgba(52, 211, 153, 0.14); color: #34d399; font-size: 0.7rem; font-weight: 900; }
       .dl-banner { margin: 0 0 20px; padding: 13px 16px; border: 1px solid #7a3a3a; border-radius: 14px; background: #2a1418; color: #ffc7c7; }
-      .dl-banner[hidden], .dl-result[hidden] { display: none !important; }
+      .dl-banner[hidden], .dl-results[hidden] { display: none !important; }
       .dl-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr); gap: 22px; align-items: start; }
       .dl-card { position: relative; overflow: hidden; padding: 26px; border: 1px solid rgba(109, 94, 252, 0.28); border-radius: 24px; background: linear-gradient(180deg, rgba(18, 26, 54, 0.95), rgba(8, 13, 29, 0.98)); box-shadow: 0 24px 80px rgba(3, 6, 18, 0.5); }
       .dl-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 1px; background: linear-gradient(90deg, transparent, rgba(109, 94, 252, 0.8), rgba(34, 211, 238, 0.6), transparent); }
@@ -68,9 +66,11 @@ const STYLE = `
       .dl-pill { flex: none; padding: 6px 10px; border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 999px; background: rgba(52, 211, 153, 0.1); color: #7ee2b8; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
       .dl-form { margin: 0; }
       .dl-label { display: block; margin: 0 0 8px; font-size: 0.9rem; font-weight: 700; }
-      .dl-input-row { display: flex; gap: 10px; }
+      .dl-input-row { display: flex; gap: 10px; align-items: flex-start; }
       .dl-input { flex: 1; min-width: 0; height: 54px; padding: 0 16px; border: 1px solid var(--line); border-radius: 13px; background: #060a18; color: var(--text); font: inherit; }
+      .dl-textarea { width: 100%; height: auto; min-height: 104px; padding: 13px 16px; line-height: 1.6; resize: vertical; }
       .dl-input:focus { outline: 2px solid rgba(109, 94, 252, 0.8); outline-offset: 2px; border-color: transparent; }
+      .dl-hint { margin: 8px 0 0; }
       .dl-submit { flex: none; height: 54px; padding: 0 24px; border-radius: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
       .dl-submit:disabled { cursor: not-allowed; opacity: 0.5; }
       .dl-turnstile { margin: 16px 0 0; min-height: 65px; }
@@ -96,15 +96,22 @@ const STYLE = `
       .dl-status[data-kind="ok"]::before { background: #34d399; }
       .dl-status[data-kind="error"] { color: #ff9c9c; }
       .dl-status[data-kind="error"]::before { background: #f87171; }
-      .dl-result { display: grid; gap: 14px; margin-top: 18px; padding: 16px; border: 1px solid rgba(109, 94, 252, 0.3); border-radius: 16px; background: rgba(109, 94, 252, 0.06); }
-      .dl-result-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+      .dl-results { display: grid; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+      .dl-results[hidden] { display: none !important; }
+      .dl-job { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px; border: 1px solid rgba(109, 94, 252, 0.24); border-radius: 16px; background: rgba(109, 94, 252, 0.06); }
+      .dl-job-num { display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 10px; background: rgba(109, 94, 252, 0.18); color: #c7c1ff; font-size: 0.8rem; font-weight: 800; }
+      .dl-job-body { min-width: 0; }
+      .dl-job-name { display: block; font-size: 0.95rem; word-break: break-word; }
+      .dl-job-status { display: block; margin-top: 3px; color: var(--muted); font-size: 0.84rem; }
+      .dl-job-status[data-kind="ok"] { color: #7ee2b8; }
+      .dl-job-status[data-kind="error"] { color: #ff9c9c; }
+      .dl-job-meta, .dl-job-expiry { display: block; margin-top: 2px; color: var(--muted); font-size: 0.8rem; }
+      .dl-job-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+      .dl-job-actions .ar-btn { height: 40px; padding: 0 16px; font-size: 0.86rem; }
+      .dl-job-preview { cursor: pointer; }
+      .dl-job .dl-preview { grid-column: 1 / -1; margin-top: 4px; max-height: 360px; }
       .dl-preview { width: 100%; max-height: 440px; border-radius: 12px; background: #000; }
       .dl-preview[hidden] { display: none !important; }
-      .dl-file { display: flex; min-width: 0; align-items: center; gap: 12px; }
-      .dl-file-icon { display: inline-flex; width: 42px; height: 42px; flex: none; align-items: center; justify-content: center; border-radius: 12px; background: rgba(109, 94, 252, 0.18); color: #c7c1ff; }
-      .dl-file-icon svg { width: 22px; height: 22px; }
-      .dl-file-name { display: block; font-size: 0.97rem; word-break: break-word; }
-      .dl-result .dl-note { display: block; margin-top: 2px; }
       .dl-download { display: inline-flex; height: 46px; padding: 0 20px; align-items: center; border-radius: 12px; }
       .dl-side { display: grid; gap: 16px; }
       .dl-side-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(11, 17, 38, 0.7); }
@@ -146,6 +153,8 @@ const STYLE = `
         .dl-card { padding: 18px; border-radius: 20px; }
         .dl-input-row { flex-direction: column; }
         .dl-submit { width: 100%; }
+        .dl-job { grid-template-columns: auto minmax(0, 1fr); }
+        .dl-job-actions { grid-column: 1 / -1; justify-content: flex-start; }
         .dl-grid, .dl-feature-grid { grid-template-columns: 1fr; }
         .dl-section { margin-top: 36px; }
         .dl-section-head { flex-direction: column; align-items: flex-start; }
@@ -306,12 +315,13 @@ function pageBody(lang, copy, url) {
               <form id="dl-form" class="dl-form" novalidate>
                 <label class="dl-label" for="dl-url">${esc(copy.form.label)}</label>
                 <div class="dl-input-row">
-                  <input class="dl-input" id="dl-url" name="url" type="url"
-                         inputmode="url" autocomplete="off" spellcheck="false"
-                         placeholder="${esc(copy.form.placeholder)}" required />
+                  <textarea class="dl-input dl-textarea" id="dl-url" name="urls" rows="3"
+                            inputmode="url" autocomplete="off" spellcheck="false"
+                            placeholder="${esc(copy.form.placeholder)}" required></textarea>
                   <button id="dl-submit" class="ar-btn ar-btn-primary dl-submit"
                           type="submit" disabled>${esc(copy.form.button)}</button>
                 </div>
+                <p id="dl-batch-hint" class="dl-note dl-hint">${esc(copy.form.hint)}</p>
                 <div id="dl-turnstile" class="dl-turnstile"
                      data-sitekey="${esc(TURNSTILE_SITE_KEY)}" data-action="download"></div>
               </form>
@@ -322,20 +332,7 @@ function pageBody(lang, copy, url) {
               </ol>
               <p id="dl-status" class="dl-status" role="status" aria-live="polite"></p>
 
-              <div id="dl-result" class="dl-result" hidden>
-                <video id="dl-preview" class="dl-preview" controls playsinline preload="metadata" hidden></video>
-                <div class="dl-result-row">
-                  <div class="dl-file">
-                    <span class="dl-file-icon">${icon(FILE_ICON)}</span>
-                    <div>
-                      <strong id="dl-file-name" class="dl-file-name"></strong>
-                      <span id="dl-file-meta" class="dl-note"></span>
-                      <span id="dl-expiry" class="dl-note"></span>
-                    </div>
-                  </div>
-                  <a id="dl-file-link" class="ar-btn ar-btn-primary dl-download" href="#" hidden></a>
-                </div>
-              </div>
+              <ul id="dl-results" class="dl-results" role="list" hidden></ul>
             </section>
 
             <aside class="dl-side">

@@ -20,8 +20,8 @@ export function json(body, status = 200, headers = {}) {
   });
 }
 
-export function errorJson(code, status, headers = {}) {
-  return json({ error: { code } }, status, headers);
+export function errorJson(code, status, headers = {}, extra = {}) {
+  return json({ error: { code }, ...extra }, status, headers);
 }
 
 export function nowMs() {

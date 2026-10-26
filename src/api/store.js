@@ -8,8 +8,11 @@
 const DEFAULT_SETTINGS = {
   enabled: 1,
   daily_limit: 300,
-  hourly_per_ip: 3,
-  daily_per_ip: 10,
+  // A visitor may send several links at once. Six an hour leaves room for one
+  // full batch plus a single; twenty a day is four batches.
+  hourly_per_ip: 6,
+  daily_per_ip: 20,
+  batch_max: 5,
   queue_limit: 30,
   max_seconds: 1200,
   max_bytes: 99_614_720,
@@ -56,18 +59,26 @@ export async function createJob(env, job) {
   return row ? row.seq : 0;
 }
 
-export async function findDuplicate(env, urlHash, now) {
-  return env.DB.prepare(
-    `SELECT id, status, expires_at, seq
+export async function findDuplicates(env, urlHashes, now) {
+  if (urlHashes.length === 0) return new Map();
+  const placeholders = urlHashes.map(() => '?').join(', ');
+  const { results = [] } = await env.DB.prepare(
+    `SELECT id, status, expires_at, seq, url_hash
        FROM jobs
-      WHERE url_hash = ?
+      WHERE url_hash IN (${placeholders})
         AND (status IN ('queued', 'running')
              OR (status = 'done' AND expires_at > ?))
-      ORDER BY seq DESC
-      LIMIT 1`,
+      ORDER BY seq DESC`,
   )
-    .bind(urlHash, now)
-    .first();
+    .bind(...urlHashes, now)
+    .all();
+
+  // Newest first, so the first row seen for a hash is the one to reuse.
+  const byHash = new Map();
+  for (const row of results) {
+    if (!byHash.has(row.url_hash)) byHash.set(row.url_hash, row);
+  }
+  return byHash;
 }
 
 export async function countsForSubmit(env, ipHash, dayStart, hourStart) {
