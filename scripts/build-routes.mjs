@@ -31,6 +31,7 @@ import { LOCALES, LOCALE_TAGS, SITE_URL, absolute, routes } from '../src/data/ro
 import { plans, priceIn } from '../src/data/pricing.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, docPath, docs } from '../src/data/docs.js';
+import { DOWNLOADS } from '../src/data/downloads.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -417,6 +418,22 @@ function sitemap(stamp) {
         ),
       );
     }
+  }
+
+  // The public download tool, written by `build-downloads.mjs`. It is the
+  // page this site wants a search engine to find, so it sits above the docs.
+  for (const lang of LOCALES) {
+    urls.push(
+      entry(
+        absolute(DOWNLOADS.path[lang]),
+        stamp,
+        '0.8',
+        alternatesFor({
+          vi: absolute(DOWNLOADS.path.vi),
+          en: absolute(DOWNLOADS.path.en),
+        }),
+      ),
+    );
   }
 
   return (

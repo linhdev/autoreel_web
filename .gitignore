@@ -9,6 +9,8 @@ dist-ssr/
 .env
 .env.local
 .env.*.local
+.dev.vars
+.wrangler/
 
 # Logs
 npm-debug.log*

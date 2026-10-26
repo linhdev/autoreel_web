@@ -111,7 +111,7 @@ export function nav(lang, active = '') {
       // An entry is either a route key or a literal address; `site.js` says
       // which and why. The current-page marker only means anything for the
       // second kind, because the first kind is always the one-pager.
-      const href = link.href || pathFor(link.to);
+      const href = link.href || pathFor(link.to, lang);
       const here = link.key && link.key === active ? ' aria-current="page"' : '';
       return `          <li><a class="ar-nav-link" href="${href}"${here}>${esc(link.label)}</a></li>`;
     })
@@ -124,7 +124,7 @@ export function nav(lang, active = '') {
   // likely to be read on a phone.
   return `      <header class="ar-nav">
         <div class="ar-container ar-nav-inner">
-          <a href="/" class="ar-nav-brand" aria-label="${esc(site.name)}">
+          <a href="${pathFor('home', lang)}" class="ar-nav-brand" aria-label="${esc(site.name)}">
             <img src="/logo-88.webp" alt="" width="44" height="44" />
             <span class="ar-brand-text">${esc(site.name)}</span>
           </a>
@@ -133,7 +133,7 @@ export function nav(lang, active = '') {
 ${links}
             </ul>
           </nav>
-          <a class="ar-btn ar-btn-primary" href="${pathFor('contact')}">${esc(ui[lang].contact)}</a>
+          <a class="ar-btn ar-btn-primary" href="${pathFor('contact', lang)}">${esc(ui[lang].contact)}</a>
         </div>
       </header>`;
 }
@@ -141,7 +141,7 @@ ${links}
 export function footer(lang) {
   const copy = footerCopy[lang];
   const links = copy.links
-    .map((link) => `<a class="ar-footer-link" href="${pathFor(link.to)}">${esc(link.label)}</a>`)
+    .map((link) => `<a class="ar-footer-link" href="${link.href || pathFor(link.to, lang)}">${esc(link.label)}</a>`)
     .join('\n            ');
   const registered = businessInfo.lines.map((line) => `<span>${esc(line)}</span>`).join('\n              ');
   // The same two marks the one-pager's footer draws, from the same `path` in

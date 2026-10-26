@@ -10,9 +10,26 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    // Assets are served before the Worker by default, which would skip the
-    // http -> https redirect for every page that exists. The Worker is cheap
-    // here: it either redirects or hands the request straight back.
-    "run_worker_first": true
-  }
+    // Only /api goes through the Worker. Every other asset is served by the
+    // static-assets layer, which Cloudflare does not count as a Worker
+    // request; a traffic page cannot quietly eat the 100k/day allowance.
+    // The http -> https redirect for pages is the zone's "Always Use HTTPS"
+    // setting, not this Worker (see README/HANDOVER notes in the plan).
+    "run_worker_first": ["/api/*"]
+  },
+
+  // The public download queue. All three bindings are free-tier resources.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "autoreel-downloads",
+      "database_id": "8c1bd04d-7e94-4b03-938f-5956c52316b2",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "DOWNLOADS", "bucket_name": "autoreel-downloads" }
+  ],
+  "vars": { "ENVIRONMENT": "production" },
+  "triggers": { "crons": ["17 * * * *"] }
 }

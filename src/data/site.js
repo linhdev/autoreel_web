@@ -131,6 +131,7 @@ export const navLinks = {
     { label: 'Demo', to: 'demo' },
     { label: 'Bảng giá', to: 'pricing' },
     { label: 'FAQ', to: 'faq' },
+    { label: 'Tải video', href: '/downloads/', key: 'downloads' },
     { label: 'Blog', href: '/blog/', key: 'blog' },
     { label: 'Tài liệu', href: '/tai-lieu/', key: 'docs' },
   ],
@@ -141,6 +142,7 @@ export const navLinks = {
     { label: 'Demo', to: 'demo' },
     { label: 'Pricing', to: 'pricing' },
     { label: 'FAQ', to: 'faq' },
+    { label: 'Downloader', href: '/en/downloads/', key: 'downloads' },
     { label: 'Blog', href: '/en/blog/', key: 'blog' },
     { label: 'Docs', href: '/en/docs/', key: 'docs' },
   ],
@@ -383,6 +385,7 @@ export const footer = {
       { label: 'Bảng giá', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
       { label: 'Liên hệ', to: 'contact' },
+      { label: 'Tải video', href: '/downloads/' },
       // The two static pages, as `{ href }` entries for the reason given on
       // `navLinks` above. Blog was a hard-coded anchor here too.
       { label: 'Blog', href: '/blog/' },
@@ -399,6 +402,7 @@ export const footer = {
       { label: 'Pricing', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
       { label: 'Contact', to: 'contact' },
+      { label: 'Downloader', href: '/en/downloads/' },
       { label: 'Blog', href: '/en/blog/' },
       { label: 'Docs', href: '/en/docs/' },
       { label: 'Terms', href: '/en/terms/' },

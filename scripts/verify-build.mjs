@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
+import { DOWNLOADS, downloads } from '../src/data/downloads.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
 import { postContentProblems } from './lib/post-rules.mjs';
 import {
@@ -68,6 +69,10 @@ async function main() {
     'favicon-192.png',
     'apple-touch-icon.png',
     'og-image.png',
+    // The public download tool, written after the app build.
+    'downloads/index.html',
+    'en/downloads/index.html',
+    'downloads/app.js',
     // The English pages point their social preview and their home-screen icon
     // at these two; without them the unfurl falls back to a Vietnamese card.
     ...(LOCALES.length > 1 ? ['og-image-en.png', 'en/site.webmanifest'] : []),
@@ -620,6 +625,44 @@ async function main() {
   if (docProblems.length) fail(`docs: ${docProblems.slice(0, 6).join('; ')}`);
   else pass(`docs: ${docs.length} topic(s) x 2 languages, no bundle, every figure present`);
 
+  // ---- The public download tool ----
+  //
+  // It is a standalone page, so the two things that matter most are the ones
+  // that made the docs a separate builder in the first place: no React bundle
+  // (the router would send the reader home) and a real, indexable document for
+  // each language.
+  const dlProblems = [];
+  for (const lang of LOCALES) {
+    const file = path.join(dist, DOWNLOADS.path[lang].replace(/^\//, ''), 'index.html');
+    if (!existsSync(file)) {
+      dlProblems.push(`${lang}: page missing`);
+      continue;
+    }
+    const page = await readFile(file, 'utf8');
+    const url = absolute(DOWNLOADS.path[lang]);
+    if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) dlProblems.push(`${lang}: html lang`);
+    if (!page.includes(`<link rel="canonical" href="${url}"`)) dlProblems.push(`${lang}: canonical`);
+    if (!page.includes('hreflang="vi"') || !page.includes('hreflang="en"')
+      || !page.includes('hreflang="x-default"')) dlProblems.push(`${lang}: hreflang trio`);
+    if (!page.includes('itemtype="https://schema.org/WebApplication"')) dlProblems.push(`${lang}: WebApplication`);
+    if (!page.includes('itemtype="https://schema.org/FAQPage"')) dlProblems.push(`${lang}: FAQPage`);
+    if (/assets\/index-[\w-]+\.js/.test(page)) dlProblems.push(`${lang}: carries the app bundle`);
+    if (!page.includes('/downloads/app.js')) dlProblems.push(`${lang}: client script`);
+    if (!page.includes('challenges.cloudflare.com/turnstile')) dlProblems.push(`${lang}: Turnstile script`);
+    if (!page.includes('data-sitekey="')) dlProblems.push(`${lang}: Turnstile site key`);
+    if (!page.includes(downloads[lang].title.replace(/&/g, '&amp;'))) dlProblems.push(`${lang}: title copy`);
+  }
+  const headers = await readFile(path.join(dist, '_headers'), 'utf8');
+  if (!headers.includes('/downloads/*') || !headers.includes('/en/downloads/*')) {
+    dlProblems.push('_headers has no downloads CSP rule');
+  }
+  if (!headers.includes('challenges.cloudflare.com')
+    || !headers.includes("script-src 'self'")) {
+    dlProblems.push('downloads CSP does not allow the Turnstile script');
+  }
+  if (dlProblems.length) fail(`downloads: ${dlProblems.slice(0, 6).join('; ')}`);
+  else pass(`downloads: ${LOCALES.length} language(s), no bundle, CSP and Turnstile present`);
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
   // "Route" here includes the blog, which is not in `routes.js` on purpose -
@@ -635,6 +678,8 @@ async function main() {
     // that the two agree.
     ...LOCALES.map((lang) => absolute(DOCS.path[lang])),
     ...docs.flatMap((doc) => LOCALES.map((lang) => absolute(docPath(doc, lang)))),
+    // The public download tool, written by `build-downloads.mjs`.
+    ...LOCALES.map((lang) => absolute(DOWNLOADS.path[lang])),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {
