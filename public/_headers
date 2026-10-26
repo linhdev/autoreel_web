@@ -41,6 +41,9 @@
 /*.svg
   Cache-Control: public, max-age=604800
 
+/embed.js
+  Cache-Control: public, max-age=3600
+
 # The public download tool. Its CSP is scoped to these two paths rather than
 # `/*` because the landing page still uses inline styles and inline scripts
 # that a strict policy would break. Turnstile needs both its script and its

@@ -58,7 +58,12 @@ export async function nextJob(request, env, url) {
   for (;;) {
     const job = await claimNext(env, nowMs(), workerId(request));
     if (job) {
-      return json({ id: job.id, url: job.url, ...max });
+      return json({
+        id: job.id,
+        url: job.url,
+        kind: job.kind || 'video',
+        ...max,
+      });
     }
     if (nowMs() >= deadline) return new Response(null, { status: 204 });
     await sleep(2000);
@@ -89,7 +94,31 @@ export async function uploadFile(request, env, id) {
       name = headerName;
     }
   }
-  name = sanitizeFilename(name, `video-${id.slice(0, 8)}.mp4`);
+
+  // The file's type comes from the worker that produced it. A kind whose mime
+  // does not belong to it would make the row unplayable (or, worse, let an
+  // HTML file be uploaded as a cover), so the pair is checked rather than
+  // trusted.
+  const kind = row.kind || 'video';
+  const mime = String(request.headers.get('content-type') || '')
+    .split(';')[0]
+    .trim()
+    .toLowerCase();
+  const allowed = {
+    video: ['video/mp4', 'video/webm'],
+    audio: ['audio/mp4', 'audio/mpeg', 'audio/aac'],
+    cover: ['image/jpeg', 'image/png', 'image/webp'],
+  };
+  if (!(allowed[kind] || allowed.video).includes(mime)) {
+    return errorJson('BAD_MEDIA', 400);
+  }
+  const ext = mime === 'image/png' ? '.png'
+    : mime === 'image/webp' ? '.webp'
+      : mime === 'audio/mpeg' ? '.mp3'
+        : kind === 'audio' ? '.m4a'
+          : kind === 'cover' ? '.jpg' : '.mp4';
+  const base = kind === 'audio' ? 'audio' : kind === 'cover' ? 'cover' : 'video';
+  name = sanitizeFilename(name, `${base}-${id.slice(0, 8)}${ext}`, ext);
 
   const duration = Number(request.headers.get('x-duration') || 0);
   const now = nowMs();
@@ -100,7 +129,7 @@ export async function uploadFile(request, env, id) {
   let object;
   try {
     object = await env.DOWNLOADS.put(fileKey, request.body, {
-      httpMetadata: { contentType: 'video/mp4' },
+      httpMetadata: { contentType: mime },
       customMetadata: { name },
     });
   } catch {
@@ -120,6 +149,7 @@ export async function uploadFile(request, env, id) {
     duration: Number.isFinite(duration) && duration > 0 ? duration : null,
     token,
     expiresAt,
+    fileMime: mime,
   });
   if (!done) {
     await env.DOWNLOADS.delete(fileKey).catch(() => {});

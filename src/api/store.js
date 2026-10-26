@@ -40,8 +40,8 @@ export async function readSettings(env) {
 export async function createJob(env, job) {
   await env.DB.prepare(
     `INSERT INTO jobs
-       (id, url, url_hash, host, source, status, created_at, ip_hash)
-     VALUES (?, ?, ?, ?, ?, 'queued', ?, ?)`,
+       (id, url, url_hash, host, source, status, created_at, ip_hash, kind)
+     VALUES (?, ?, ?, ?, ?, 'queued', ?, ?, ?)`,
   )
     .bind(
       job.id,
@@ -51,6 +51,7 @@ export async function createJob(env, job) {
       job.source,
       job.createdAt,
       job.ipHash,
+      job.kind || 'video',
     )
     .run();
   const row = await env.DB.prepare('SELECT seq FROM jobs WHERE id = ?')
@@ -59,18 +60,19 @@ export async function createJob(env, job) {
   return row ? row.seq : 0;
 }
 
-export async function findDuplicates(env, urlHashes, now) {
+export async function findDuplicates(env, urlHashes, now, kind = 'video') {
   if (urlHashes.length === 0) return new Map();
   const placeholders = urlHashes.map(() => '?').join(', ');
   const { results = [] } = await env.DB.prepare(
-    `SELECT id, status, expires_at, seq, url_hash
+    `SELECT id, status, expires_at, seq, url_hash, kind
        FROM jobs
       WHERE url_hash IN (${placeholders})
+        AND kind = ?
         AND (status IN ('queued', 'running')
              OR (status = 'done' AND expires_at > ?))
       ORDER BY seq DESC`,
   )
-    .bind(...urlHashes, now)
+    .bind(...urlHashes, kind, now)
     .all();
 
   // Newest first, so the first row seen for a hash is the one to reuse.
@@ -179,7 +181,7 @@ export async function claimNext(env, now, workerId) {
       .bind(now, workerId, row.id)
       .run();
     if (result.meta?.changes === 1) {
-      return env.DB.prepare('SELECT id, url, created_at FROM jobs WHERE id = ?')
+      return env.DB.prepare('SELECT id, url, created_at, kind FROM jobs WHERE id = ?')
         .bind(row.id)
         .first();
     }
@@ -191,7 +193,8 @@ export async function markDone(env, id, file) {
   const result = await env.DB.prepare(
     `UPDATE jobs
         SET status = 'done', finished_at = ?, file_key = ?, file_name = ?,
-            file_size = ?, duration = ?, token = ?, expires_at = ?, url = ''
+            file_size = ?, duration = ?, token = ?, expires_at = ?,
+            file_mime = ?, url = ''
       WHERE id = ? AND status = 'running'`,
   )
     .bind(
@@ -202,6 +205,7 @@ export async function markDone(env, id, file) {
       file.duration,
       file.token,
       file.expiresAt,
+      file.fileMime || 'video/mp4',
       id,
     )
     .run();
@@ -223,7 +227,7 @@ export async function markError(env, id, code, detail, now) {
 export async function getJob(env, id) {
   return env.DB.prepare(
     `SELECT seq, id, status, created_at, claimed_at, file_name, file_size,
-            duration, token, expires_at, error_code
+            duration, token, expires_at, error_code, kind, file_mime
        FROM jobs WHERE id = ?`,
   )
     .bind(id)

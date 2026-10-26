@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 import { LOCALES, LOCALE_TAGS, absolute, routes, SITE_URL } from '../src/data/routes.js';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
-import { DOWNLOADS, downloads } from '../src/data/downloads.js';
+import { DOWNLOADS, QUICK, downloads } from '../src/data/downloads.js';
+import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
 import { postContentProblems } from './lib/post-rules.mjs';
 import {
@@ -73,6 +74,13 @@ async function main() {
     'downloads/index.html',
     'en/downloads/index.html',
     'downloads/app.js',
+    'downloads/qr.js',
+    'downloads/sw.js',
+    'downloads/manifest.webmanifest',
+    'downloads/icon-512.png',
+    'embed.js',
+    'tai-video-nhanh/index.html',
+    'en/quick-download/index.html',
     // The English pages point their social preview and their home-screen icon
     // at these two; without them the unfurl falls back to a Vietnamese card.
     ...(LOCALES.length > 1 ? ['og-image-en.png', 'en/site.webmanifest'] : []),
@@ -648,6 +656,8 @@ async function main() {
     if (!page.includes('itemtype="https://schema.org/FAQPage"')) dlProblems.push(`${lang}: FAQPage`);
     if (/assets\/index-[\w-]+\.js/.test(page)) dlProblems.push(`${lang}: carries the app bundle`);
     if (!page.includes('/downloads/app.js')) dlProblems.push(`${lang}: client script`);
+    if (!page.includes('/downloads/qr.js')) dlProblems.push(`${lang}: QR script`);
+    if (!page.includes('href="/downloads/manifest.webmanifest"')) dlProblems.push(`${lang}: downloads manifest`);
     if (!page.includes('challenges.cloudflare.com/turnstile')) dlProblems.push(`${lang}: Turnstile script`);
     if (!page.includes('data-sitekey="')) dlProblems.push(`${lang}: Turnstile site key`);
     if (!page.includes(downloads[lang].title.replace(/&/g, '&amp;'))) dlProblems.push(`${lang}: title copy`);
@@ -662,6 +672,49 @@ async function main() {
   }
   if (dlProblems.length) fail(`downloads: ${dlProblems.slice(0, 6).join('; ')}`);
   else pass(`downloads: ${LOCALES.length} language(s), no bundle, CSP and Turnstile present`);
+
+  // ---- The six platform landing pages ----
+  const pfProblems = [];
+  for (const platform of PLATFORM_PAGES) {
+    for (const lang of LOCALES) {
+      const file = path.join(dist, platform.path[lang].replace(/^\//, ''), 'index.html');
+      if (!existsSync(file)) {
+        pfProblems.push(`${platform.key}/${lang}: page missing`);
+        continue;
+      }
+      const page = await readFile(file, 'utf8');
+      const url = absolute(platform.path[lang]);
+      if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) pfProblems.push(`${platform.key}/${lang}: html lang`);
+      if (!page.includes(`<link rel="canonical" href="${url}"`)) pfProblems.push(`${platform.key}/${lang}: canonical`);
+      if (!page.includes('hreflang="vi"') || !page.includes('hreflang="en"')
+        || !page.includes('hreflang="x-default"')) pfProblems.push(`${platform.key}/${lang}: hreflang trio`);
+      if (!page.includes('itemtype="https://schema.org/WebApplication"')) pfProblems.push(`${platform.key}/${lang}: WebApplication`);
+      if (!page.includes('itemtype="https://schema.org/FAQPage"')) pfProblems.push(`${platform.key}/${lang}: FAQPage`);
+      if (/assets\/index-[\w-]+\.js/.test(page)) pfProblems.push(`${platform.key}/${lang}: carries the app bundle`);
+      if (!page.includes(`action="${DOWNLOADS.path[lang]}"`)) pfProblems.push(`${platform.key}/${lang}: tool action`);
+      if (!page.includes('name="url"')) pfProblems.push(`${platform.key}/${lang}: url field`);
+      if (!page.includes(platform.meta[lang].title.replace(/&/g, '&amp;'))) pfProblems.push(`${platform.key}/${lang}: title copy`);
+    }
+  }
+  if (pfProblems.length) fail(`platform pages: ${pfProblems.slice(0, 6).join('; ')}`);
+  else pass(`platform pages: ${PLATFORM_PAGES.length} platform(s) x ${LOCALES.length} languages`);
+
+  // ---- Bookmarklet and embed page ----
+  const qtProblems = [];
+  for (const lang of LOCALES) {
+    const file = path.join(dist, QUICK.path[lang].replace(/^\//, ''), 'index.html');
+    if (!existsSync(file)) {
+      qtProblems.push(`${lang}: page missing`);
+      continue;
+    }
+    const page = await readFile(file, 'utf8');
+    if (!page.includes(`<link rel="canonical" href="${absolute(QUICK.path[lang])}"`)) qtProblems.push(`${lang}: canonical`);
+    if (!page.includes('javascript:')) qtProblems.push(`${lang}: bookmarklet`);
+    if (!page.includes('/embed.js')) qtProblems.push(`${lang}: embed snippet`);
+    if (/assets\/index-[\w-]+\.js/.test(page)) qtProblems.push(`${lang}: carries the app bundle`);
+  }
+  if (qtProblems.length) fail(`quick/embed: ${qtProblems.slice(0, 6).join('; ')}`);
+  else pass(`quick/embed: ${LOCALES.length} language(s)`);
 
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
@@ -680,6 +733,12 @@ async function main() {
     ...docs.flatMap((doc) => LOCALES.map((lang) => absolute(docPath(doc, lang)))),
     // The public download tool, written by `build-downloads.mjs`.
     ...LOCALES.map((lang) => absolute(DOWNLOADS.path[lang])),
+    // The platform landing pages, written by `build-download-platforms.mjs`.
+    ...PLATFORM_PAGES.flatMap((platform) =>
+      LOCALES.map((lang) => absolute(platform.path[lang]))),
+    // The bookmarklet and embed instructions, written by
+    // `build-download-tools.mjs`.
+    ...LOCALES.map((lang) => absolute(QUICK.path[lang])),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {

@@ -100,14 +100,14 @@ export async function hashIp(env, request) {
  * control characters, separators and quotes become spaces. The name stays
  * UTF-8; `contentDisposition` carries the ASCII fallback as well.
  */
-export function sanitizeFilename(name, fallback = 'video.mp4') {
+export function sanitizeFilename(name, fallback = 'video.mp4', ext = '.mp4') {
   let clean = String(name || '')
     .replace(/[\u0000-\u001f\u007f]/g, ' ')
     .replace(/[\\/:*?"<>|]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   if (!clean) clean = fallback;
-  if (!/\.mp4$/i.test(clean)) clean += '.mp4';
+  if (!/\.(mp4|m4a|mp3|jpg|jpeg|png|webp)$/i.test(clean)) clean += ext;
   return clean.slice(0, 80);
 }
 

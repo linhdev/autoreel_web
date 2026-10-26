@@ -10,6 +10,11 @@ export const DOWNLOADS = {
   path: { vi: '/downloads/', en: '/en/downloads/' },
 };
 
+/** The bookmarklet and embed instructions, written by `build-download-tools.mjs`. */
+export const QUICK = {
+  path: { vi: '/tai-video-nhanh/', en: '/en/quick-download/' },
+};
+
 /**
  * Public Turnstile site key. A production build must set the environment
  * variable; the fallback is Cloudflare's documented "always passes" test key,
@@ -41,6 +46,9 @@ export const downloads = {
       button: 'Tải video',
       note: 'Mỗi video tối đa 20 phút · 95MB',
       hint: 'Mỗi dòng một link.',
+      kindLabel: 'Chọn loại file',
+      kinds: { video: 'Video', audio: 'Âm thanh', cover: 'Ảnh bìa' },
+      quick: 'Cài nút “Tải video này” cho trình duyệt',
     },
     stepsTitle: 'Cách dùng',
     steps: [
@@ -139,6 +147,9 @@ export const downloads = {
       button: 'Download video',
       note: 'Up to 20 minutes · 95MB per video',
       hint: 'One link per line.',
+      kindLabel: 'File type',
+      kinds: { video: 'Video', audio: 'Audio', cover: 'Cover' },
+      quick: 'Get the “Download this video” bookmarklet',
     },
     stepsTitle: 'How it works',
     steps: [

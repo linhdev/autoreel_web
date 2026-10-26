@@ -13,7 +13,8 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { DOWNLOADS, TURNSTILE_SITE_KEY, downloads } from '../src/data/downloads.js';
+import { DOWNLOADS, QUICK, TURNSTILE_SITE_KEY, downloads } from '../src/data/downloads.js';
+import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { benefits } from '../src/data/features.js';
 import {
   LOCALE_TAGS, SITE_URL, absolute, pathFor,
@@ -71,6 +72,11 @@ const STYLE = `
       .dl-textarea { width: 100%; height: auto; min-height: 104px; padding: 13px 16px; line-height: 1.6; resize: vertical; }
       .dl-input:focus { outline: 2px solid rgba(109, 94, 252, 0.8); outline-offset: 2px; border-color: transparent; }
       .dl-hint { margin: 8px 0 0; }
+      .dl-quick { margin: 6px 0 0; }
+      .dl-quick a { color: #c7c1ff; font-weight: 700; }
+      .dl-kinds { display: flex; gap: 5px; width: fit-content; margin: 0 0 16px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: rgba(148, 163, 184, 0.05); }
+      .dl-kind { padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
+      .dl-kind.is-active { background: rgba(109, 94, 252, 0.22); color: #e9e6ff; box-shadow: inset 0 0 0 1px rgba(109, 94, 252, 0.5); }
       .dl-submit { flex: none; height: 54px; padding: 0 24px; border-radius: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
       .dl-submit:disabled { cursor: not-allowed; opacity: 0.5; }
       .dl-turnstile { margin: 16px 0 0; min-height: 65px; }
@@ -110,6 +116,16 @@ const STYLE = `
       .dl-job-actions .ar-btn { height: 40px; padding: 0 16px; font-size: 0.86rem; }
       .dl-job-preview { cursor: pointer; }
       .dl-job .dl-preview { grid-column: 1 / -1; margin-top: 4px; max-height: 360px; }
+      .dl-cover { grid-column: 1 / -1; margin-top: 4px; width: 100%; max-width: 320px; border: 1px solid var(--line); border-radius: 12px; }
+      audio.dl-preview { grid-column: 1 / -1; margin-top: 4px; width: 100%; max-width: 480px; }
+      .dl-share { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: center; margin-top: 16px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: rgba(11, 17, 38, 0.6); }
+      .dl-share[hidden] { display: none !important; }
+      .dl-share-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .dl-share-actions .ar-btn { height: 38px; padding: 0 14px; font-size: 0.84rem; }
+      .dl-qr { display: grid; justify-items: center; gap: 6px; }
+      .dl-qr img { width: 112px; height: 112px; padding: 6px; border-radius: 8px; background: #fff; }
+      .dl-qr .dl-note { max-width: 150px; text-align: center; font-size: 0.72rem; }
+      @media (max-width: 600px) { .dl-share { grid-template-columns: 1fr; } .dl-qr { justify-items: start; } }
       .dl-preview { width: 100%; max-height: 440px; border-radius: 12px; background: #000; }
       .dl-preview[hidden] { display: none !important; }
       .dl-download { display: inline-flex; height: 46px; padding: 0 20px; align-items: center; border-radius: 12px; }
@@ -216,6 +232,7 @@ ${assets}
     <style>${STYLE}    </style>
 
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+    <script src="/downloads/qr.js" defer></script>
     <script src="/downloads/app.js" defer></script>
   </head>
   <body>
@@ -237,7 +254,12 @@ function pageBody(lang, copy, url) {
     .join('\n');
 
   const chips = copy.platforms
-    .map((platform) => `<span class="dl-chip">${esc(platform)}</span>`)
+    .map((platform) => {
+      const page = PLATFORM_PAGES.find((one) => one.label === platform);
+      return page
+        ? `<a class="dl-chip" href="${esc(page.path[lang])}">${esc(platform)}</a>`
+        : `<span class="dl-chip">${esc(platform)}</span>`;
+    })
     .join('');
 
   const limits = copy.limits
@@ -313,7 +335,16 @@ function pageBody(lang, copy, url) {
               </div>
 
               <form id="dl-form" class="dl-form" novalidate>
-                <label class="dl-label" for="dl-url">${esc(copy.form.label)}</label>
+                <div class="dl-kinds" id="dl-kinds" role="radiogroup"
+                     aria-label="${esc(copy.form.kindLabel)}">
+                  <button type="button" class="dl-kind is-active" data-kind="video"
+                          role="radio" aria-checked="true">${esc(copy.form.kinds.video)}</button>
+                  <button type="button" class="dl-kind" data-kind="audio"
+                          role="radio" aria-checked="false">${esc(copy.form.kinds.audio)}</button>
+                  <button type="button" class="dl-kind" data-kind="cover"
+                          role="radio" aria-checked="false">${esc(copy.form.kinds.cover)}</button>
+                </div>
+                <label class="dl-label" for="dl-url" id="dl-field-label">${esc(copy.form.label)}</label>
                 <div class="dl-input-row">
                   <textarea class="dl-input dl-textarea" id="dl-url" name="urls" rows="3"
                             inputmode="url" autocomplete="off" spellcheck="false"
@@ -322,6 +353,7 @@ function pageBody(lang, copy, url) {
                           type="submit" disabled>${esc(copy.form.button)}</button>
                 </div>
                 <p id="dl-batch-hint" class="dl-note dl-hint">${esc(copy.form.hint)}</p>
+                <p class="dl-note dl-quick"><a href="${esc(QUICK.path[lang])}">${esc(copy.form.quick)} →</a></p>
                 <div id="dl-turnstile" class="dl-turnstile"
                      data-sitekey="${esc(TURNSTILE_SITE_KEY)}" data-action="download"></div>
               </form>
@@ -333,6 +365,23 @@ function pageBody(lang, copy, url) {
               <p id="dl-status" class="dl-status" role="status" aria-live="polite"></p>
 
               <ul id="dl-results" class="dl-results" role="list" hidden></ul>
+
+              <div id="dl-share" class="dl-share" hidden>
+                <div class="dl-share-copy">
+                  <strong id="dl-share-title" class="dl-file-name"></strong>
+                  <p id="dl-share-text" class="dl-note"></p>
+                  <div class="dl-share-actions">
+                    <button id="dl-share-native" class="ar-btn ar-btn-secondary" type="button" hidden></button>
+                    <button id="dl-copy-link" class="ar-btn ar-btn-secondary" type="button"></button>
+                    <a id="dl-share-fb" class="ar-btn ar-btn-secondary" target="_blank" rel="noopener">Facebook</a>
+                    <a id="dl-share-tg" class="ar-btn ar-btn-secondary" target="_blank" rel="noopener">Telegram</a>
+                  </div>
+                </div>
+                <div class="dl-qr">
+                  <div id="dl-qr-box"></div>
+                  <span id="dl-qr-note" class="dl-note"></span>
+                </div>
+              </div>
             </section>
 
             <aside class="dl-side">
@@ -439,7 +488,9 @@ async function main() {
   }
 
   for (const lang of LANGS) {
-    const assets = langAssets(baseAssets, lang);
+    const assets = langAssets(baseAssets, lang)
+      .replace('href="/site.webmanifest"', 'href="/downloads/manifest.webmanifest"')
+      .replace('href="/en/site.webmanifest"', 'href="/downloads/manifest.webmanifest"');
     const html = document_({ lang, copy: downloads[lang], assets });
     const slug = DOWNLOADS.path[lang].replace(/^\/|\/$/g, '');
     await write(join(DIST, slug, 'index.html'), html);

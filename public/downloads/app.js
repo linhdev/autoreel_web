@@ -39,6 +39,16 @@
       waiting: 'Đang chờ...',
       preview: 'Xem trước',
       hidePreview: 'Ẩn',
+      linkVideo: 'Link video (mỗi dòng một link)',
+      linkAudio: 'Link video để lấy âm thanh (mỗi dòng một link)',
+      linkCover: 'Link video để lấy ảnh bìa (mỗi dòng một link)',
+      prefilled: 'Đã điền link từ nút Tải video nhanh.',
+      shareTitle: 'Chia sẻ trang này',
+      shareText: 'Tải video miễn phí từ TikTok, YouTube, Douyin, Bilibili, Hongguoduanju và iQiyi.',
+      shareNative: 'Chia sẻ',
+      shareCopy: 'Sao chép link',
+      shareCopied: 'Đã sao chép.',
+      qrNote: 'Quét để mở trên điện thoại',
       turnstile: 'Chưa xác minh được. Hãy tải lại trang và thử lại.',
       rate: 'Bạn đã dùng hết lượt trong giờ này. Thử lại sau ít phút.',
       rateRemaining: (n) => `Bạn còn ${n} lượt trong giờ này. Bớt link rồi thử lại.`,
@@ -84,6 +94,16 @@
       waiting: 'Waiting...',
       preview: 'Preview',
       hidePreview: 'Hide',
+      linkVideo: 'Video links (one per line)',
+      linkAudio: 'Video links for audio (one per line)',
+      linkCover: 'Video links for the cover (one per line)',
+      prefilled: 'Link filled in from the quick-download button.',
+      shareTitle: 'Share this page',
+      shareText: 'Download videos free from TikTok, YouTube, Douyin, Bilibili, Hongguoduanju and iQiyi.',
+      shareNative: 'Share',
+      shareCopy: 'Copy link',
+      shareCopied: 'Copied.',
+      qrNote: 'Scan to open on your phone',
       turnstile: 'Verification did not complete. Reload the page and try again.',
       rate: 'You have used this hour’s allowance. Try again shortly.',
       rateRemaining: (n) => `You have ${n} left this hour. Remove some links and try again.`,
@@ -117,6 +137,18 @@
   const status = document.getElementById('dl-status');
   const results = document.getElementById('dl-results');
   const hint = document.getElementById('dl-batch-hint');
+  const kinds = document.getElementById('dl-kinds');
+  const fieldLabel = document.getElementById('dl-field-label');
+  const share = document.getElementById('dl-share');
+  const shareTitle = document.getElementById('dl-share-title');
+  const shareText = document.getElementById('dl-share-text');
+  const shareNative = document.getElementById('dl-share-native');
+  const copyLink = document.getElementById('dl-copy-link');
+  const shareFb = document.getElementById('dl-share-fb');
+  const shareTg = document.getElementById('dl-share-tg');
+  const qrBox = document.getElementById('dl-qr-box');
+  const qrNote = document.getElementById('dl-qr-note');
+  const kindButtons = [...document.querySelectorAll('.dl-kind')];
   const banner = document.getElementById('dl-banner');
   const turnstileBox = document.getElementById('dl-turnstile');
   const siteKey = turnstileBox?.dataset.sitekey || '';
@@ -127,6 +159,8 @@
 
   let token = '';
   let batchMax = 5;
+  let kind = 'video';
+  let shareReady = false;
   let jobs = loadSessionJobs();
   const state = new Map();
   let pollTimer = null;
@@ -182,6 +216,20 @@
     if (hint) hint.textContent = `${t.hint} ${t.hintMax(batchMax)}`;
   }
 
+  function setKind(next) {
+    kind = next === 'audio' || next === 'cover' ? next : 'video';
+    for (const button of kindButtons) {
+      const active = button.dataset.kind === kind;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-checked', active ? 'true' : 'false');
+    }
+    if (fieldLabel) {
+      fieldLabel.textContent = kind === 'audio'
+        ? t.linkAudio
+        : kind === 'cover' ? t.linkCover : t.linkVideo;
+    }
+  }
+
   function resetTurnstile() {
     token = '';
     if (window.turnstile && turnstileBox) window.turnstile.reset(turnstileBox);
@@ -226,6 +274,7 @@
     state.clear();
     results.textContent = '';
     results.hidden = true;
+    if (share) share.hidden = true;
     saveSession();
   }
 
@@ -335,27 +384,98 @@
   }
 
   function togglePreview(row, job) {
-    let video = row.querySelector('video');
-    const button = row.querySelector('.dl-job-preview');
-    const href = state.get(job.id)?.data?.downloadUrl;
+    const data = state.get(job.id)?.data;
+    const href = data?.downloadUrl;
     if (typeof href !== 'string' || !href.startsWith('/api/file/')) return;
 
-    if (!video) {
-      video = document.createElement('video');
-      video.className = 'dl-preview';
-      video.controls = true;
-      video.playsInline = true;
-      video.preload = 'metadata';
-      video.hidden = true;
-      row.append(video);
+    const mediaKind = data.kind || 'video';
+    const selector = mediaKind === 'cover'
+      ? 'img.dl-cover'
+      : mediaKind === 'audio' ? 'audio.dl-preview' : 'video.dl-preview';
+    let media = row.querySelector(selector);
+
+    if (!media) {
+      if (mediaKind === 'cover') {
+        media = document.createElement('img');
+        media.className = 'dl-cover';
+        media.alt = '';
+      } else if (mediaKind === 'audio') {
+        media = document.createElement('audio');
+        media.className = 'dl-preview';
+        media.controls = true;
+        media.preload = 'metadata';
+      } else {
+        media = document.createElement('video');
+        media.className = 'dl-preview';
+        media.controls = true;
+        media.playsInline = true;
+        media.preload = 'metadata';
+      }
+      media.hidden = true;
+      row.append(media);
     }
 
-    if (!video.src) {
-      video.src = `${href}${href.includes('?') ? '&' : '?'}inline=1`;
+    if (!media.src) {
+      media.src = `${href}${href.includes('?') ? '&' : '?'}inline=1`;
     }
-    video.hidden = !video.hidden;
-    if (video.hidden) video.pause();
-    if (button) button.textContent = video.hidden ? t.preview : t.hidePreview;
+    media.hidden = !media.hidden;
+    if (media.hidden && media.pause) media.pause();
+    const button = row.querySelector('.dl-job-preview');
+    if (button) button.textContent = media.hidden ? t.preview : t.hidePreview;
+  }
+
+  /* ------------------------------------------------------------- sharing */
+
+  function pageUrl() {
+    return location.origin + (lang === 'en' ? '/en/downloads/' : '/downloads/');
+  }
+
+  function showShare() {
+    if (!share) return;
+    share.hidden = false;
+    if (shareReady) return;
+    shareReady = true;
+
+    const url = pageUrl();
+    if (shareTitle) shareTitle.textContent = t.shareTitle;
+    if (shareText) shareText.textContent = t.shareText;
+    if (shareNative) {
+      shareNative.textContent = t.shareNative;
+      shareNative.hidden = typeof navigator.share !== 'function';
+      shareNative.addEventListener('click', () => {
+        navigator.share({ title: t.shareTitle, text: t.shareText, url }).catch(() => {});
+      });
+    }
+    if (copyLink) {
+      copyLink.textContent = t.shareCopy;
+      copyLink.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          copyLink.textContent = t.shareCopied;
+          setTimeout(() => { copyLink.textContent = t.shareCopy; }, 1600);
+        } catch {
+          // Clipboard can be refused; the address is still in the bar.
+        }
+      });
+    }
+    if (shareFb) {
+      shareFb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    }
+    if (shareTg) {
+      shareTg.href = `https://t.me/share/url?url=${encodeURIComponent(url)}`
+        + `&text=${encodeURIComponent(t.shareText)}`;
+    }
+    if (qrNote) qrNote.textContent = t.qrNote;
+    if (qrBox && typeof window.qrcode === 'function') {
+      try {
+        const qr = window.qrcode(0, 'M');
+        qr.addData(url);
+        qr.make();
+        qrBox.innerHTML = qr.createImgTag(4, 8);
+      } catch {
+        qrBox.textContent = '';
+      }
+    }
   }
 
   /* ------------------------------------------------------------- polling */
@@ -386,6 +506,7 @@
       if (failed === 0) writeStatus(t.allDone(done), 'ok');
       else if (done === 0) writeStatus(t.allFailed(failed), 'error');
       else writeStatus(t.someFailed(done, failed), 'error');
+      if (done > 0) showShare();
       return;
     }
     setStage(running > 0 ? 'running' : 'queued');
@@ -501,6 +622,17 @@
 
   input.addEventListener('input', updateSubmit);
 
+  for (const button of kindButtons) {
+    button.addEventListener('click', () => setKind(button.dataset.kind));
+  }
+
+  const wantedUrl = new URLSearchParams(location.search).get('url');
+  if (jobs.length === 0 && typeof wantedUrl === 'string' && /^https?:\/\//i.test(wantedUrl)) {
+    input.value = wantedUrl;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    writeStatus(t.prefilled);
+  }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (busy) return;
@@ -546,7 +678,7 @@
       const response = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ urls, turnstileToken: token }),
+        body: JSON.stringify({ urls, kind, turnstileToken: token }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
@@ -607,6 +739,7 @@
   }, 10000);
 
   setStage(jobs.length > 0 ? 'queued' : 'idle');
+  setKind('video');
   updateHint();
   renderTurnstile();
   updateSubmit();
@@ -615,5 +748,15 @@
     buildRows();
     renderOverall();
     poll();
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/downloads/sw.js', { scope: '/downloads/' })
+        .catch(() => {
+          // An install prompt is a bonus; the page works without it.
+        });
+    });
   }
 })();

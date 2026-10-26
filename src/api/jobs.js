@@ -12,6 +12,7 @@ import {
 } from './store.js';
 
 const ID_RE = /^[a-f0-9]{32}$/;
+const KINDS = new Set(['video', 'audio', 'cover']);
 /** The product's ceiling. The dashboard may lower it, never raise it past this. */
 const BATCH_CEILING = 5;
 /** Five links of up to 2048 characters, plus a Turnstile token. */
@@ -77,6 +78,8 @@ export async function createJob(request, env) {
 
   const raw = requestedUrls(body);
   if (!raw || raw.length === 0) return errorJson('BAD_URL', 400);
+  const kind = body.kind === undefined ? 'video' : body.kind;
+  if (!KINDS.has(kind)) return errorJson('BAD_KIND', 400);
   if (raw.length > BATCH_CEILING) {
     return errorJson('BATCH_TOO_BIG', 400, {}, { max: BATCH_CEILING });
   }
@@ -131,6 +134,7 @@ export async function createJob(request, env) {
     env,
     [...new Set(entries.map((entry) => entry.urlHash))],
     now,
+    kind,
   );
   const fresh = entries.filter((entry) => !duplicates.has(entry.urlHash));
 
@@ -178,6 +182,7 @@ export async function createJob(request, env) {
           : 0,
         duplicate: true,
         indexes: entry.indexes,
+        kind,
       });
       continue;
     }
@@ -191,6 +196,7 @@ export async function createJob(request, env) {
       source: entry.source,
       createdAt: now,
       ipHash,
+      kind,
     });
     jobs.push({
       id,
@@ -198,6 +204,7 @@ export async function createJob(request, env) {
       position: await queuePosition(env, seq),
       duplicate: false,
       indexes: entry.indexes,
+      kind,
     });
     created += 1;
   }
@@ -213,6 +220,7 @@ export async function createJob(request, env) {
       status: first.status,
       position: first.position,
       duplicate: first.duplicate,
+      kind,
       queue: after.queue,
       remaining: Math.max(0, settings.daily_limit - after.today),
     }, created > 0 ? 201 : 200);
@@ -240,6 +248,7 @@ export async function getJobStatus(request, env, id) {
   const payload = {
     id: row.id,
     status,
+    kind: row.kind || 'video',
     createdAt: row.created_at,
   };
   if (status === 'queued') payload.position = await queuePosition(env, row.seq);
@@ -248,6 +257,7 @@ export async function getJobStatus(request, env, id) {
     payload.fileName = row.file_name;
     payload.size = row.file_size;
     payload.duration = row.duration;
+    payload.fileMime = row.file_mime || 'video/mp4';
     payload.expiresAt = row.expires_at;
     payload.downloadUrl = `/api/file/${row.id}?t=${row.token}`;
   }
@@ -277,8 +287,9 @@ export async function downloadFile(request, env, id, url) {
   // same Range-capable endpoint; only the disposition differs. `inline` lets
   // the browser's media element play it, while the button still downloads.
   const disposition = contentDisposition(row.file_name || 'video.mp4');
+  const mime = row.file_mime || 'video/mp4';
   const headers = {
-    'content-type': 'video/mp4',
+    'content-type': mime,
     'content-disposition': url.searchParams.get('inline') === '1'
       ? disposition.replace(/^attachment/, 'inline')
       : disposition,
