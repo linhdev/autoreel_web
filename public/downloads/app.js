@@ -66,7 +66,7 @@
       playlist: 'Không hỗ trợ playlist.',
       badMedia: 'File tải về không phải video hợp lệ.',
       timeout: 'Video xử lý quá lâu. Thử lại hoặc chọn video ngắn hơn.',
-      download: 'Tải file về máy',
+      download: 'Download',
       expiry: (m) => `Link còn ${m} phút.`,
       offlineBanner: 'Máy chủ tải đang nghỉ. Bạn vẫn có thể xem trang, nhưng chưa gửi được video.',
       pausedBanner: 'Công cụ đang tạm dừng nhận video mới.',
@@ -121,7 +121,7 @@
       playlist: 'Playlists are not supported.',
       badMedia: 'The downloaded file is not a valid video.',
       timeout: 'The video took too long to process. Try again or pick a shorter one.',
-      download: 'Save the file',
+      download: 'Download',
       expiry: (m) => `Link expires in ${m} minutes.`,
       offlineBanner: 'The download machine is offline. You can browse, but new jobs cannot start.',
       pausedBanner: 'The tool is not accepting new videos right now.',
@@ -149,6 +149,8 @@
   const qrBox = document.getElementById('dl-qr-box');
   const qrNote = document.getElementById('dl-qr-note');
   const kindButtons = [...document.querySelectorAll('.dl-kind')];
+  const audioFormatBox = document.getElementById('dl-audio-format');
+  const audioFormatSelect = document.getElementById('dl-audio-format-select');
   const banner = document.getElementById('dl-banner');
   const turnstileBox = document.getElementById('dl-turnstile');
   const siteKey = turnstileBox?.dataset.sitekey || '';
@@ -160,6 +162,7 @@
   let token = '';
   let batchMax = 5;
   let kind = 'video';
+  let audioFormat = 'm4a';
   let shareReady = false;
   let jobs = loadSessionJobs();
   const state = new Map();
@@ -228,6 +231,7 @@
         ? t.linkAudio
         : kind === 'cover' ? t.linkCover : t.linkVideo;
     }
+    if (audioFormatBox) audioFormatBox.hidden = kind !== 'audio';
   }
 
   function resetTurnstile() {
@@ -625,6 +629,12 @@
   for (const button of kindButtons) {
     button.addEventListener('click', () => setKind(button.dataset.kind));
   }
+  if (audioFormatSelect) {
+    audioFormat = audioFormatSelect.value || 'm4a';
+    audioFormatSelect.addEventListener('change', () => {
+      audioFormat = audioFormatSelect.value || 'm4a';
+    });
+  }
 
   const wantedUrl = new URLSearchParams(location.search).get('url');
   if (jobs.length === 0 && typeof wantedUrl === 'string' && /^https?:\/\//i.test(wantedUrl)) {
@@ -678,7 +688,12 @@
       const response = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ urls, kind, turnstileToken: token }),
+        body: JSON.stringify({
+          urls,
+          kind,
+          audioFormat: kind === 'audio' ? audioFormat : undefined,
+          turnstileToken: token,
+        }),
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {

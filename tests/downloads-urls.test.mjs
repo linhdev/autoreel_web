@@ -78,6 +78,7 @@ test('sanitizes filenames for headers and filesystems', () => {
   assert.equal(sanitizeFilename('a/b\\c:d*e?f"g<h>i|j'), 'a b c d e f g h i j.mp4');
   assert.equal(sanitizeFilename('line\r\nbreak'), 'line break.mp4');
   assert.equal(sanitizeFilename('already.MP4'), 'already.MP4');
+  assert.equal(sanitizeFilename('clip.wav'), 'clip.wav');
   assert.equal(sanitizeFilename(''), 'video.mp4');
   assert.equal(sanitizeFilename('', 'video-abc.mp4'), 'video-abc.mp4');
 });

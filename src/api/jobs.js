@@ -13,6 +13,7 @@ import {
 
 const ID_RE = /^[a-f0-9]{32}$/;
 const KINDS = new Set(['video', 'audio', 'cover']);
+const AUDIO_FORMATS = new Set(['m4a', 'mp3', 'wav']);
 /** The product's ceiling. The dashboard may lower it, never raise it past this. */
 const BATCH_CEILING = 5;
 /** Five links of up to 2048 characters, plus a Turnstile token. */
@@ -80,6 +81,12 @@ export async function createJob(request, env) {
   if (!raw || raw.length === 0) return errorJson('BAD_URL', 400);
   const kind = body.kind === undefined ? 'video' : body.kind;
   if (!KINDS.has(kind)) return errorJson('BAD_KIND', 400);
+  const audioFormat = kind === 'audio'
+    ? (body.audioFormat === undefined ? 'm4a' : body.audioFormat)
+    : null;
+  if (kind === 'audio' && !AUDIO_FORMATS.has(audioFormat)) {
+    return errorJson('BAD_FORMAT', 400);
+  }
   if (raw.length > BATCH_CEILING) {
     return errorJson('BATCH_TOO_BIG', 400, {}, { max: BATCH_CEILING });
   }
@@ -135,6 +142,7 @@ export async function createJob(request, env) {
     [...new Set(entries.map((entry) => entry.urlHash))],
     now,
     kind,
+    audioFormat || 'm4a',
   );
   const fresh = entries.filter((entry) => !duplicates.has(entry.urlHash));
 
@@ -183,6 +191,7 @@ export async function createJob(request, env) {
         duplicate: true,
         indexes: entry.indexes,
         kind,
+        audioFormat,
       });
       continue;
     }
@@ -197,6 +206,7 @@ export async function createJob(request, env) {
       createdAt: now,
       ipHash,
       kind,
+      audioFormat,
     });
     jobs.push({
       id,
@@ -205,6 +215,7 @@ export async function createJob(request, env) {
       duplicate: false,
       indexes: entry.indexes,
       kind,
+      audioFormat,
     });
     created += 1;
   }
@@ -221,6 +232,7 @@ export async function createJob(request, env) {
       position: first.position,
       duplicate: first.duplicate,
       kind,
+      audioFormat,
       queue: after.queue,
       remaining: Math.max(0, settings.daily_limit - after.today),
     }, created > 0 ? 201 : 200);
@@ -249,6 +261,7 @@ export async function getJobStatus(request, env, id) {
     id: row.id,
     status,
     kind: row.kind || 'video',
+    audioFormat: row.audio_format || (row.kind === 'audio' ? 'm4a' : null),
     createdAt: row.created_at,
   };
   if (status === 'queued') payload.position = await queuePosition(env, row.seq);

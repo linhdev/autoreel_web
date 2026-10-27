@@ -62,6 +62,7 @@ export async function nextJob(request, env, url) {
         id: job.id,
         url: job.url,
         kind: job.kind || 'video',
+        audioFormat: job.audio_format || (job.kind === 'audio' ? 'm4a' : null),
         ...max,
       });
     }
@@ -106,7 +107,7 @@ export async function uploadFile(request, env, id) {
     .toLowerCase();
   const allowed = {
     video: ['video/mp4', 'video/webm'],
-    audio: ['audio/mp4', 'audio/mpeg', 'audio/aac'],
+    audio: ['audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/wav'],
     cover: ['image/jpeg', 'image/png', 'image/webp'],
   };
   if (!(allowed[kind] || allowed.video).includes(mime)) {
@@ -115,8 +116,9 @@ export async function uploadFile(request, env, id) {
   const ext = mime === 'image/png' ? '.png'
     : mime === 'image/webp' ? '.webp'
       : mime === 'audio/mpeg' ? '.mp3'
-        : kind === 'audio' ? '.m4a'
-          : kind === 'cover' ? '.jpg' : '.mp4';
+        : mime === 'audio/wav' ? '.wav'
+          : kind === 'audio' ? '.m4a'
+            : kind === 'cover' ? '.jpg' : '.mp4';
   const base = kind === 'audio' ? 'audio' : kind === 'cover' ? 'cover' : 'video';
   name = sanitizeFilename(name, `${base}-${id.slice(0, 8)}${ext}`, ext);
 

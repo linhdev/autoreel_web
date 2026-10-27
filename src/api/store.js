@@ -40,8 +40,8 @@ export async function readSettings(env) {
 export async function createJob(env, job) {
   await env.DB.prepare(
     `INSERT INTO jobs
-       (id, url, url_hash, host, source, status, created_at, ip_hash, kind)
-     VALUES (?, ?, ?, ?, ?, 'queued', ?, ?, ?)`,
+       (id, url, url_hash, host, source, status, created_at, ip_hash, kind, audio_format)
+     VALUES (?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?)`,
   )
     .bind(
       job.id,
@@ -52,6 +52,7 @@ export async function createJob(env, job) {
       job.createdAt,
       job.ipHash,
       job.kind || 'video',
+      job.audioFormat || null,
     )
     .run();
   const row = await env.DB.prepare('SELECT seq FROM jobs WHERE id = ?')
@@ -60,19 +61,20 @@ export async function createJob(env, job) {
   return row ? row.seq : 0;
 }
 
-export async function findDuplicates(env, urlHashes, now, kind = 'video') {
+export async function findDuplicates(env, urlHashes, now, kind = 'video', audioFormat = 'm4a') {
   if (urlHashes.length === 0) return new Map();
   const placeholders = urlHashes.map(() => '?').join(', ');
   const { results = [] } = await env.DB.prepare(
-    `SELECT id, status, expires_at, seq, url_hash, kind
+    `SELECT id, status, expires_at, seq, url_hash, kind, audio_format
        FROM jobs
       WHERE url_hash IN (${placeholders})
         AND kind = ?
+        AND COALESCE(audio_format, 'm4a') = ?
         AND (status IN ('queued', 'running')
              OR (status = 'done' AND expires_at > ?))
       ORDER BY seq DESC`,
   )
-    .bind(...urlHashes, kind, now)
+    .bind(...urlHashes, kind, audioFormat, now)
     .all();
 
   // Newest first, so the first row seen for a hash is the one to reuse.
@@ -181,7 +183,7 @@ export async function claimNext(env, now, workerId) {
       .bind(now, workerId, row.id)
       .run();
     if (result.meta?.changes === 1) {
-      return env.DB.prepare('SELECT id, url, created_at, kind FROM jobs WHERE id = ?')
+      return env.DB.prepare('SELECT id, url, created_at, kind, audio_format FROM jobs WHERE id = ?')
         .bind(row.id)
         .first();
     }
@@ -227,7 +229,7 @@ export async function markError(env, id, code, detail, now) {
 export async function getJob(env, id) {
   return env.DB.prepare(
     `SELECT seq, id, status, created_at, claimed_at, file_name, file_size,
-            duration, token, expires_at, error_code, kind, file_mime
+            duration, token, expires_at, error_code, kind, file_mime, audio_format
        FROM jobs WHERE id = ?`,
   )
     .bind(id)

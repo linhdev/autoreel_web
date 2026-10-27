@@ -77,6 +77,9 @@ const STYLE = `
       .dl-kinds { display: flex; gap: 5px; width: fit-content; margin: 0 0 16px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: rgba(148, 163, 184, 0.05); }
       .dl-kind { padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
       .dl-kind.is-active { background: rgba(109, 94, 252, 0.22); color: #e9e6ff; box-shadow: inset 0 0 0 1px rgba(109, 94, 252, 0.5); }
+      .dl-audio-format { margin: 0 0 16px; }
+      .dl-audio-format[hidden] { display: none !important; }
+      .dl-select { max-width: 320px; height: 48px; padding: 0 12px; }
       .dl-submit { flex: none; height: 54px; padding: 0 24px; border-radius: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
       .dl-submit:disabled { cursor: not-allowed; opacity: 0.5; }
       .dl-turnstile { margin: 16px 0 0; min-height: 65px; }
@@ -343,6 +346,15 @@ function pageBody(lang, copy, url) {
                           role="radio" aria-checked="false">${esc(copy.form.kinds.audio)}</button>
                   <button type="button" class="dl-kind" data-kind="cover"
                           role="radio" aria-checked="false">${esc(copy.form.kinds.cover)}</button>
+                </div>
+                <div class="dl-audio-format" id="dl-audio-format" hidden>
+                  <label class="dl-label" for="dl-audio-format-select">${esc(copy.form.audioFormatLabel)}</label>
+                  <select id="dl-audio-format-select" class="dl-input dl-select">
+                    <option value="m4a">${esc(copy.form.audioFormats.m4a)}</option>
+                    <option value="mp3">${esc(copy.form.audioFormats.mp3)}</option>
+                    <option value="wav">${esc(copy.form.audioFormats.wav)}</option>
+                  </select>
+                  <p class="dl-note dl-hint">${esc(copy.form.audioFormatNote)}</p>
                 </div>
                 <label class="dl-label" for="dl-url" id="dl-field-label">${esc(copy.form.label)}</label>
                 <div class="dl-input-row">
