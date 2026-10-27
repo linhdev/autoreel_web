@@ -74,7 +74,9 @@ export function headAssets(indexHtml) {
       /rel="(stylesheet|preconnect|icon|apple-touch-icon|manifest)"/.test(tag) &&
       !/rel="canonical"/.test(tag),
   );
-  return wanted.map((tag) => `    ${tag}`).join('\n');
+  return `${wanted.map((tag) => `    ${tag}`).join('\n')}
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1787558413198473"
+            crossorigin="anonymous"></script>`;
 }
 
 /**

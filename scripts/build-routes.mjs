@@ -34,6 +34,7 @@ import { DOCS, docPath, docs } from '../src/data/docs.js';
 import { DOWNLOADS, QUICK } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
+import { REFERENCE_PAGE } from '../src/data/referencePage.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -489,6 +490,22 @@ function sitemap(stamp) {
         ),
       );
     }
+  }
+
+  // The static “make it like this reference” page, written by
+  // `build-reference-page.mjs`.
+  for (const lang of LOCALES) {
+    urls.push(
+      entry(
+        absolute(REFERENCE_PAGE.path[lang]),
+        stamp,
+        '0.7',
+        alternatesFor({
+          vi: absolute(REFERENCE_PAGE.path.vi),
+          en: absolute(REFERENCE_PAGE.path.en),
+        }),
+      ),
+    );
   }
 
   return (

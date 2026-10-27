@@ -13,6 +13,7 @@ import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
 import { DOWNLOADS, QUICK, downloads } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
+import { REFERENCE_PAGE } from '../src/data/referencePage.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
 import { postContentProblems } from './lib/post-rules.mjs';
 import {
@@ -82,6 +83,7 @@ async function main() {
     'downloads/sw.js',
     'downloads/manifest.webmanifest',
     'downloads/icon-512.png',
+    'ads.txt',
     'embed.js',
     'tai-video-nhanh/index.html',
     'en/quick-download/index.html',
@@ -661,6 +663,8 @@ async function main() {
     if (/assets\/index-[\w-]+\.js/.test(page)) dlProblems.push(`${lang}: carries the app bundle`);
     if (!page.includes('/downloads/app.js')) dlProblems.push(`${lang}: client script`);
     if (!page.includes('/downloads/qr.js')) dlProblems.push(`${lang}: QR script`);
+    if (!page.includes('data-kind="subtitle"')) dlProblems.push(`${lang}: subtitle button`);
+    if (!page.includes('id="dl-push-box"')) dlProblems.push(`${lang}: push opt-in`);
     if (!page.includes('href="/downloads/manifest.webmanifest"')) dlProblems.push(`${lang}: downloads manifest`);
     if (!page.includes('challenges.cloudflare.com/turnstile')) dlProblems.push(`${lang}: Turnstile script`);
     if (!page.includes('data-sitekey="')) dlProblems.push(`${lang}: Turnstile site key`);
@@ -676,6 +680,26 @@ async function main() {
   }
   if (dlProblems.length) fail(`downloads: ${dlProblems.slice(0, 6).join('; ')}`);
   else pass(`downloads: ${LOCALES.length} language(s), no bundle, CSP and Turnstile present`);
+
+  // Web Push participates through the same worker the PWA already registers.
+  const sw = await readFile(path.join(dist, 'downloads/sw.js'), 'utf8');
+  const swProblems = [];
+  if (!sw.includes("addEventListener('push'")) swProblems.push('no push handler');
+  if (!sw.includes("addEventListener('notificationclick'")) swProblems.push('no click handler');
+  const manifest = await readFile(path.join(dist, 'downloads/manifest.webmanifest'), 'utf8');
+  if (!manifest.includes('"id": "/downloads/"')) swProblems.push('manifest has no id');
+  if (swProblems.length) fail(`push: ${swProblems.join('; ')}`);
+  else pass('push: service worker handlers and manifest id present');
+
+  // AdSense is a script and an ads.txt; the loader alone is an unverified
+  // claim, and the text file is what the crawler checks.
+  const ads = await readFile(path.join(dist, 'ads.txt'), 'utf8');
+  const adsProblems = [];
+  if (!ads.includes('pub-1787558413198473')) adsProblems.push('ads.txt client');
+  const landing = await readFile(path.join(dist, 'index.html'), 'utf8');
+  if (!landing.includes('pagead2.googlesyndication.com')) adsProblems.push('landing loader');
+  if (adsProblems.length) fail(`ads: ${adsProblems.join('; ')}`);
+  else pass('ads: loader and ads.txt present');
 
   // The transfer page is reached from a QR, not from search. It must stay out
   // of the index and must actually load the script that reads `?id=`.
@@ -765,6 +789,27 @@ async function main() {
   if (ucProblems.length) fail(`use cases: ${ucProblems.slice(0, 6).join('; ')}`);
   else pass(`use cases: ${USE_CASE_PAGES.length} kind(s) x ${LOCALES.length} languages`);
 
+  // ---- The reference-pacing page ----
+  const rfProblems = [];
+  for (const lang of LOCALES) {
+    const file = path.join(
+      dist, REFERENCE_PAGE.path[lang].replace(/^\//, ''), 'index.html',
+    );
+    if (!existsSync(file)) {
+      rfProblems.push(`${lang}: page missing`);
+      continue;
+    }
+    const html = await readFile(file, 'utf8');
+    if (!html.includes(`<link rel="canonical" href="${absolute(REFERENCE_PAGE.path[lang])}"`)) {
+      rfProblems.push(`${lang}: canonical`);
+    }
+    if (!html.includes('itemtype="https://schema.org/FAQPage"')) rfProblems.push(`${lang}: FAQPage`);
+    if (!html.includes('rf-grid')) rfProblems.push(`${lang}: template cards`);
+    if (/assets\/index-[\w-]+\.js/.test(html)) rfProblems.push(`${lang}: carries the app bundle`);
+  }
+  if (rfProblems.length) fail(`reference page: ${rfProblems.slice(0, 6).join('; ')}`);
+  else pass(`reference page: ${LOCALES.length} language(s)`);
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
   // "Route" here includes the blog, which is not in `routes.js` on purpose -
@@ -792,6 +837,8 @@ async function main() {
     // `build-download-use-cases.mjs`.
     ...USE_CASE_PAGES.flatMap((page) =>
       LOCALES.map((lang) => absolute(page.path[lang]))),
+    // The static “make it like this reference” page.
+    ...LOCALES.map((lang) => absolute(REFERENCE_PAGE.path[lang])),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {

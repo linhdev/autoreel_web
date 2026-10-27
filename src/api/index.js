@@ -5,6 +5,7 @@
 import { errorJson } from './http.js';
 import { createJob, downloadFile, getJobStatus, getStatus } from './jobs.js';
 import { failJob, nextJob, uploadFile } from './worker.js';
+import { pushKey, subscribePush, unsubscribePush } from './pushRoutes.js';
 import { cleanup } from './store.js';
 
 const JOB = /^\/api\/jobs\/([a-f0-9]{32})$/;
@@ -23,6 +24,15 @@ export async function handleApi(request, env, ctx) {
     if (path === '/api/status' && request.method === 'GET') {
       return await getStatus(env);
     }
+    if (path === '/api/push/key' && request.method === 'GET') {
+      return await pushKey(env);
+    }
+    if (path === '/api/push/subscribe' && request.method === 'POST') {
+      return await subscribePush(request, env);
+    }
+    if (path === '/api/push/unsubscribe' && request.method === 'POST') {
+      return await unsubscribePush(request, env);
+    }
 
     const job = JOB.exec(path);
     if (job && request.method === 'GET') {
@@ -40,7 +50,7 @@ export async function handleApi(request, env, ctx) {
 
     const upload = UPLOAD.exec(path);
     if (upload && request.method === 'POST') {
-      return await uploadFile(request, env, upload[1]);
+      return await uploadFile(request, env, upload[1], ctx);
     }
 
     const fail = FAIL.exec(path);

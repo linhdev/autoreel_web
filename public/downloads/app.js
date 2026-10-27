@@ -42,6 +42,7 @@
       linkVideo: 'Link video (mỗi dòng một link)',
       linkAudio: 'Link video để lấy âm thanh (mỗi dòng một link)',
       linkCover: 'Link video để lấy ảnh bìa (mỗi dòng một link)',
+      linkSubtitle: 'Link video để lấy phụ đề (mỗi dòng một link)',
       prefilled: 'Đã điền link từ nút Tải video nhanh.',
       shareTitle: 'Chia sẻ trang này',
       shareText: 'Tải video miễn phí từ TikTok, YouTube, Douyin, Bilibili, Hongguoduanju và iQiyi.',
@@ -60,6 +61,7 @@
       rateRemaining: (n) => `Bạn còn ${n} lượt trong giờ này. Bớt link rồi thử lại.`,
       daily: 'Hết lượt hôm nay. Mai thử lại sau 0:00.',
       queueFull: 'Hàng đợi đang đầy. Thử lại sau một phút.',
+      noSubtitles: 'Video này không có phụ đề do nền tảng cung cấp.',
       offline: 'Máy chủ tải đang nghỉ. Thử lại sau.',
       maintenance: 'Công cụ đang tạm dừng. Thử lại sau.',
       network: 'Mất kết nối. Kiểm tra mạng và thử lại.',
@@ -103,6 +105,7 @@
       linkVideo: 'Video links (one per line)',
       linkAudio: 'Video links for audio (one per line)',
       linkCover: 'Video links for the cover (one per line)',
+      linkSubtitle: 'Video links for subtitles (one per line)',
       prefilled: 'Link filled in from the quick-download button.',
       shareTitle: 'Share this page',
       shareText: 'Download videos free from TikTok, YouTube, Douyin, Bilibili, Hongguoduanju and iQiyi.',
@@ -121,6 +124,7 @@
       rateRemaining: (n) => `You have ${n} left this hour. Remove some links and try again.`,
       daily: 'Today’s allowance is used up. Try again after 00:00.',
       queueFull: 'The queue is full. Try again in a minute.',
+      noSubtitles: 'This video has no subtitles provided by the platform.',
       offline: 'The download machine is offline. Try again later.',
       maintenance: 'The tool is paused. Try again later.',
       network: 'Connection lost. Check your network and try again.',
@@ -171,6 +175,9 @@
   const audioFormatBox = document.getElementById('dl-audio-format');
   const audioFormatSelect = document.getElementById('dl-audio-format-select');
   const banner = document.getElementById('dl-banner');
+  const pushBox = document.getElementById('dl-push-box');
+  const pushToggle = document.getElementById('dl-push-toggle');
+  const pushNote = document.getElementById('dl-push-note');
   const turnstileBox = document.getElementById('dl-turnstile');
   const siteKey = turnstileBox?.dataset.sitekey || '';
 
@@ -185,7 +192,10 @@
   let shareReady = false;
   let shareEnabled = true;
   let transferLink = '';
-  const kindsEnabled = { video: true, audio: true, cover: true };
+  let pushWanted = false;
+  let pushKey = '';
+  let pushRegistration = null;
+  const kindsEnabled = { video: true, audio: true, cover: true, subtitle: true };
   let jobs = loadSessionJobs();
   const state = new Map();
   let pollTimer = null;
@@ -212,6 +222,105 @@
     } catch {
       // A private window can refuse storage; the page still works in-memory.
     }
+  }
+
+  /* --------------------------------------------------------------- push */
+
+  const canPush = 'serviceWorker' in navigator && 'PushManager' in window
+    && 'Notification' in window && window.isSecureContext;
+
+  function pushNoteText(message) {
+    if (!pushNote) return;
+    pushNote.textContent = message || t.pushHint;
+    pushNote.hidden = false;
+  }
+
+  function bytesFromBase64Url(value) {
+    const text = String(value || '').replace(/-/g, '+').replace(/_/g, '/');
+    const padded = text + '='.repeat((4 - (text.length % 4)) % 4);
+    const binary = atob(padded);
+    return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  }
+
+  async function ensureWorker() {
+    if (pushRegistration?.active) return pushRegistration;
+    const registration = await navigator.serviceWorker.register(
+      '/downloads/sw.js', { scope: '/downloads/' },
+    );
+    pushRegistration = registration;
+    if (registration.active) return registration;
+    const worker = registration.installing || registration.waiting;
+    if (!worker) return registration;
+    await new Promise((resolve) => {
+      const done = () => {
+        if (worker.state === 'activated') resolve();
+      };
+      worker.addEventListener('statechange', done);
+      done();
+    });
+    return registration;
+  }
+
+  async function syncPush() {
+    if (!canPush || !pushWanted || jobs.length === 0) return;
+    if (Notification.permission !== 'granted') return;
+    try {
+      if (!pushKey) {
+        const answer = await fetch('/api/push/key', { cache: 'no-store' });
+        const key = await answer.json().catch(() => ({}));
+        if (!answer.ok || !key.enabled || !key.publicKey) return;
+        pushKey = key.publicKey;
+      }
+      const registration = await ensureWorker();
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: bytesFromBase64Url(pushKey),
+        });
+      }
+      const answer = await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          subscription: subscription.toJSON(),
+          jobIds: jobs.map((job) => job.id),
+          lang,
+        }),
+      });
+      if (!answer.ok) return;
+      if (pushNote) pushNote.hidden = true;
+    } catch {
+      // A browser that refuses a subscription is not an error in the
+      // download; the page simply keeps polling as it always did.
+    }
+  }
+
+  if (pushToggle) {
+    pushToggle.addEventListener('change', async () => {
+      if (!pushToggle.checked) {
+        pushWanted = false;
+        return;
+      }
+      if (!canPush) {
+        pushToggle.checked = false;
+        pushWanted = false;
+        pushNoteText(t.pushDenied);
+        return;
+      }
+      // Directly in the gesture, before any await: Safari drops the user
+      // activation otherwise.
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        pushToggle.checked = false;
+        pushWanted = false;
+        pushNoteText(t.pushDenied);
+        return;
+      }
+      pushWanted = true;
+      pushNoteText(t.pushHint);
+      await syncPush();
+    });
   }
 
   function setStage(stage) {
@@ -242,7 +351,8 @@
   }
 
   function setKind(next) {
-    kind = next === 'audio' || next === 'cover' ? next : 'video';
+    kind = next === 'audio' || next === 'cover' || next === 'subtitle'
+      ? next : 'video';
     if (!kindsEnabled[kind]) kind = 'video';
     for (const button of kindButtons) {
       const active = button.dataset.kind === kind;
@@ -252,7 +362,8 @@
     if (fieldLabel) {
       fieldLabel.textContent = kind === 'audio'
         ? t.linkAudio
-        : kind === 'cover' ? t.linkCover : t.linkVideo;
+        : kind === 'cover' ? t.linkCover
+          : kind === 'subtitle' ? t.linkSubtitle : t.linkVideo;
     }
     if (audioFormatBox) audioFormatBox.hidden = kind !== 'audio';
   }
@@ -272,6 +383,8 @@
       case 'WORKER_OFFLINE': return t.offline;
       case 'MAINTENANCE': return t.maintenance;
       case 'TURNSTILE_FAILED': return t.turnstile;
+      case 'NO_SUBTITLES': return t.noSubtitles;
+      case 'SUBTITLE_FAILED': return t.noSubtitles;
       case 'BAD_URL':
       case 'UNSUPPORTED':
       case 'NOT_A_VIDEO': return t.badUrl;
@@ -290,7 +403,8 @@
   function bytes(value) {
     const size = Number(value || 0);
     if (!size) return '';
-    if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   }
 
@@ -399,7 +513,9 @@
         previewButton.className = 'ar-btn ar-btn-secondary dl-job-preview';
         previewButton.textContent = t.preview;
         previewButton.addEventListener('click', () => togglePreview(row, job));
-        actions.append(previewButton);
+        // An SRT has nothing to preview; the button would open an empty
+        // <video> over a text file.
+        if (data.kind !== 'subtitle') actions.append(previewButton);
       }
       link.href = href;
     } else if (slot.status === 'queued') {
@@ -421,6 +537,7 @@
     const data = state.get(job.id)?.data;
     const href = data?.downloadUrl;
     if (typeof href !== 'string' || !href.startsWith('/api/file/')) return;
+    if (data.kind === 'subtitle') return;
 
     const mediaKind = data.kind || 'video';
     const selector = mediaKind === 'cover'
@@ -687,6 +804,13 @@
         if (share) share.hidden = true;
         if (transferDialog?.open) transferDialog.close();
       }
+      if (pushBox) {
+        pushBox.hidden = !canPush || data.push === false;
+        if (pushBox.hidden) {
+          pushWanted = false;
+          if (pushToggle) pushToggle.checked = false;
+        }
+      }
       if (!data.enabled) {
         serverOnline = false;
         banner.hidden = false;
@@ -863,6 +987,7 @@
       buildRows();
       renderOverall();
       poll();
+      if (pushWanted && Notification.permission === 'granted') void syncPush();
     } catch {
       busy = false;
       setStage('error');
@@ -877,9 +1002,15 @@
   }, 10000);
 
   setStage(jobs.length > 0 ? 'queued' : 'idle');
+  const jobParam = query.get('job');
+  if (/^[a-f0-9]{32}$/.test(jobParam || '') && !jobs.some((job) => job.id === jobParam)) {
+    jobs.push({ id: jobParam });
+    saveSession();
+  }
   setKind('video');
   const kindParam = query.get('kind');
-  if (kindParam === 'audio' || kindParam === 'cover') setKind(kindParam);
+  if (kindParam === 'audio' || kindParam === 'cover'
+    || kindParam === 'subtitle') setKind(kindParam);
   const formatParam = query.get('audioFormat');
   if (audioFormatSelect && ['m4a', 'mp3', 'wav'].includes(formatParam)) {
     audioFormatSelect.value = formatParam;
@@ -897,11 +1028,9 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register('/downloads/sw.js', { scope: '/downloads/' })
-        .catch(() => {
-          // An install prompt is a bonus; the page works without it.
-        });
+      ensureWorker().catch(() => {
+        // An install prompt and push are bonuses; the page works without them.
+      });
     });
   }
 })();

@@ -107,7 +107,7 @@ export function sanitizeFilename(name, fallback = 'video.mp4', ext = '.mp4') {
     .replace(/\s+/g, ' ')
     .trim();
   if (!clean) clean = fallback;
-  if (!/\.(mp4|m4a|mp3|wav|jpg|jpeg|png|webp)$/i.test(clean)) clean += ext;
+  if (!/\.(mp4|m4a|mp3|wav|jpg|jpeg|png|webp|srt|vtt)$/i.test(clean)) clean += ext;
   return clean.slice(0, 80);
 }
 

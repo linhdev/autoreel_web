@@ -13,6 +13,7 @@ import {
 import {
   claimNext, getJob, markDone, markError, readSettings, touchWorker,
 } from './store.js';
+import { notifyJob } from './push.js';
 
 const ID_RE = /^[a-f0-9]{32}$/;
 const CODE_RE = /^[A-Z][A-Z_]{2,39}$/;
@@ -71,7 +72,7 @@ export async function nextJob(request, env, url) {
   }
 }
 
-export async function uploadFile(request, env, id) {
+export async function uploadFile(request, env, id, ctx) {
   if (!authorised(request, env)) return errorJson('UNAUTHORISED', 401);
   if (!ID_RE.test(id)) return errorJson('NOT_FOUND', 404);
 
@@ -86,7 +87,7 @@ export async function uploadFile(request, env, id) {
   }
   if (!request.body) return errorJson('BAD_BODY', 400);
 
-  let name = 'video.mp4';
+  let name = '';
   const headerName = request.headers.get('x-file-name');
   if (headerName) {
     try {
@@ -109,6 +110,7 @@ export async function uploadFile(request, env, id) {
     video: ['video/mp4', 'video/webm'],
     audio: ['audio/mp4', 'audio/mpeg', 'audio/aac', 'audio/wav'],
     cover: ['image/jpeg', 'image/png', 'image/webp'],
+    subtitle: ['application/x-subrip'],
   };
   if (!(allowed[kind] || allowed.video).includes(mime)) {
     return errorJson('BAD_MEDIA', 400);
@@ -117,9 +119,12 @@ export async function uploadFile(request, env, id) {
     : mime === 'image/webp' ? '.webp'
       : mime === 'audio/mpeg' ? '.mp3'
         : mime === 'audio/wav' ? '.wav'
-          : kind === 'audio' ? '.m4a'
-            : kind === 'cover' ? '.jpg' : '.mp4';
-  const base = kind === 'audio' ? 'audio' : kind === 'cover' ? 'cover' : 'video';
+          : mime === 'application/x-subrip' ? '.srt'
+            : kind === 'audio' ? '.m4a'
+              : kind === 'cover' ? '.jpg' : '.mp4';
+  const base = kind === 'audio' ? 'audio'
+    : kind === 'cover' ? 'cover'
+      : kind === 'subtitle' ? 'subtitle' : 'video';
   name = sanitizeFilename(name, `${base}-${id.slice(0, 8)}${ext}`, ext);
 
   const duration = Number(request.headers.get('x-duration') || 0);
@@ -156,6 +161,12 @@ export async function uploadFile(request, env, id) {
   if (!done) {
     await env.DOWNLOADS.delete(fileKey).catch(() => {});
     return errorJson('LEASE_LOST', 409);
+  }
+
+  // A push is a convenience and must not hold the worker's upload response:
+  // waitUntil lets the response go now and the push service answer later.
+  if (ctx && typeof ctx.waitUntil === 'function') {
+    ctx.waitUntil(notifyJob(env, id));
   }
 
   return json({ ok: true, size: object.size, expiresAt });

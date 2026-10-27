@@ -390,6 +390,7 @@ export const footer = {
       // `navLinks` above. Blog was a hard-coded anchor here too.
       { label: 'Blog', href: '/blog/' },
       { label: 'Tài liệu', href: '/tai-lieu/' },
+      { label: 'Làm video theo mẫu', href: '/lam-theo-mau/' },
       { label: 'Điều khoản', href: '/dieu-khoan/' },
     ],
     columns: { links: 'Liên kết', contact: 'Liên hệ', follow: 'Theo dõi' },
@@ -405,6 +406,7 @@ export const footer = {
       { label: 'Downloader', href: '/en/downloads/' },
       { label: 'Blog', href: '/en/blog/' },
       { label: 'Docs', href: '/en/docs/' },
+      { label: 'Make it like a reference', href: '/en/make-video-like-reference/' },
       { label: 'Terms', href: '/en/terms/' },
     ],
     columns: { links: 'Links', contact: 'Contact', follow: 'Follow' },

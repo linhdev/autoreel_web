@@ -47,7 +47,7 @@ export const downloads = {
       note: 'Mỗi video tối đa 20 phút · 95MB',
       hint: 'Mỗi dòng một link.',
       kindLabel: 'Chọn loại file',
-      kinds: { video: 'Video', audio: 'Âm thanh', cover: 'Ảnh bìa' },
+      kinds: { video: 'Video', audio: 'Âm thanh', cover: 'Ảnh bìa', subtitle: 'Phụ đề' },
       audioFormatLabel: 'Định dạng âm thanh',
       audioFormats: {
         m4a: 'M4A (nhỏ, phổ biến)',
@@ -56,6 +56,10 @@ export const downloads = {
       },
       audioFormatNote: 'WAV có thể vượt 95MB với video dài.',
       quick: 'Cài nút “Tải video này” cho trình duyệt',
+      reference: 'Cần làm video mới theo video mẫu? Xem 拍同款 →',
+      pushLabel: 'Báo khi tải xong',
+      pushHint: 'Trình duyệt sẽ báo khi file sẵn sàng. Trên iPhone, thêm trang vào màn hình chính trước.',
+      pushDenied: 'Trình duyệt đã chặn thông báo.',
     },
     stepsTitle: 'Cách dùng',
     steps: [
@@ -109,6 +113,10 @@ export const downloads = {
         a: 'Có. Mỗi lần gửi tối đa 5 link, mỗi dòng một link. Các video được xếp hàng và trả về lần lượt.',
       },
       {
+        q: 'Có tải được phụ đề không?',
+        a: 'Có, nếu video có phụ đề do nền tảng cung cấp (YouTube, TikTok, Bilibili…). Video không có phụ đề sẽ báo lỗi thay vì tạo phụ đề bằng AI.',
+      },
+      {
         q: 'Vì sao có video không tải được?',
         a: 'Nền tảng có thể chặn IP, yêu cầu đăng nhập, hoặc video không công khai. Hãy thử video khác.',
       },
@@ -123,7 +131,7 @@ export const downloads = {
     ],
     privacyTitle: 'Quyền riêng tư',
     privacyText:
-      'IP được băm một chiều, không lưu IP thô. URL chỉ lưu tạm để xử lý và được xoá khi job kết thúc. Không có analytics bên thứ ba.',
+      'IP được băm một chiều, không lưu IP thô. URL chỉ lưu tạm để xử lý và được xoá khi job kết thúc. Trang dùng Google AdSense để hiển thị quảng cáo; Google có thể dùng cookie và dữ liệu trình duyệt theo chính sách của Google.',
     legalText: 'Điều khoản sử dụng',
     legalHref: '/dieu-khoan/',
     ctaTitle: 'Cần nhiều hơn một video?',
@@ -155,7 +163,7 @@ export const downloads = {
       note: 'Up to 20 minutes · 95MB per video',
       hint: 'One link per line.',
       kindLabel: 'File type',
-      kinds: { video: 'Video', audio: 'Audio', cover: 'Cover' },
+      kinds: { video: 'Video', audio: 'Audio', cover: 'Cover', subtitle: 'Subtitles' },
       audioFormatLabel: 'Audio format',
       audioFormats: {
         m4a: 'M4A (small, common)',
@@ -164,6 +172,10 @@ export const downloads = {
       },
       audioFormatNote: 'WAV can exceed 95MB for a long video.',
       quick: 'Get the “Download this video” bookmarklet',
+      reference: 'Need a video at a reference’s pace? See the feature →',
+      pushLabel: 'Notify me when it finishes',
+      pushHint: 'Your browser will tell you when the file is ready. On iPhone, add this page to the Home Screen first.',
+      pushDenied: 'Notifications are blocked in this browser.',
     },
     stepsTitle: 'How it works',
     steps: [
@@ -217,6 +229,10 @@ export const downloads = {
         a: 'Yes. Send up to 5 links at a time, one per line. They are queued and delivered one after another.',
       },
       {
+        q: 'Can I download subtitles?',
+        a: 'Yes, when the video has subtitles provided by the platform (YouTube, TikTok, Bilibili…). A video with none reports that instead of generating them with AI.',
+      },
+      {
         q: 'Why did a video fail?',
         a: 'The platform may block the address, require a login, or the video may not be public. Try another video.',
       },
@@ -231,7 +247,7 @@ export const downloads = {
     ],
     privacyTitle: 'Privacy',
     privacyText:
-      'IP addresses are stored only as a one-way hash, never raw. The URL is kept only while the job runs and is cleared when it ends. There is no third-party analytics.',
+      'IP addresses are stored only as a one-way hash, never raw. The URL is kept only while the job runs and is cleared when it ends. The page uses Google AdSense to show ads; Google may use cookies and browser data under its own policies.',
     legalText: 'Terms of use',
     legalHref: '/en/terms/',
     ctaTitle: 'Need more than one video?',

@@ -52,7 +52,8 @@
   const bytes = (value) => {
     const size = Number(value || 0);
     if (!size) return '';
-    if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${Math.max(1, Math.round(size / 1024))} KB`;
     return `${(size / (1024 * 1024)).toFixed(1)} MB`;
   };
 
@@ -119,6 +120,10 @@
           audio.src = inline;
           audio.style.cssText = 'width:100%;max-width:520px';
           preview.append(audio);
+        } else if (data.kind === 'subtitle'
+          || /x-subrip/.test(data.fileMime || '')) {
+          // A subtitle is text; a <video> pointed at it is a control that can
+          // never play. The download button above is the whole page for it.
         } else {
           const video = document.createElement('video');
           video.controls = true;

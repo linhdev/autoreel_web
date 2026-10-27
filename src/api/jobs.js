@@ -12,7 +12,7 @@ import {
 } from './store.js';
 
 const ID_RE = /^[a-f0-9]{32}$/;
-const KINDS = new Set(['video', 'audio', 'cover']);
+const KINDS = new Set(['video', 'audio', 'cover', 'subtitle']);
 const AUDIO_FORMATS = new Set(['m4a', 'mp3', 'wav']);
 /** The product's ceiling. The dashboard may lower it, never raise it past this. */
 const BATCH_CEILING = 5;
@@ -103,6 +103,9 @@ export async function createJob(request, env) {
     return errorJson('KIND_DISABLED', 400);
   }
   if (kind === 'cover' && !settings.cover_enabled) {
+    return errorJson('KIND_DISABLED', 400);
+  }
+  if (kind === 'subtitle' && !settings.subtitle_enabled) {
     return errorJson('KIND_DISABLED', 400);
   }
   const formats = audioFormatList(settings);
@@ -360,8 +363,10 @@ export async function getStatus(env) {
       video: true,
       audio: Boolean(settings.audio_enabled),
       cover: Boolean(settings.cover_enabled),
+      subtitle: Boolean(settings.subtitle_enabled),
     },
     audioFormats: audioFormatList(settings),
     share: Boolean(settings.share_enabled),
+    push: Boolean(settings.push_enabled),
   });
 }

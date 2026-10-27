@@ -15,7 +15,9 @@ const DEFAULT_SETTINGS = {
   batch_max: 5,
   audio_enabled: 1,
   cover_enabled: 1,
+  subtitle_enabled: 1,
   share_enabled: 1,
+  push_enabled: 1,
   audio_formats: 'm4a,mp3,wav',
   queue_limit: 30,
   max_seconds: 1200,
@@ -30,7 +32,8 @@ export async function readSettings(env) {
       if (row.key === 'audio_formats') {
         settings.audio_formats = String(row.value || '');
       } else if ([
-        'enabled', 'audio_enabled', 'cover_enabled', 'share_enabled',
+        'enabled', 'audio_enabled', 'cover_enabled', 'subtitle_enabled',
+        'share_enabled', 'push_enabled',
       ].includes(row.key)) {
         settings[row.key] = row.value === '1' || row.value === 'true' ? 1 : 0;
       } else if (row.key in settings) {
@@ -280,5 +283,158 @@ export async function cleanup(env, now) {
       WHERE id IN (SELECT id FROM jobs WHERE created_at < ? LIMIT 200)`,
   )
     .bind(now - 7 * 24 * 60 * 60 * 1000)
+    .run();
+
+  await cleanupPush(env, now);
+}
+
+/* ------------------------------------------------------------------ push */
+
+export async function upsertPushSubscription(env, sub) {
+  await env.DB.prepare(
+    `INSERT INTO push_subscriptions
+       (endpoint, p256dh, auth, ip_hash, lang, origin, created_at, last_used_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(endpoint) DO UPDATE SET
+       p256dh = excluded.p256dh,
+       auth = excluded.auth,
+       ip_hash = excluded.ip_hash,
+       lang = excluded.lang,
+       origin = excluded.origin,
+       last_used_at = excluded.last_used_at,
+       disabled_at = NULL,
+       fail_count = 0`,
+  )
+    .bind(
+      sub.endpoint,
+      sub.p256dh,
+      sub.auth,
+      sub.ipHash,
+      sub.lang,
+      sub.origin,
+      sub.now,
+      sub.now,
+    )
+    .run();
+  const row = await env.DB.prepare(
+    'SELECT id FROM push_subscriptions WHERE endpoint = ?',
+  )
+    .bind(sub.endpoint)
+    .first();
+  return row ? Number(row.id) : 0;
+}
+
+export async function countPushSubscriptions(env, ipHash) {
+  const row = await env.DB.prepare(
+    'SELECT COUNT(*) AS n FROM push_subscriptions WHERE ip_hash = ? AND disabled_at IS NULL',
+  )
+    .bind(ipHash)
+    .first();
+  return Number(row?.n || 0);
+}
+
+export async function findPushSubscription(env, endpoint) {
+  const row = await env.DB.prepare(
+    'SELECT id FROM push_subscriptions WHERE endpoint = ?',
+  )
+    .bind(endpoint)
+    .first();
+  return row ? Number(row.id) : 0;
+}
+
+/** Link up to a batch's jobs to one device. Existing links are left alone. */export async function linkPushTargets(env, jobIds, subscriptionId, now) {
+  if (jobIds.length === 0 || !subscriptionId) return;
+  const statements = jobIds.map((id) => env.DB.prepare(
+    `INSERT OR IGNORE INTO push_targets
+       (job_id, subscription_id, created_at) VALUES (?, ?, ?)`,
+  ).bind(id, subscriptionId, now));
+  await env.DB.batch(statements);
+}
+
+export async function pushTargetsFor(env, jobId) {
+  const { results = [] } = await env.DB.prepare(
+    `SELECT s.id, s.endpoint, s.p256dh, s.auth, s.lang, s.origin
+       FROM push_targets t
+       JOIN push_subscriptions s ON s.id = t.subscription_id
+      WHERE t.job_id = ?
+        AND t.sent_at IS NULL
+        AND s.disabled_at IS NULL
+        AND s.fail_count < 3
+      ORDER BY t.created_at
+      LIMIT 10`,
+  )
+    .bind(jobId)
+    .all();
+  return results;
+}
+
+export async function markPushSent(env, jobId, subscriptionId, now) {
+  await env.DB.prepare(
+    `UPDATE push_targets
+        SET sent_at = ?, attempts = attempts + 1, last_error = NULL
+      WHERE job_id = ? AND subscription_id = ?`,
+  )
+    .bind(now, jobId, subscriptionId)
+    .run();
+}
+
+export async function markPushFailed(env, jobId, subscriptionId, error, now,
+  { disable = false } = {}) {
+  await env.DB.prepare(
+    `UPDATE push_targets
+        SET attempts = attempts + 1, last_error = ?
+      WHERE job_id = ? AND subscription_id = ?`,
+  )
+    .bind(String(error || '').slice(0, 300), jobId, subscriptionId)
+    .run();
+  if (disable) {
+    await env.DB.prepare(
+      `UPDATE push_subscriptions
+          SET disabled_at = ?, fail_count = fail_count + 1
+        WHERE id = ?`,
+    )
+      .bind(now, subscriptionId)
+      .run();
+    return;
+  }
+  await env.DB.prepare(
+    `UPDATE push_subscriptions
+        SET fail_count = fail_count + 1,
+            disabled_at = CASE WHEN fail_count + 1 >= 3 THEN ? ELSE disabled_at END
+      WHERE id = ?`,
+  )
+    .bind(now, subscriptionId)
+    .run();
+}
+
+export async function deletePushSubscription(env, endpoint, ipHash) {
+  await env.DB.prepare(
+    `DELETE FROM push_targets
+      WHERE subscription_id IN (
+        SELECT id FROM push_subscriptions
+         WHERE endpoint = ? AND ip_hash = ?)`,
+  )
+    .bind(endpoint, ipHash)
+    .run();
+  await env.DB.prepare(
+    'DELETE FROM push_subscriptions WHERE endpoint = ? AND ip_hash = ?',
+  )
+    .bind(endpoint, ipHash)
+    .run();
+}
+
+/** Drop targets with the jobs, and device rows nothing has used for a month. */
+async function cleanupPush(env, now) {
+  await env.DB.prepare(
+    'DELETE FROM push_targets WHERE created_at < ?',
+  )
+    .bind(now - 7 * 24 * 60 * 60 * 1000)
+    .run();
+  await env.DB.prepare(
+    `DELETE FROM push_subscriptions
+      WHERE created_at < ?
+        AND id NOT IN (SELECT subscription_id FROM push_targets)`,
+  )
+    .bind(now - 30 * 24 * 60 * 60 * 1000)
     .run();
 }

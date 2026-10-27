@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 import { DOWNLOADS, QUICK, TURNSTILE_SITE_KEY, downloads } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
+import { REFERENCE_PAGE } from '../src/data/referencePage.js';
 import { benefits } from '../src/data/features.js';
 import {
   LOCALE_TAGS, SITE_URL, absolute, pathFor,
@@ -74,7 +75,10 @@ const STYLE = `
       .dl-hint { margin: 8px 0 0; }
       .dl-quick { margin: 6px 0 0; }
       .dl-quick a { color: #c7c1ff; font-weight: 700; }
-      .dl-kinds { display: flex; gap: 5px; width: fit-content; margin: 0 0 16px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: rgba(148, 163, 184, 0.05); }
+      .dl-push { display: flex; align-items: flex-start; gap: 9px; margin: 12px 0 0; font-size: 0.86rem; color: var(--muted); }
+      .dl-push input { margin-top: 2px; }
+      .dl-push[hidden] { display: none !important; }
+      .dl-kinds { display: flex; flex-wrap: wrap; gap: 5px; width: fit-content; max-width: 100%; margin: 0 0 16px; padding: 4px; border: 1px solid var(--line); border-radius: 12px; background: rgba(148, 163, 184, 0.05); }
       .dl-kind { padding: 8px 14px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; }
       .dl-kind.is-active { background: rgba(109, 94, 252, 0.22); color: #e9e6ff; box-shadow: inset 0 0 0 1px rgba(109, 94, 252, 0.5); }
       .dl-audio-format { margin: 0 0 16px; }
@@ -355,6 +359,8 @@ function pageBody(lang, copy, url) {
                           role="radio" aria-checked="false">${esc(copy.form.kinds.audio)}</button>
                   <button type="button" class="dl-kind" data-kind="cover"
                           role="radio" aria-checked="false">${esc(copy.form.kinds.cover)}</button>
+                  <button type="button" class="dl-kind" data-kind="subtitle"
+                          role="radio" aria-checked="false">${esc(copy.form.kinds.subtitle)}</button>
                 </div>
                 <div class="dl-audio-format" id="dl-audio-format" hidden>
                   <label class="dl-label" for="dl-audio-format-select">${esc(copy.form.audioFormatLabel)}</label>
@@ -374,7 +380,13 @@ function pageBody(lang, copy, url) {
                           type="submit" disabled>${esc(copy.form.button)}</button>
                 </div>
                 <p id="dl-batch-hint" class="dl-note dl-hint">${esc(copy.form.hint)}</p>
+                <label class="dl-push" id="dl-push-box" hidden>
+                  <input type="checkbox" id="dl-push-toggle">
+                  <span>${esc(copy.form.pushLabel)}</span>
+                </label>
+                <p id="dl-push-note" class="dl-note" hidden>${esc(copy.form.pushHint)}</p>
                 <p class="dl-note dl-quick"><a href="${esc(QUICK.path[lang])}">${esc(copy.form.quick)} →</a></p>
+                <p class="dl-note dl-quick"><a href="${esc(REFERENCE_PAGE.path[lang])}">${esc(copy.form.reference)}</a></p>
                 <div id="dl-turnstile" class="dl-turnstile"
                      data-sitekey="${esc(TURNSTILE_SITE_KEY)}" data-action="download"></div>
               </form>

@@ -1,6 +1,7 @@
 {
   "name": "AutoReel — Tải video miễn phí",
   "short_name": "AutoReel Tải video",
+  "id": "/downloads/",
   "description": "Tải video công khai từ TikTok, Douyin, YouTube, Bilibili, Hongguoduanju và iQiyi.",
   "start_url": "/downloads/",
   "scope": "/downloads/",
