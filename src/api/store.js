@@ -13,6 +13,10 @@ const DEFAULT_SETTINGS = {
   hourly_per_ip: 6,
   daily_per_ip: 20,
   batch_max: 5,
+  audio_enabled: 1,
+  cover_enabled: 1,
+  share_enabled: 1,
+  audio_formats: 'm4a,mp3,wav',
   queue_limit: 30,
   max_seconds: 1200,
   max_bytes: 99_614_720,
@@ -23,8 +27,12 @@ export async function readSettings(env) {
   try {
     const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
     for (const row of results || []) {
-      if (row.key === 'enabled') {
-        settings.enabled = row.value === '1' || row.value === 'true' ? 1 : 0;
+      if (row.key === 'audio_formats') {
+        settings.audio_formats = String(row.value || '');
+      } else if ([
+        'enabled', 'audio_enabled', 'cover_enabled', 'share_enabled',
+      ].includes(row.key)) {
+        settings[row.key] = row.value === '1' || row.value === 'true' ? 1 : 0;
       } else if (row.key in settings) {
         const number = Number(row.value);
         if (Number.isFinite(number)) settings[row.key] = number;

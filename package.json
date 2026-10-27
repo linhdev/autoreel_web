@@ -6,7 +6,7 @@
   "description": "AutoReel landing page - AI Content Automation",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && node scripts/build-routes.mjs && node scripts/build-posts.mjs && node scripts/build-docs.mjs && node scripts/build-downloads.mjs && node scripts/build-download-platforms.mjs && node scripts/build-download-tools.mjs",
+    "build": "vite build && node scripts/build-routes.mjs && node scripts/build-posts.mjs && node scripts/build-docs.mjs && node scripts/build-downloads.mjs && node scripts/build-download-platforms.mjs && node scripts/build-download-tools.mjs && node scripts/build-download-use-cases.mjs",
     "build:posts": "node scripts/build-posts.mjs",
     "preview": "vite preview",
     "assets": "node scripts/generate-assets.mjs",

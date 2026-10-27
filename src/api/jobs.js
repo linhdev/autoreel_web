@@ -25,6 +25,14 @@ export function batchLimit(settings) {
   return Math.min(BATCH_CEILING, Math.max(1, value));
 }
 
+function audioFormatList(settings) {
+  const list = String(settings.audio_formats || '')
+    .split(',')
+    .map((one) => one.trim())
+    .filter((one) => AUDIO_FORMATS.has(one));
+  return list.length > 0 ? list : ['m4a'];
+}
+
 export function requestedUrls(body) {
   if (Array.isArray(body.urls)) return body.urls;
   if (typeof body.url === 'string') return [body.url];
@@ -81,10 +89,8 @@ export async function createJob(request, env) {
   if (!raw || raw.length === 0) return errorJson('BAD_URL', 400);
   const kind = body.kind === undefined ? 'video' : body.kind;
   if (!KINDS.has(kind)) return errorJson('BAD_KIND', 400);
-  const audioFormat = kind === 'audio'
-    ? (body.audioFormat === undefined ? 'm4a' : body.audioFormat)
-    : null;
-  if (kind === 'audio' && !AUDIO_FORMATS.has(audioFormat)) {
+  const requestedFormat = body.kind === 'audio' ? body.audioFormat : undefined;
+  if (requestedFormat !== undefined && !AUDIO_FORMATS.has(requestedFormat)) {
     return errorJson('BAD_FORMAT', 400);
   }
   if (raw.length > BATCH_CEILING) {
@@ -93,6 +99,19 @@ export async function createJob(request, env) {
 
   const settings = await readSettings(env);
   if (!settings.enabled) return errorJson('MAINTENANCE', 503);
+  if (kind === 'audio' && !settings.audio_enabled) {
+    return errorJson('KIND_DISABLED', 400);
+  }
+  if (kind === 'cover' && !settings.cover_enabled) {
+    return errorJson('KIND_DISABLED', 400);
+  }
+  const formats = audioFormatList(settings);
+  const audioFormat = kind === 'audio'
+    ? (requestedFormat === undefined ? formats[0] : requestedFormat)
+    : null;
+  if (kind === 'audio' && !formats.includes(audioFormat)) {
+    return errorJson('BAD_FORMAT', 400);
+  }
 
   const limit = batchLimit(settings);
   if (raw.length > limit) return errorJson('BATCH_TOO_BIG', 400, {}, { max: limit });
@@ -337,5 +356,12 @@ export async function getStatus(env) {
     today: counts.today,
     limit: settings.daily_limit,
     batchMax: batchLimit(settings),
+    kinds: {
+      video: true,
+      audio: Boolean(settings.audio_enabled),
+      cover: Boolean(settings.cover_enabled),
+    },
+    audioFormats: audioFormatList(settings),
+    share: Boolean(settings.share_enabled),
   });
 }

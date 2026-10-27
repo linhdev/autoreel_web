@@ -12,6 +12,7 @@ import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, DOC_GROUPS, docPath, docs } from '../src/data/docs.js';
 import { DOWNLOADS, QUICK, downloads } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
+import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
 import { postContentProblems } from './lib/post-rules.mjs';
 import {
@@ -75,6 +76,9 @@ async function main() {
     'en/downloads/index.html',
     'downloads/app.js',
     'downloads/qr.js',
+    'downloads/share.js',
+    'downloads/share/index.html',
+    'en/downloads/share/index.html',
     'downloads/sw.js',
     'downloads/manifest.webmanifest',
     'downloads/icon-512.png',
@@ -673,6 +677,28 @@ async function main() {
   if (dlProblems.length) fail(`downloads: ${dlProblems.slice(0, 6).join('; ')}`);
   else pass(`downloads: ${LOCALES.length} language(s), no bundle, CSP and Turnstile present`);
 
+  // The transfer page is reached from a QR, not from search. It must stay out
+  // of the index and must actually load the script that reads `?id=`.
+  const shareProblems = [];
+  for (const lang of LOCALES) {
+    const file = path.join(
+      dist,
+      DOWNLOADS.path[lang].replace(/^\//, ''),
+      'share',
+      'index.html',
+    );
+    if (!existsSync(file)) {
+      shareProblems.push(`${lang}: page missing`);
+      continue;
+    }
+    const page = await readFile(file, 'utf8');
+    if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) shareProblems.push(`${lang}: html lang`);
+    if (!page.includes('/downloads/share.js')) shareProblems.push(`${lang}: script`);
+    if (!page.includes('content="noindex, nofollow"')) shareProblems.push(`${lang}: indexable`);
+  }
+  if (shareProblems.length) fail(`share page: ${shareProblems.slice(0, 6).join('; ')}`);
+  else pass(`share page: ${LOCALES.length} language(s), noindex, script present`);
+
   // ---- The six platform landing pages ----
   const pfProblems = [];
   for (const platform of PLATFORM_PAGES) {
@@ -716,6 +742,29 @@ async function main() {
   if (qtProblems.length) fail(`quick/embed: ${qtProblems.slice(0, 6).join('; ')}`);
   else pass(`quick/embed: ${LOCALES.length} language(s)`);
 
+  // ---- Audio and cover landing pages ----
+  const ucProblems = [];
+  for (const page of USE_CASE_PAGES) {
+    for (const lang of LOCALES) {
+      const file = path.join(dist, page.path[lang].replace(/^\//, ''), 'index.html');
+      if (!existsSync(file)) {
+        ucProblems.push(`${page.key}/${lang}: page missing`);
+        continue;
+      }
+      const html = await readFile(file, 'utf8');
+      const url = absolute(page.path[lang]);
+      if (!html.includes(`<link rel="canonical" href="${url}"`)) ucProblems.push(`${page.key}/${lang}: canonical`);
+      if (!html.includes('itemtype="https://schema.org/FAQPage"')) ucProblems.push(`${page.key}/${lang}: FAQPage`);
+      if (!html.includes(`action="${DOWNLOADS.path[lang]}"`)) ucProblems.push(`${page.key}/${lang}: tool action`);
+      if (!html.includes(`name="kind" value="${page.kind}"`)) ucProblems.push(`${page.key}/${lang}: kind field`);
+      if (page.kind === 'audio' && !html.includes(`name="audioFormat" value="${page.audioFormat}"`)) {
+        ucProblems.push(`${page.key}/${lang}: audio format`);
+      }
+    }
+  }
+  if (ucProblems.length) fail(`use cases: ${ucProblems.slice(0, 6).join('; ')}`);
+  else pass(`use cases: ${USE_CASE_PAGES.length} kind(s) x ${LOCALES.length} languages`);
+
   // ---- Sitemap: every URL, and no URL that is not a route ----
   //
   // "Route" here includes the blog, which is not in `routes.js` on purpose -
@@ -739,6 +788,10 @@ async function main() {
     // The bookmarklet and embed instructions, written by
     // `build-download-tools.mjs`.
     ...LOCALES.map((lang) => absolute(QUICK.path[lang])),
+    // Audio and cover landing pages, written by
+    // `build-download-use-cases.mjs`.
+    ...USE_CASE_PAGES.flatMap((page) =>
+      LOCALES.map((lang) => absolute(page.path[lang]))),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {

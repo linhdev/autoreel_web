@@ -33,6 +33,7 @@ import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, docPath, docs } from '../src/data/docs.js';
 import { DOWNLOADS, QUICK } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
+import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -470,6 +471,24 @@ function sitemap(stamp) {
         }),
       ),
     );
+  }
+
+  // The audio and cover landing pages, written by
+  // `build-download-use-cases.mjs`.
+  for (const page of USE_CASE_PAGES) {
+    for (const lang of LOCALES) {
+      urls.push(
+        entry(
+          absolute(page.path[lang]),
+          stamp,
+          '0.8',
+          alternatesFor({
+            vi: absolute(page.path.vi),
+            en: absolute(page.path.en),
+          }),
+        ),
+      );
+    }
   }
 
   return (

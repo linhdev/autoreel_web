@@ -128,6 +128,15 @@ const STYLE = `
       .dl-qr { display: grid; justify-items: center; gap: 6px; }
       .dl-qr img { width: 112px; height: 112px; padding: 6px; border-radius: 8px; background: #fff; }
       .dl-qr .dl-note { max-width: 150px; text-align: center; font-size: 0.72rem; }
+      .dl-transfer { width: min(92vw, 430px); padding: 0; border: 1px solid var(--line); border-radius: 18px; background: #0b1126; color: var(--text); }
+      .dl-transfer::backdrop { background: rgba(3, 6, 18, 0.72); }
+      .dl-transfer-box { position: relative; padding: 24px 22px 20px; text-align: center; }
+      .dl-transfer-box h2 { margin: 0 0 8px; font-size: 1.12rem; }
+      .dl-transfer-close { position: absolute; top: 8px; right: 12px; border: 0; background: transparent; color: var(--muted); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+      .dl-transfer-qr { display: flex; justify-content: center; margin: 12px 0 4px; }
+      .dl-transfer-qr img { width: 160px; height: 160px; padding: 7px; border-radius: 12px; background: #fff; }
+      .dl-transfer-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+      .dl-transfer-actions .ar-btn { height: 40px; padding: 0 14px; font-size: 0.84rem; }
       @media (max-width: 600px) { .dl-share { grid-template-columns: 1fr; } .dl-qr { justify-items: start; } }
       .dl-preview { width: 100%; max-height: 440px; border-radius: 12px; background: #000; }
       .dl-preview[hidden] { display: none !important; }
@@ -394,6 +403,19 @@ function pageBody(lang, copy, url) {
                   <span id="dl-qr-note" class="dl-note"></span>
                 </div>
               </div>
+
+              <dialog id="dl-transfer" class="dl-transfer" aria-labelledby="dl-transfer-title">
+                <div class="dl-transfer-box">
+                  <button id="dl-transfer-close" class="dl-transfer-close" type="button" aria-label="Đóng">×</button>
+                  <h2 id="dl-transfer-title"></h2>
+                  <p id="dl-transfer-text" class="dl-note"></p>
+                  <div id="dl-transfer-qr" class="dl-transfer-qr"></div>
+                  <div class="dl-transfer-actions">
+                    <button id="dl-transfer-copy" class="ar-btn ar-btn-secondary" type="button"></button>
+                    <a id="dl-transfer-open" class="ar-btn ar-btn-primary" href="#" target="_blank" rel="noopener"></a>
+                  </div>
+                </div>
+              </dialog>
             </section>
 
             <aside class="dl-side">
@@ -485,6 +507,72 @@ function checkCopy() {
   }
 }
 
+function shareDocument(lang, assets) {
+  const copy = lang === 'en'
+    ? {
+        title: 'The file is ready — AutoReel',
+        heading: 'The file is ready',
+        status: 'Checking the file…',
+        again: 'Download another video free',
+        note: 'Open on the device that should receive the file, then press Download.',
+      }
+    : {
+        title: 'File đã sẵn sàng — AutoReel',
+        heading: 'File đã sẵn sàng',
+        status: 'Đang kiểm tra file…',
+        again: 'Tải video khác miễn phí',
+        note: 'Mở trên thiết bị muốn nhận file, rồi bấm Download.',
+      };
+  return `<!doctype html>
+<html lang="${LOCALE_TAGS[lang].html}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#070B1A" />
+    <title>${esc(copy.title)}</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="${esc(copy.note)}" />
+${assets}
+    <style>${STYLE}    </style>
+    <style>
+      .share-wrap { max-width: 760px; margin: 0 auto; padding: 34px 0 80px; }
+      .share-card { padding: 26px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(180deg, rgba(18,26,54,.95), rgba(8,13,29,.98)); }
+      .share-card h1 { margin: 8px 0 10px; font-size: clamp(1.5rem, 3vw, 2.1rem); line-height: 1.15; word-break: break-word; }
+      #share-preview { margin: 18px 0; }
+      #share-download { margin: 8px 0 4px; }
+      #share-empty { margin-top: 18px; }
+      .share-back { display: inline-flex; margin-top: 14px; font-weight: 700; color: #c7c1ff; }
+    </style>
+    <script src="/downloads/share.js" defer></script>
+  </head>
+  <body>
+${nav(lang, 'downloads')}
+    <main id="main" class="dl-main">
+      <div class="ar-container">
+        <div class="share-wrap">
+          <section class="share-card">
+            <span class="dl-pill">AUTOREEL</span>
+            <h1 id="share-title">${esc(copy.heading)}</h1>
+            <p id="share-status" class="dl-status" role="status">${esc(copy.status)}</p>
+            <p id="share-meta" class="dl-note"></p>
+            <div id="share-preview"></div>
+            <a id="share-download" class="ar-btn ar-btn-primary dl-download" href="#" hidden>Download</a>
+            <p id="share-expiry" class="dl-note"></p>
+            <div id="share-empty" hidden>
+              <p class="dl-note">${esc(copy.note)}</p>
+              <a id="share-again" class="share-back" href="${esc(DOWNLOADS.path[lang])}">${esc(copy.again)} →</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+${footer(lang)}
+  </body>
+</html>
+`;
+}
+
 async function main() {
   checkCopy();
   if (TURNSTILE_SITE_KEY.startsWith('1x000')) {
@@ -506,6 +594,7 @@ async function main() {
     const html = document_({ lang, copy: downloads[lang], assets });
     const slug = DOWNLOADS.path[lang].replace(/^\/|\/$/g, '');
     await write(join(DIST, slug, 'index.html'), html);
+    await write(join(DIST, slug, 'share', 'index.html'), shareDocument(lang, assets));
   }
   console.log(`downloads: wrote ${LANGS.length} page(s)`);
 }

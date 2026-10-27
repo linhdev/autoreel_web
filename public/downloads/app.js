@@ -49,6 +49,12 @@
       shareCopy: 'Sao chép link',
       shareCopied: 'Đã sao chép.',
       qrNote: 'Quét để mở trên điện thoại',
+      transfer: 'Gửi máy khác',
+      transferTitle: 'Gửi file sang thiết bị khác',
+      transferText: 'Quét mã QR bằng điện thoại, hoặc mở link bên dưới. Link hết hạn cùng file.',
+      transferCopy: 'Sao chép link',
+      transferCopied: 'Đã sao chép.',
+      transferOpen: 'Mở trang nhận file',
       turnstile: 'Chưa xác minh được. Hãy tải lại trang và thử lại.',
       rate: 'Bạn đã dùng hết lượt trong giờ này. Thử lại sau ít phút.',
       rateRemaining: (n) => `Bạn còn ${n} lượt trong giờ này. Bớt link rồi thử lại.`,
@@ -104,6 +110,12 @@
       shareCopy: 'Copy link',
       shareCopied: 'Copied.',
       qrNote: 'Scan to open on your phone',
+      transfer: 'Send to device',
+      transferTitle: 'Send the file to another device',
+      transferText: 'Scan the QR with a phone, or open the link below. The link expires with the file.',
+      transferCopy: 'Copy link',
+      transferCopied: 'Copied.',
+      transferOpen: 'Open the receiving page',
       turnstile: 'Verification did not complete. Reload the page and try again.',
       rate: 'You have used this hour’s allowance. Try again shortly.',
       rateRemaining: (n) => `You have ${n} left this hour. Remove some links and try again.`,
@@ -148,6 +160,13 @@
   const shareTg = document.getElementById('dl-share-tg');
   const qrBox = document.getElementById('dl-qr-box');
   const qrNote = document.getElementById('dl-qr-note');
+  const transferDialog = document.getElementById('dl-transfer');
+  const transferTitle = document.getElementById('dl-transfer-title');
+  const transferText = document.getElementById('dl-transfer-text');
+  const transferQr = document.getElementById('dl-transfer-qr');
+  const transferCopy = document.getElementById('dl-transfer-copy');
+  const transferOpen = document.getElementById('dl-transfer-open');
+  const transferClose = document.getElementById('dl-transfer-close');
   const kindButtons = [...document.querySelectorAll('.dl-kind')];
   const audioFormatBox = document.getElementById('dl-audio-format');
   const audioFormatSelect = document.getElementById('dl-audio-format-select');
@@ -164,6 +183,9 @@
   let kind = 'video';
   let audioFormat = 'm4a';
   let shareReady = false;
+  let shareEnabled = true;
+  let transferLink = '';
+  const kindsEnabled = { video: true, audio: true, cover: true };
   let jobs = loadSessionJobs();
   const state = new Map();
   let pollTimer = null;
@@ -221,6 +243,7 @@
 
   function setKind(next) {
     kind = next === 'audio' || next === 'cover' ? next : 'video';
+    if (!kindsEnabled[kind]) kind = 'video';
     for (const button of kindButtons) {
       const active = button.dataset.kind === kind;
       button.classList.toggle('is-active', active);
@@ -364,6 +387,13 @@
         link.textContent = t.download;
         actions.append(link);
 
+        const transferButton = document.createElement('button');
+        transferButton.type = 'button';
+        transferButton.className = 'ar-btn ar-btn-secondary dl-job-transfer';
+        transferButton.textContent = t.transfer;
+        transferButton.addEventListener('click', () => openTransfer(job));
+        if (shareEnabled) actions.append(transferButton);
+
         const previewButton = document.createElement('button');
         previewButton.type = 'button';
         previewButton.className = 'ar-btn ar-btn-secondary dl-job-preview';
@@ -435,11 +465,10 @@
   }
 
   function showShare() {
-    if (!share) return;
+    if (!share || !shareEnabled) return;
     share.hidden = false;
     if (shareReady) return;
     shareReady = true;
-
     const url = pageUrl();
     if (shareTitle) shareTitle.textContent = t.shareTitle;
     if (shareText) shareText.textContent = t.shareText;
@@ -480,6 +509,59 @@
         qrBox.textContent = '';
       }
     }
+  }
+
+  /* ------------------------------------------------------------- transfer */
+
+  function openTransfer(job) {
+    if (!shareEnabled) return;
+    const url = `${location.origin}${lang === 'en' ? '/en' : ''}/downloads/share/?id=${job.id}`;
+    transferLink = url;
+    if (!transferDialog || typeof transferDialog.showModal !== 'function') {
+      window.open(url, '_blank', 'noopener');
+      return;
+    }
+    if (transferTitle) transferTitle.textContent = t.transferTitle;
+    if (transferText) transferText.textContent = t.transferText;
+    if (transferCopy) transferCopy.textContent = t.transferCopy;
+    if (transferOpen) {
+      transferOpen.textContent = t.transferOpen;
+      transferOpen.href = url;
+    }
+    if (transferQr) {
+      transferQr.textContent = '';
+      if (typeof window.qrcode === 'function') {
+        try {
+          const qr = window.qrcode(0, 'M');
+          qr.addData(url);
+          qr.make();
+          transferQr.innerHTML = qr.createImgTag(4, 8);
+        } catch {
+          transferQr.textContent = '';
+        }
+      }
+    }
+    if (!transferDialog.open) transferDialog.showModal();
+  }
+
+  if (transferCopy) {
+    transferCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(transferLink);
+        transferCopy.textContent = t.transferCopied;
+        setTimeout(() => { transferCopy.textContent = t.transferCopy; }, 1600);
+      } catch {
+        // The link is still shown by the receiving page.
+      }
+    });
+  }
+  if (transferClose && transferDialog) {
+    transferClose.addEventListener('click', () => transferDialog.close());
+  }
+  if (transferDialog) {
+    transferDialog.addEventListener('click', (event) => {
+      if (event.target === transferDialog) transferDialog.close();
+    });
   }
 
   /* ------------------------------------------------------------- polling */
@@ -573,6 +655,38 @@
         batchMax = Math.min(5, Math.trunc(Number(data.batchMax)));
         updateHint();
       }
+      // An operator can turn a file kind, an audio format or sharing off from
+      // the dashboard. The page hides what the API would refuse anyway, so a
+      // visitor never picks an option that would fail after solving Turnstile.
+      if (data.kinds && typeof data.kinds === 'object') {
+        for (const key of ['audio', 'cover']) {
+          kindsEnabled[key] = data.kinds[key] !== false;
+        }
+      }
+      for (const button of kindButtons) {
+        if (button.dataset.kind !== 'video') {
+          button.hidden = !kindsEnabled[button.dataset.kind];
+        }
+      }
+      if (!kindsEnabled[kind]) setKind('video');
+      if (Array.isArray(data.audioFormats)) {
+        const formats = data.audioFormats
+          .filter((one) => ['m4a', 'mp3', 'wav'].includes(one));
+        if (formats.length > 0) {
+          for (const option of audioFormatSelect?.options || []) {
+            option.hidden = !formats.includes(option.value);
+          }
+          if (!formats.includes(audioFormat)) {
+            audioFormat = formats[0];
+            if (audioFormatSelect) audioFormatSelect.value = audioFormat;
+          }
+        }
+      }
+      shareEnabled = data.share !== false;
+      if (!shareEnabled) {
+        if (share) share.hidden = true;
+        if (transferDialog?.open) transferDialog.close();
+      }
       if (!data.enabled) {
         serverOnline = false;
         banner.hidden = false;
@@ -636,7 +750,16 @@
     });
   }
 
-  const wantedUrl = new URLSearchParams(location.search).get('url');
+  const query = new URLSearchParams(location.search);
+  let wantedUrl = query.get('url');
+  if (!wantedUrl) {
+    // Android's share sheet often puts the link in `text`; iOS or a browser
+    // without share-target support may put it in neither, in which case the
+    // box stays empty and the visitor pastes it themselves.
+    const sharedText = query.get('text') || '';
+    const found = sharedText.match(/https?:\/\/\S+/);
+    if (found) wantedUrl = found[0];
+  }
   if (jobs.length === 0 && typeof wantedUrl === 'string' && /^https?:\/\//i.test(wantedUrl)) {
     input.value = wantedUrl;
     input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -755,6 +878,13 @@
 
   setStage(jobs.length > 0 ? 'queued' : 'idle');
   setKind('video');
+  const kindParam = query.get('kind');
+  if (kindParam === 'audio' || kindParam === 'cover') setKind(kindParam);
+  const formatParam = query.get('audioFormat');
+  if (audioFormatSelect && ['m4a', 'mp3', 'wav'].includes(formatParam)) {
+    audioFormatSelect.value = formatParam;
+    audioFormat = formatParam;
+  }
   updateHint();
   renderTurnstile();
   updateSubmit();
