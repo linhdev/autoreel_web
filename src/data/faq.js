@@ -18,7 +18,7 @@ export const faqs = {
       id: 'pricing',
       question: 'AutoReel có phải trả phí hàng tháng không?',
       answer:
-        'Tuỳ bạn chọn. Có gói thuê theo tháng, rẻ nhất 159.000đ/tháng, dừng lúc nào cũng được; và có gói mua một lần dùng vĩnh viễn, không phí tháng. Ngoài ra, một số AI/API hoặc dịch vụ bên thứ ba có thể tính phí riêng theo mức sử dụng.',
+        'Tuỳ bạn chọn. Có gói thuê theo tháng, rẻ nhất 99.000đ/tháng, dừng lúc nào cũng được; và có gói mua một lần dùng vĩnh viễn, không phí tháng. Ngoài ra, một số AI/API hoặc dịch vụ bên thứ ba có thể tính phí riêng theo mức sử dụng.',
     },
     {
       id: 'runtime',
@@ -78,7 +78,7 @@ export const faqs = {
       id: 'pricing',
       question: 'Is there a monthly fee?',
       answer:
-        'That depends which you pick. There is a monthly subscription, from $6.12 a month, which you can stop whenever you like; and there is a one-off licence that never renews. Separately, some AI/API or third-party services bill you by usage.',
+        'That depends which you pick. There is a monthly subscription, from $6.99 a month, which you can stop whenever you like; and there is a one-off licence that never renews. Separately, some AI/API or third-party services bill you by usage.',
     },
     {
       id: 'runtime',

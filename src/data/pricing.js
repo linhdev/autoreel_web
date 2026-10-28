@@ -36,8 +36,8 @@ export const VND_PER_USD = 26000;
  * The dollar price of a đồng amount, worked out **in cents**.
  *
  * In cents because a dong price almost never divides into a whole number of
- * dollars, and doing the rounding in floating point gives `6.114999…` for what
- * a person reads as `6.12`. Rounding to an integer number of cents first means
+ * dollars, and doing the rounding in floating point gives `3.807692…` for what
+ * a person reads as `3.81`. Rounding to an integer number of cents first means
  * the only arithmetic left is a division by 100, which is exact enough for
  * `Intl` to print the figure that was intended.
  */
@@ -81,7 +81,7 @@ export function priceIn(plan, lang) {
   return { amount: plan.priceValue, currency: 'VND' };
 }
 
-/** `1.490.000đ` in Vietnamese, `$57.31` in English — the same money. */
+/** `1.490.000đ` in Vietnamese, `$61.99` in English — the same money. */
 export const PRICE_SUFFIX = { vi: 'đ', en: '$' };
 export const CURRENCY_LOCALE = { vi: 'vi-VN', en: 'en-US' };
 
@@ -96,12 +96,24 @@ export function formatMoney(vnd, lang, usdOverride) {
   if (lang === 'en') {
     const cents =
       Number.isSafeInteger(usdOverride) && usdOverride > 0 ? usdOverride : usdCents(vnd);
-    return `${PRICE_SUFFIX.en}${new Intl.NumberFormat(CURRENCY_LOCALE.en, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(cents / 100)}`;
+    return formatUsdCents(cents);
   }
   return `${new Intl.NumberFormat(CURRENCY_LOCALE.vi).format(vnd)}${PRICE_SUFFIX.vi}`;
+}
+
+/**
+ * One amount already in cents, printed the way the English page prints money.
+ *
+ * `formatMoney` takes đồng and converts; a saving computed from two USD prices
+ * is already in cents, and converting it again would apply the exchange rate a
+ * second time. That is exactly how the three-month card came to advertise
+ * $3.00 while its own two prices differed by $3.98.
+ */
+export function formatUsdCents(cents) {
+  return `${PRICE_SUFFIX.en}${new Intl.NumberFormat(CURRENCY_LOCALE.en, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(cents / 100)}`;
 }
 
 /**
@@ -199,7 +211,7 @@ export const plans = {
       group: 'monthly',
       icon: 'Clapperboard',
       name: 'Edit',
-      priceValue: 159000,
+      priceValue: 99000,
       billing: 'month',
       priceNote: 'mỗi tháng',
       audience: 'Cho người đã có video, chỉ cần dựng và xử lý lại.',
@@ -374,7 +386,7 @@ export const plans = {
       group: 'monthly',
       icon: 'Clapperboard',
       name: 'Edit',
-      priceValue: 159000,
+      priceValue: 99000,
       billing: 'month',
       priceNote: 'per month',
       audience: 'For anyone who already has footage and only needs to cut and process it.',
@@ -585,7 +597,13 @@ export function checkoutHref(plan, lang = 'vi') {
 }
 
 /**
- * What the three-month pack saves against paying monthly, in đồng.
+ * What the three-month pack saves against paying monthly: đồng on the
+ * Vietnamese page, cents on the English one.
+ *
+ * The unit follows the page because the two pages do not share a currency
+ * table: the English plan prices are the USD amounts PayPal charges, not a
+ * conversion of the đồng price. Subtracting đồng and then converting the
+ * difference would advertise a saving the two cards do not actually offer.
  *
  * `null` when the plan declares no `saves`, which is every card but one — so
  * the caller asks "is there a saving to show" with a truthiness test rather
@@ -595,6 +613,9 @@ export function savingFor(plan, lang, lookup = planById) {
   if (!plan.saves) return null;
   const base = lookup(plan.saves.against, lang);
   if (!base) return null;
+  if (lang === 'en') {
+    return usdCentsFor(base) * plan.saves.months - usdCentsFor(plan);
+  }
   return base.priceValue * plan.saves.months - plan.priceValue;
 }
 
@@ -609,5 +630,13 @@ export function paybackMonths(plan, lang, lookup = planById) {
   if (!plan.paybackAgainst) return null;
   const base = lookup(plan.paybackAgainst, lang);
   if (!base || !base.priceValue) return null;
+  // The English page quotes USD plan prices; the ratio of those is the ratio a
+  // buyer can check against the two cards. In đồng the numbers happen to round
+  // to the same month today, but that is luck, not a rule.
+  if (lang === 'en') {
+    const baseCents = usdCentsFor(base);
+    if (!baseCents) return null;
+    return Math.ceil(usdCentsFor(plan) / baseCents);
+  }
   return Math.ceil(plan.priceValue / base.priceValue);
 }

@@ -17,7 +17,7 @@ export default {
   },
   description: {
     vi: 'Nhiều nền tảng không mở API để đăng video. Bài này nói rõ hai đường đi khi không có API, cái giá của mỗi đường, và khi nào API là lựa chọn bền hơn.',
-    en: 'Plenty of platforms never open an API for posting video. Here are the two routes that remain, what each one costs, and when an official API is the sturdier choice.',
+    en: 'Many platforms never open a posting API. The two routes that remain, what each costs, and when an official API is the sturdier choice.',
   },
   date: '2026-10-10',
   minutes: { vi: 6, en: 6 },

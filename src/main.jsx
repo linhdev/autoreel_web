@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './styles/globals.css';
 
@@ -9,8 +9,16 @@ import './styles/globals.css';
 // section the URL asks for.
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-createRoot(document.getElementById('root')).render(
+const container = document.getElementById('root');
+const app = (
   <StrictMode>
     <App />
-  </StrictMode>,
+  </StrictMode>
 );
+
+// `scripts/prerender.mjs` fills this element before the bundle loads, so a
+// normal production visit hydrates that markup instead of throwing it away and
+// rendering it again. Vite's dev server still serves an empty root, which is
+// what the other branch is for.
+if (container.hasChildNodes()) hydrateRoot(container, app);
+else createRoot(container).render(app);

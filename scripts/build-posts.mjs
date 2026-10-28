@@ -26,12 +26,15 @@
  * Run: `node scripts/build-posts.mjs` (or `npm run build`, which chains it).
  */
 import { readFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { BLOG, postPath, posts, relatedPosts } from '../src/data/posts.js';
 import { LOCALE_TAGS, SITE_URL, absolute, pathFor } from '../src/data/routes.js';
-import { site } from '../src/data/site.js';
+import { founder, site } from '../src/data/site.js';
+import { ORG_ID, PERSON_ID } from '../src/data/schema.js';
 import {
   esc, footer, headAssets, langAssets, nav, shownDate, write,
 } from './lib/site-shell.mjs';
@@ -57,7 +60,7 @@ const CHROME = {
     minRead: 'phút đọc',
     ctaTitle: 'Tự động hoá phần lặp lại',
     ctaBody:
-      'AutoReel làm phần lớn công đoạn trong các bài trên: đọc sản phẩm, viết kịch bản, dựng video, rồi đăng lên Shopee Video và Facebook/Reels. Giá thuê từ 159.000đ một tháng, hoặc mua một lần dùng vĩnh viễn.',
+      'AutoReel làm phần lớn công đoạn trong các bài trên: đọc sản phẩm, viết kịch bản, dựng video, rồi đăng lên Shopee Video và Facebook/Reels. Giá thuê từ 99.000đ một tháng, hoặc mua một lần dùng vĩnh viễn.',
     ctaPrimary: 'Xem bảng giá',
     ctaSecondary: 'Nhận tư vấn',
     home: 'Trang chủ',
@@ -69,7 +72,7 @@ const CHROME = {
     minRead: 'min read',
     ctaTitle: 'Automate the repetitive part',
     ctaBody:
-      'AutoReel does most of what these articles describe: reads the product, writes the script, builds the video, then publishes it to Shopee Video and Facebook/Reels. Rent it from $6.12 a month, or buy it once and keep it.',
+      'AutoReel does most of what these articles describe: reads the product, writes the script, builds the video, then publishes it to Shopee Video and Facebook/Reels. Rent it from $6.99 a month, or buy it once and keep it.',
     ctaPrimary: 'See pricing',
     ctaSecondary: 'Talk to us',
     home: 'Home',
@@ -99,9 +102,31 @@ function figure(one) {
   if (!src || !alt) {
     throw new Error(`a figure needs a src and an alt: ${JSON.stringify(one).slice(0, 80)}`);
   }
-  const image = `          <img src="${src}" alt="${esc(alt)}" loading="lazy" decoding="async" />`;
+  // The diagrams are SVGs with a viewBox; without width/height the browser
+  // reserves no space and the paragraph below jumps when the image lands. Read
+  // the two numbers from the file rather than keeping a second copy in the data.
+  const svg = readFileSync(join(ROOT, 'public', src.replace(/^\//, '')), 'utf8').slice(0, 400);
+  const box = svg.match(/viewBox="0 0 (\d+) (\d+)"/);
+  const size = box ? ` width="${box[1]}" height="${box[2]}"` : '';
+  const image = `          <img src="${src}" alt="${esc(alt)}"${size} loading="lazy" decoding="async" />`;
   const text = caption ? `\n          <figcaption>${esc(caption)}</figcaption>` : '';
   return `        <figure class="ar-post-figure">\n${image}${text}\n        </figure>`;
+}
+
+/**
+ * Prose with one controlled exception to "all text is escaped": a same-site
+ * link, written `[label](/path/)`.
+ *
+ * The body blocks are plain strings, which kept an author from injecting
+ * markup — and also kept every article from linking to the page it is about.
+ * The escaping still runs first; the substitution only recognises an absolute
+ * path on this site, so `[x](javascript:…)`, an external URL or a quote in the
+ * address cannot become an anchor. The label is already escaped by then.
+ */
+function inlineText(value) {
+  return esc(value).replace(/\[([^\]]+)\]\((\/[A-Za-z0-9\-_/]*)\)/g, (match, label, href) =>
+    href.startsWith('//') ? match : `<a href="${href}">${label}</a>`,
+  );
 }
 
 /** One block of an article's body. Every string is escaped on the way in. */
@@ -112,16 +137,16 @@ function block(one) {
     // alternative — a second `{ p }` — reads as a new section in the source.
     return one.p
       .split('\n\n')
-      .map((part) => `        <p>${esc(part.trim())}</p>`)
+      .map((part) => `        <p>${inlineText(part.trim())}</p>`)
       .join('\n');
   }
   if (one.ul) {
-    return `        <ul>\n${one.ul.map((item) => `          <li>${esc(item)}</li>`).join('\n')}\n        </ul>`;
+    return `        <ul>\n${one.ul.map((item) => `          <li>${inlineText(item)}</li>`).join('\n')}\n        </ul>`;
   }
   if (one.ol) {
-    return `        <ol>\n${one.ol.map((item) => `          <li>${esc(item)}</li>`).join('\n')}\n        </ol>`;
+    return `        <ol>\n${one.ol.map((item) => `          <li>${inlineText(item)}</li>`).join('\n')}\n        </ol>`;
   }
-  if (one.note) return `        <div class="ar-post-note">${esc(one.note)}</div>`;
+  if (one.note) return `        <div class="ar-post-note">${inlineText(one.note)}</div>`;
   if (one.figure) return figure(one.figure);
   throw new Error(`unknown article block: ${JSON.stringify(one).slice(0, 80)}`);
 }
@@ -183,12 +208,15 @@ function structuredData(post, lang, url) {
       headline: post.title[lang],
       description: post.description[lang],
       datePublished: post.date,
-      dateModified: post.date,
+      dateModified: post.updated || post.date,
       inLanguage: LOCALE_TAGS[lang].html,
       articleSection: post.tag[lang],
       mainEntityOfPage: { '@type': 'WebPage', '@id': url },
-      author: { '@type': 'Organization', name: site.name, url: SITE_URL },
-      publisher: { '@type': 'Organization', name: site.name, url: SITE_URL },
+      // The articles are first-person, measured accounts. Naming the person
+      // and pointing at the About page is what makes that claim checkable;
+      // `Organization` here was a brand signing its own homework.
+      author: { '@id': PERSON_ID },
+      publisher: { '@id': ORG_ID },
       image: `${SITE_URL}/${lang === 'en' ? 'og-image-en.png' : 'og-image.png'}`,
     },
     {
@@ -238,10 +266,14 @@ function alternates(post, lang) {
     `    <link rel="alternate" hreflang="${other}" href="${esc(absolute(postPath(post, other)))}" />`,
     `    <link rel="alternate" hreflang="x-default" href="${esc(absolute(postPath(post, 'vi')))}" />`,
     `    <meta property="og:locale:alternate" content="${LOCALE_TAGS[other].og}" />`,
+    `    <meta property="article:published_time" content="${post.date}T00:00:00+07:00" />`,
+    `    <meta property="article:modified_time" content="${post.updated || post.date}T00:00:00+07:00" />`,
+    `    <meta property="article:author" content="${esc(founder.name)}" />`,
+    `    <meta property="article:section" content="${esc(post.tag[lang])}" />`,
   ].join('\n');
 }
 
-function document_({ title, description, url, assets, body, ld, lang, extraHead = '' }) {
+function document_({ title, description, url, assets, body, ld, lang, ogType = 'article', extraHead = '' }) {
   const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
   return `<!doctype html>
 <html lang="${LOCALE_TAGS[lang].html}">
@@ -253,11 +285,11 @@ function document_({ title, description, url, assets, body, ld, lang, extraHead 
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content="${esc(site.name)}" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="${esc(founder.name)}" />
 ${extraHead}
 
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="${ogType}" />
     <meta property="og:site_name" content="${esc(site.name)}" />
     <meta property="og:locale" content="${LOCALE_TAGS[lang].og}" />
     <meta property="og:url" content="${esc(url)}" />
@@ -266,11 +298,13 @@ ${extraHead}
     <meta property="og:image" content="${SITE_URL}${card}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${esc(`${site.name} — ${title}`)}" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${esc(title)}" />
     <meta name="twitter:description" content="${esc(description)}" />
     <meta name="twitter:image" content="${SITE_URL}${card}" />
+    <meta name="twitter:image:alt" content="${esc(`${site.name} — ${title}`)}" />
 
 ${assets}
 
@@ -304,7 +338,7 @@ function articlePage(post, lang, assets) {
         <div class="ar-container">
           <div class="ar-post-head">
             <a class="ar-post-back" href="${BLOG.path[lang]}">← ${esc(BLOG.heading[lang])}</a>
-            <div class="ar-blog-meta"><span>${esc(post.tag[lang])}</span><span>${esc(shownDate(post.date, lang))}</span><span>${post.minutes[lang]} ${esc(CHROME[lang].minRead)}</span></div>
+            <div class="ar-blog-meta"><span>${esc(post.tag[lang])}</span><span><a href="${founder.about[lang]}" rel="author">${esc(founder.name)}</a></span><span>${esc(shownDate(post.updated || post.date, lang))}</span><span>${post.minutes[lang]} ${esc(CHROME[lang].minRead)}</span></div>
             <h1 class="ar-post-title">${esc(post.title[lang])}</h1>
             <p class="ar-post-lead">${esc(post.lead[lang])}</p>
             <p class="ar-post-lang"><a href="${postPath(post, other)}" hreflang="${other}">${esc(CHROME[lang].other)}</a></p>
@@ -347,11 +381,19 @@ function indexPage(lang, assets) {
     .join('\n');
 
   const other = OTHER[lang];
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [CHROME[lang].home, lang === 'en' ? '/en/' : '/'],
+      [BLOG.heading[lang], null],
+    ],
+  });
   const body = `${nav(lang, 'blog')}
 
     <main id="main">
       <section class="ar-section">
         <div class="ar-container">
+          ${trail.nav}
           <div class="ar-section-head">
             <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.03em;margin:0 0 14px">${esc(BLOG.heading[lang])}</h1>
             <p style="color:var(--muted);line-height:1.7;margin:0">${esc(BLOG.lede[lang])}</p>
@@ -372,6 +414,7 @@ ${footer(lang)}`;
     url: absolute(BLOG.path[lang]),
     assets,
     body,
+    ogType: 'website',
     ld: {
       '@context': 'https://schema.org',
       '@type': 'Blog',
@@ -379,12 +422,13 @@ ${footer(lang)}`;
       description: BLOG.description[lang],
       url: absolute(BLOG.path[lang]),
       inLanguage: LOCALE_TAGS[lang].html,
-      publisher: { '@type': 'Organization', name: site.name, url: SITE_URL },
+      publisher: { '@id': ORG_ID },
       blogPost: posts.map((post) => ({
         '@type': 'BlogPosting',
         headline: post.title[lang],
         url: absolute(postPath(post, lang)),
         datePublished: post.date,
+        dateModified: post.updated || post.date,
       })),
     },
     lang,
@@ -392,6 +436,7 @@ ${footer(lang)}`;
       `    <link rel="alternate" hreflang="vi" href="${esc(absolute(BLOG.path.vi))}" />`,
       `    <link rel="alternate" hreflang="en" href="${esc(absolute(BLOG.path.en))}" />`,
       `    <link rel="alternate" hreflang="x-default" href="${esc(absolute(BLOG.path.vi))}" />`,
+      trail.script,
     ].join('\n'),
   });
 }

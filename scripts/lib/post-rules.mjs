@@ -33,6 +33,18 @@ export const INTERNAL_WORDS = [
   'moneyprinter', 'zerotts', 'nvenc', 'jsonrpc', '127.0.0.1', 'localhost',
 ];
 
+/**
+ * One article may name one of those words, and only one.
+ *
+ * The comparison article is *about* MoneyPrinterTurbo as a public product; the
+ * rule's job is to keep the build's internal vocabulary out of customer prose,
+ * not to make a competitor unnameable. The exception is keyed by slug and names
+ * the single word, so a second article cannot inherit it by copying a heading.
+ */
+const INTERNAL_ALLOWED = {
+  'so-sanh-autoreel-va-moneyprinterturbo': ['moneyprinter'],
+};
+
 export const TITLE_MAX = 62;
 export const DESCRIPTION_MAX = 165;
 
@@ -134,8 +146,9 @@ export function postContentProblems(posts, languages = ['vi', 'en']) {
     }
 
     const text = JSON.stringify(post).toLowerCase();
+    const allowed = new Set(INTERNAL_ALLOWED[post.slug?.vi] || []);
     for (const word of INTERNAL_WORDS) {
-      if (text.includes(word)) problems.push(`${name}: names "${word}"`);
+      if (!allowed.has(word) && text.includes(word)) problems.push(`${name}: names "${word}"`);
     }
   }
 

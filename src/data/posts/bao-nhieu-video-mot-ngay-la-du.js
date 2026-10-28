@@ -16,7 +16,7 @@ export default {
   },
   description: {
     vi: 'Không có con số đúng cho mọi người, nhưng có con số đúng cho bạn. Cách tự đo nhịp giữ được cả tháng, năm dấu hiệu đăng quá nhiều, và chỗ hai nền tảng khác nhau.',
-    en: 'No single number is right for everyone, but one is right for your shop. How to measure your rhythm, five signs of posting too much, and where the platforms differ.',
+    en: 'No single number fits every shop. How to find your rhythm, five signs of posting too much, and where the platforms differ.',
   },
   date: '2026-10-10',
   minutes: { vi: 8, en: 8 },

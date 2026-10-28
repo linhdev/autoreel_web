@@ -23,7 +23,7 @@ export default {
   title: { vi: 'Tóm tắt phim', en: 'Movie recap' },
   description: {
     vi: 'Đưa một hoặc nhiều phim: app nghe lời thoại, viết lời bình tiếng Việt, cắt hình, lồng tiếng, thêm phụ đề và đóng dấu — mỗi phim một video.',
-    en: 'Give it one film or several: the app listens to the dialogue, writes a Vietnamese narration, cuts the picture, voices it, adds subtitles and branding — one video per film.',
+    en: 'Give it one film or several: it listens to the dialogue, writes a Vietnamese narration, cuts and voices it, adds subtitles — one video per film.',
   },
   lead: {
     vi: 'Một bộ phim vào, **một câu chuyện kể lại** ra. Độ dài bạn chọn là mức **tối đa**, không phải con số phải đạt.',

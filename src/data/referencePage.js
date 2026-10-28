@@ -21,7 +21,7 @@ export const REFERENCE_PAGE = {
     en: {
       title: 'Make a video like a reference | AutoReel',
       description:
-        'AutoReel measures a reference video’s cuts, shot length and speech rate, then writes a new script at that pace. It does not reuse the reference’s footage or audio.',
+        'AutoReel measures a reference video’s cuts, shot length and speech rate, then writes a new script at that pace. It reuses none of its footage or audio.',
     },
   },
   copy: {

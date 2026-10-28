@@ -19,6 +19,7 @@ import { LOCALE_TAGS, SITE_URL, absolute } from '../src/data/routes.js';
 import {
   esc, footer, headAssets, langAssets, nav, write,
 } from './lib/site-shell.mjs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -46,6 +47,9 @@ const STYLE = `
       .tr-step::before { counter-increment: tr; content: counter(tr); display: inline-flex; width: 26px; height: 26px; flex: none; align-items: center; justify-content: center; border-radius: 8px; background: rgba(109,94,252,.18); color: #c7c1ff; font-size: 0.76rem; font-weight: 900; }
       .tr-note { margin: 16px 0 0; padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px; background: rgba(148,163,184,.05); color: var(--muted); font-size: 0.85rem; line-height: 1.6; }
       .tr-note strong { color: var(--text); }
+      .tr-prose { max-width: 780px; }
+      .tr-list { display: grid; gap: 7px; margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+      .tr-list li::marker { color: #c7c1ff; }
       .tr-demo { margin-top: 16px; padding: 16px; border: 1px dashed var(--line); border-radius: 14px; }
       .tr-faq { display: grid; gap: 9px; margin-top: 22px; }
       .tr-faq details { border: 1px solid var(--line); border-radius: 14px; background: rgba(11,17,38,.45); }
@@ -72,6 +76,14 @@ function page(lang) {
   const url = absolute(path);
   const other = lang === 'vi' ? 'en' : 'vi';
   const code = bookmarklet(lang);
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? DOWNLOADS.path.en : DOWNLOADS.path.vi],
+      [lang === 'en' ? 'Download' : 'Tải video', DOWNLOADS.path[lang]],
+      [copy.h1, null],
+    ],
+  });
   const faq = copy.faq
     .map(
       ([question, answer]) => `<details>
@@ -83,6 +95,20 @@ function page(lang) {
   const steps = copy.steps
     .map(([title, text]) => `<li class="tr-step"><span><strong>${esc(title)}</strong> — ${esc(text)}</span></li>`)
     .join('\n            ');
+  const sections = (copy.sections || [])
+    .map((section) => {
+      const paragraphs = (section.paragraphs || [])
+        .map((paragraph) => `<p>${esc(paragraph)}</p>`)
+        .join('');
+      const bullets = (section.bullets || []).length
+        ? `<ul class="tr-list">${section.bullets.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`
+        : '';
+      return `<section class="tr-card">
+            <h2>${esc(section.h2)}</h2>
+            <div class="tr-prose">${paragraphs}${bullets}</div>
+          </section>`;
+    })
+    .join('\n\n          ');
 
   return `<!doctype html>
 <html lang="${LOCALE_TAGS[lang].html}">
@@ -93,7 +119,7 @@ function page(lang) {
     <title>${esc(copy.title)}</title>
     <meta name="description" content="${esc(copy.description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[lang].html}" href="${esc(url)}" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[other].html}" href="${esc(absolute(QUICK.path[other]))}" />
     <link rel="alternate" hreflang="x-default" href="${esc(absolute(QUICK.path.vi))}" />
@@ -105,6 +131,7 @@ function page(lang) {
     <meta property="og:description" content="${esc(copy.description)}" />
     <meta property="og:image" content="${SITE_URL}${lang === 'en' ? '/og-image-en.png' : '/og-image.png'}" />
 ${await_index_placeholder}
+${trail.script}
     <style>${STYLE}</style>
   </head>
   <body>
@@ -112,6 +139,7 @@ ${nav(lang, 'downloads')}
     <main id="main" class="tr-main">
       <div class="ar-container">
         <div class="tr-page">
+          ${trail.nav}
           <section class="tr-hero">
             <span class="tr-badge"><span class="tr-dot"></span>${lang === 'vi' ? 'MIỄN PHÍ · KHÔNG CẦN CÀI ĐẶT' : 'FREE · NOTHING TO INSTALL'}</span>
             <h1 class="tr-h1">${esc(copy.h1)}</h1>
@@ -144,6 +172,8 @@ ${nav(lang, 'downloads')}
               <p class="tr-note" style="margin-bottom:0">${esc(copy.embedNote)}</p>
             </div>
           </section>
+
+          ${sections}
 
           <section class="tr-card">
             <h2>${esc(copy.faqTitle)}</h2>

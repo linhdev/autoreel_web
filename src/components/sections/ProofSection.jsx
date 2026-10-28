@@ -16,7 +16,7 @@ export default function ProofSection() {
   const hasPlaceholder = proof.metrics.some((metric) => typeof metric.value !== 'number');
 
   return (
-    <section className="ar-section" aria-labelledby="proof-title">
+    <section id="proof" className="ar-section" aria-labelledby="proof-title">
       <div className="ar-container">
         <SectionHeading id="proof-title" title={proof.headline} subtitle={proof.subheadline} />
 

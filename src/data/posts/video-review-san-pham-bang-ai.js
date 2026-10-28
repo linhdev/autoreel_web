@@ -17,7 +17,7 @@ export default {
   },
   description: {
     vi: 'Video review sản phẩm bằng AI: máy lo kịch bản, giọng đọc, dựng hình và phụ đề, còn bạn phải kiểm giá, công dụng và mọi con số trước khi đăng.',
-    en: 'AI product reviews: the machine handles the script, the voice, the edit and the subtitles — you still check the price, claims and every number before it goes out.',
+    en: 'AI product reviews: the machine writes the script, voices it, edits and adds subtitles — you still check the price, claims and every number before it goes out.',
   },
   date: '2026-10-10',
   minutes: { vi: 5, en: 5 },

@@ -30,6 +30,21 @@ export const site = {
 };
 
 /**
+ * The person behind the product, used as the blog's author.
+ *
+ * The articles are written in the first person and say what the author measured
+ * and chose; an Organization byline hid that behind a brand. A real name, a
+ * LinkedIn profile and an About page are the E-E-A-T signal Google's own
+ * guidance keeps pointing at — experience, not a keyword.
+ */
+export const founder = {
+  name: 'Bùi Quang Linh',
+  jobTitle: 'Founder',
+  linkedinUrl: site.linkedinUrl,
+  about: { vi: '/gioi-thieu/', en: '/en/about/' },
+};
+
+/**
  * The channels the product is shown on, and the mark that labels each.
  *
  * **The label is not translated and the mark is drawn from here**, both for the
@@ -391,7 +406,9 @@ export const footer = {
       { label: 'Blog', href: '/blog/' },
       { label: 'Tài liệu', href: '/tai-lieu/' },
       { label: 'Làm video theo mẫu', href: '/lam-theo-mau/' },
+      { label: 'Giới thiệu', href: '/gioi-thieu/' },
       { label: 'Điều khoản', href: '/dieu-khoan/' },
+      { label: 'Bảo mật', href: '/chinh-sach-bao-mat/' },
     ],
     columns: { links: 'Liên kết', contact: 'Liên hệ', follow: 'Theo dõi' },
     copyright: '© 2026 AutoReel. All rights reserved.',
@@ -407,7 +424,9 @@ export const footer = {
       { label: 'Blog', href: '/en/blog/' },
       { label: 'Docs', href: '/en/docs/' },
       { label: 'Make it like a reference', href: '/en/make-video-like-reference/' },
+      { label: 'About', href: '/en/about/' },
       { label: 'Terms', href: '/en/terms/' },
+      { label: 'Privacy', href: '/en/privacy/' },
     ],
     columns: { links: 'Links', contact: 'Contact', follow: 'Follow' },
     copyright: '© 2026 AutoReel. All rights reserved.',

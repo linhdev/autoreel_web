@@ -77,4 +77,11 @@ export function syncHead(route, lang) {
     tag.setAttribute('href', absolute(pathFor(route.key, code)));
     document.head.appendChild(tag);
   }
+  // The static head has an x-default on every page; without this line the
+  // first client-side navigation deletes it and the two heads disagree.
+  const fallback = document.createElement('link');
+  fallback.setAttribute('rel', 'alternate');
+  fallback.setAttribute('hreflang', 'x-default');
+  fallback.setAttribute('href', absolute(pathFor(route.key, 'vi')));
+  document.head.appendChild(fallback);
 }

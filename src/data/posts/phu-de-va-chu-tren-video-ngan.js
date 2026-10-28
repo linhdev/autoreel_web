@@ -19,6 +19,7 @@ export default {
     en: 'Safe zones that keep text clear of the app buttons, the right font size, how many words per line, contrast, and the on-screen text you should delete.',
   },
   date: '2026-10-10',
+  updated: '2026-10-28',
   minutes: { vi: 6, en: 6 },
   tag: { vi: 'Hướng dẫn', en: 'How-to' },
   lead: {
@@ -77,6 +78,9 @@ export default {
       {
         note: 'Kiểm tra cuối cùng luôn là: mở video trong chính app sẽ đăng, xem ở chế độ thật, tắt tiếng. Nếu vẫn hiểu được nội dung khi đó thì video đã sẵn sàng. Đừng kiểm tra trong phần mềm dựng — phần mềm dựng không có các nút của app, mà đó lại đúng là thứ che chữ của bạn.',
       },
+      {
+        p: 'Nếu video nguồn đã có phụ đề, bạn có thể tải track đó về làm bản nháp: [phụ đề YouTube](/tai-phu-de-youtube/) hoặc [phụ đề Bilibili](/tai-phu-de-bilibili/). Còn nếu cần tải chính video dọc để dựng lại, công cụ nhận [TikTok](/tai-video-tiktok/), [Douyin](/tai-video-douyin/), [YouTube](/tai-video-youtube/) và [Bilibili](/tai-video-bilibili/).',
+      },
       { h2: 'Cách này không hợp nếu video không có lời nói' },
       {
         p: 'Video chỉ có nhạc và hình thì chữ phải làm toàn bộ phần kể, và bạn cần nhiều chữ hơn hẳn, không phải ít đi.\n\nNó cũng không hợp nếu bạn đang làm video dài hoặc video cho website, nơi người xem chủ động bật tiếng và ngồi trước màn hình lớn. Các con số về vùng an toàn ở trên là để tránh nút của app trên điện thoại; ở màn hình lớn, ràng buộc đó không còn.',
@@ -132,6 +136,9 @@ export default {
       },
       {
         note: 'The last check is always the same: open the video inside the app you are posting to, in the real player, muted. If it still makes sense, it is ready. Do not check in your editing software — the editing software has none of the app buttons, and those buttons are exactly what covers your text.',
+      },
+      {
+        p: 'If the source video already has captions, you can download that track as a first draft: [YouTube subtitles](/en/download-youtube-subtitles/) or [Bilibili subtitles](/en/download-bilibili-subtitles/). If you need the vertical video itself to rebuild, the tool accepts [TikTok](/en/download-tiktok/), [Douyin](/en/download-douyin/), [YouTube](/en/download-youtube/) and [Bilibili](/en/download-bilibili/).',
       },
       { h2: 'This does not apply when the video has no narration' },
       {

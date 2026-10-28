@@ -16,12 +16,15 @@ import { fileURLToPath } from 'node:url';
 
 import { DOWNLOADS } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
+import { PLATFORM_SECTIONS } from '../src/data/platformSections.js';
+import { PLATFORM_EXTRA } from '../src/data/platformExtra.js';
 import {
   LOCALE_TAGS, SITE_URL, absolute,
 } from '../src/data/routes.js';
 import {
   esc, footer, headAssets, langAssets, nav, write,
 } from './lib/site-shell.mjs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -37,7 +40,9 @@ const UI = {
     stepsTitle: 'Cách tải',
     examplesTitle: (label) => `Link ${label} hợp lệ`,
     notesTitle: 'Giới hạn & lưu ý',
+    factsTitle: 'Thông số nhanh',
     faqTitle: 'Câu hỏi thường gặp',
+    relatedTitle: 'Đọc thêm',
     othersTitle: 'Nền tảng khác',
     allLabel: 'Mở công cụ tải video',
     ctaTitle: 'Tải nhiều video một lần',
@@ -55,7 +60,9 @@ const UI = {
     stepsTitle: 'How to download',
     examplesTitle: (label) => `Valid ${label} links`,
     notesTitle: 'Limits & notes',
+    factsTitle: 'Quick facts',
     faqTitle: 'Frequently asked questions',
+    relatedTitle: 'Read next',
     othersTitle: 'Other platforms',
     allLabel: 'Open the download tool',
     ctaTitle: 'Download several videos at once',
@@ -97,6 +104,15 @@ const STYLE = `
       .pf-notes { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; max-width: 780px; }
       .pf-notes li { position: relative; padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
       .pf-notes li::before { content: '·'; position: absolute; left: 4px; color: var(--pf-accent, #6d5efc); font-weight: 900; }
+      .pf-list { display: grid; gap: 7px; margin: 14px 0 0; padding: 0 0 0 20px; color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
+      .pf-list li::marker { color: var(--pf-accent, #6d5efc); }
+      .pf-table-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--line); border-radius: 14px; }
+      .pf-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      .pf-table th, .pf-table td { padding: 11px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      .pf-table tr:last-child th, .pf-table tr:last-child td { border-bottom: 0; }
+      .pf-table thead th { color: var(--text); font-weight: 800; background: rgba(255,255,255,.03); }
+      .pf-table tbody th { width: 36%; color: var(--text); font-weight: 700; }
+      .pf-table td { color: var(--muted); }
       .pf-faq { display: grid; gap: 9px; max-width: 840px; }
       .pf-faq details { border: 1px solid var(--line); border-radius: 14px; background: rgba(11,17,38,.45); }
       .pf-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; font-size: 0.94rem; font-weight: 700; list-style: none; cursor: pointer; }
@@ -120,6 +136,14 @@ function document_({ lang, platform, copy, assets }) {
   const other = lang === 'vi' ? 'en' : 'vi';
   const ui = UI[lang];
   const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? DOWNLOADS.path.en : DOWNLOADS.path.vi],
+      [lang === 'en' ? 'Download' : 'Tải video', DOWNLOADS.path[lang]],
+      [platform.label, null],
+    ],
+  });
   return `<!doctype html>
 <html lang="${LOCALE_TAGS[lang].html}">
   <head>
@@ -129,7 +153,7 @@ function document_({ lang, platform, copy, assets }) {
     <title>${esc(platform.meta[lang].title)}</title>
     <meta name="description" content="${esc(platform.meta[lang].description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="AutoReel" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[lang].html}" href="${esc(url)}" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[other].html}" href="${esc(absolute(platform.path[other]))}" />
@@ -149,16 +173,17 @@ function document_({ lang, platform, copy, assets }) {
     <meta name="twitter:description" content="${esc(platform.meta[lang].description)}" />
     <meta name="twitter:image" content="${SITE_URL}${card}" />
 ${assets}
+${trail.script}
     <style>${STYLE}    </style>
   </head>
   <body style="--pf-accent: ${platform.accent}">
-${pageBody({ lang, platform, copy, ui })}
+${pageBody({ lang, platform, copy, ui, trail })}
   </body>
 </html>
 `;
 }
 
-function pageBody({ lang, platform, copy, ui }) {
+function pageBody({ lang, platform, copy, ui, trail }) {
   const formAction = DOWNLOADS.path[lang];
   const points = copy.points.map((item) => `<li>${esc(item)}</li>`).join('');
   const steps = copy.steps
@@ -188,11 +213,46 @@ function pageBody({ lang, platform, copy, ui }) {
     )
     .join('');
 
+  const sections = (copy.sections || [])
+    .map((section) => {
+      const paragraphs = (section.paragraphs || [])
+        .map((paragraph) => `<p>${esc(paragraph)}</p>`)
+        .join('');
+      const bullets = (section.bullets || []).length
+        ? `<ul class="pf-list">${section.bullets.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`
+        : '';
+      return `<section class="pf-section">
+            <h2 class="pf-h2">${esc(section.h2)}</h2>
+            <div class="pf-prose">${paragraphs}${bullets}</div>
+          </section>`;
+    })
+    .join('\n          ');
+
+  const facts = copy.table
+    ? `<section class="pf-section">
+            <h2 class="pf-h2">${esc(ui.factsTitle)}</h2>
+            <div class="pf-table-wrap">
+              <table class="pf-table">
+                <thead><tr>${copy.table.head.map((cell) => `<th>${esc(cell)}</th>`).join('')}</tr></thead>
+                <tbody>${copy.table.rows.map((row) => `<tr>${row.map((cell, index) => (index === 0 ? `<th scope="row">${esc(cell)}</th>` : `<td>${esc(cell)}</td>`)).join('')}</tr>`).join('')}</tbody>
+              </table>
+            </div>
+          </section>`
+    : '';
+
+  const related = (copy.related || []).length
+    ? `<section class="pf-section">
+            <h2 class="pf-h2">${esc(ui.relatedTitle)}</h2>
+            <div class="pf-chips">${copy.related.map((link) => `<a class="pf-chip" href="${esc(link.href)}">${esc(link.label)}</a>`).join('')}</div>
+          </section>`
+    : '';
+
   return `${nav(lang, 'downloads')}
 
     <main id="main" class="pf-main">
       <div class="ar-container">
         <div class="pf-page">
+          ${trail.nav}
           <section class="pf-hero" itemscope itemtype="https://schema.org/WebApplication">
             <meta itemprop="name" content="${esc(`${platform.label} — ${copy.h1}`)}" />
             <meta itemprop="applicationCategory" content="MultimediaApplication" />
@@ -241,6 +301,10 @@ function pageBody({ lang, platform, copy, ui }) {
             </ul>
           </section>
 
+          ${sections}
+
+          ${facts}
+
           <section class="pf-section" itemscope itemtype="https://schema.org/FAQPage">
             <h2 class="pf-h2">${esc(ui.faqTitle)}</h2>
             <div class="pf-faq">
@@ -252,6 +316,8 @@ function pageBody({ lang, platform, copy, ui }) {
             <h2 class="pf-h2">${esc(ui.othersTitle)}</h2>
             <div class="pf-chips">${others}</div>
           </section>
+
+          ${related}
 
           <section class="pf-cta">
             <div>
@@ -293,10 +359,23 @@ async function main() {
   for (const platform of PLATFORM_PAGES) {
     for (const lang of LANGS) {
       const assets = langAssets(baseAssets, lang);
+      const base = PLATFORM_SECTIONS[platform.key]?.[lang] || {};
+      const more = PLATFORM_EXTRA[platform.key]?.[lang] || {};
+      const copy = {
+        ...platform.copy[lang],
+        ...base,
+        ...more,
+        sections: [...(base.sections || []), ...(more.sections || [])],
+        faq: [
+          ...platform.copy[lang].faq,
+          ...(base.faq || []),
+          ...(more.faq || []),
+        ],
+      };
       const html = document_({
         lang,
         platform,
-        copy: platform.copy[lang],
+        copy,
         assets,
       });
       const slug = platform.path[lang].replace(/^\/|\/$/g, '');

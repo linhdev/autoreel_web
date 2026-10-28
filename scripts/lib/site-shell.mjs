@@ -30,6 +30,9 @@ import { pathFor } from '../../src/data/routes.js';
 import {
   businessInfo, footer as footerCopy, navLinks, site, socialLinks, ui,
 } from '../../src/data/site.js';
+import {
+  graph, jsonLdScript, organizationNode, personNode, websiteNode,
+} from '../../src/data/schema.js';
 
 /**
 
@@ -71,10 +74,21 @@ export function headAssets(indexHtml) {
   const links = indexHtml.match(/<link\b[^>]*>/g) || [];
   const wanted = links.filter(
     (tag) =>
-      /rel="(stylesheet|preconnect|icon|apple-touch-icon|manifest)"/.test(tag) &&
+      /rel="(stylesheet|preconnect|preload|icon|apple-touch-icon|manifest)"/.test(tag) &&
       !/rel="canonical"/.test(tag),
   );
+  // The site-wide entities, on every generated page. Page-specific schema
+  // (BlogPosting, TechArticle, WebApplication) stays in its own builder and
+  // refers back to these @ids; this block is what makes the company, the site
+  // and the author the same entities on a blog post and on a downloader page.
+  const siteEntities = jsonLdScript(graph(
+    organizationNode(),
+    personNode(),
+    websiteNode(),
+  ));
+
   return `${wanted.map((tag) => `    ${tag}`).join('\n')}
+${siteEntities}
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1787558413198473"
             crossorigin="anonymous"></script>`;
 }

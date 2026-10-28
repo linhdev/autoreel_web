@@ -1,0 +1,29 @@
+# AutoReel
+
+> AutoReel is a local-first Windows and macOS application for Vietnamese creators and affiliates. It creates videos in bulk from products, existing footage or an idea, adds Vietnamese voice-over, subtitles and branding, and publishes to Shopee Video and Facebook/Reels. The public site also has a free video downloader for TikTok, Douyin, YouTube, Bilibili, Hongguoduanju and iQiyi.
+
+This file is an agent-readiness index, not a Google ranking file. Google Search ignores llms.txt (stated in its May 2026 AI optimisation guide); the pages below are the ones worth reading, and the sitemap is the complete list.
+
+## Product
+
+- [AutoReel home](https://autoreelvn.com/): what the app does, the three workflows, and the pricing table.
+- [Pricing](https://autoreelvn.com/bang-gia-phan-mem-tao-video/): rent from 99,000₫/month or buy outright for 1,490,000₫. No per-video charge.
+- [All features](https://autoreelvn.com/tat-ca-tinh-nang/): the complete list of the three flows and twelve single-job screens.
+- [Video demo](https://autoreelvn.com/video-demo-thuc-te/): 1m34s recording from the running app.
+- [Reference pacing](https://autoreelvn.com/lam-theo-mau/): build a new video with the same pacing and structure as a reference, without reusing its footage.
+
+## Free tools
+
+- [Video downloader](https://autoreelvn.com/downloads/): public videos and platform subtitles, no login.
+- [TikTok downloader](https://autoreelvn.com/tai-video-tiktok/), [Douyin](https://autoreelvn.com/tai-video-douyin/), [YouTube](https://autoreelvn.com/tai-video-youtube/), [Bilibili](https://autoreelvn.com/tai-video-bilibili/).
+- [TikTok audio](https://autoreelvn.com/tai-nhac-tiktok/) and [YouTube thumbnails](https://autoreelvn.com/tai-anh-bia-youtube/).
+
+## Documentation
+
+- [Documentation index](https://autoreelvn.com/tai-lieu/): install, licence, AI keys, Facebook and Shopee setup, every screen.
+- [Movie recap](https://autoreelvn.com/tai-lieu/tom-tat-phim/): how the review flow turns a film into a narrated video.
+
+## Writing
+
+- [Blog](https://autoreelvn.com/blog/): 45 articles on video automation, movie recaps, subtitle downloads, affiliate workflows, scripts, voice and publishing.
+- [Sitemap](https://autoreelvn.com/sitemap.xml): every indexable URL, both languages.

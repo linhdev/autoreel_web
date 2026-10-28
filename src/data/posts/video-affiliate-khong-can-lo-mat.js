@@ -164,7 +164,7 @@ export default {
       },
       {
         q: 'Muốn làm nhiều video mà không phải dựng tay từng cái thì bắt đầu thế nào?',
-        a: 'Hai dạng nặng phần dựng nhất là video có sẵn lồng tiếng và AI review, vì việc lặp lại nằm ở cắt, lồng tiếng, phụ đề và bộ nhận diện. AutoReel làm phần đó trên máy Windows hoặc macOS của bạn, giọng đọc tiếng Việt chạy ngay trên máy, và đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
+        a: 'Hai dạng nặng phần dựng nhất là video có sẵn lồng tiếng và AI review, vì việc lặp lại nằm ở cắt, lồng tiếng, phụ đề và bộ nhận diện. AutoReel làm phần đó trên máy Windows hoặc macOS của bạn, giọng đọc tiếng Việt chạy ngay trên máy, và đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -186,7 +186,7 @@ export default {
       },
       {
         q: 'How do I make more videos without editing each one by hand?',
-        a: 'The two formats with the heaviest editing load are voice-over on existing footage and AI review, because the repetition sits in cutting, dubbing, subtitles and branding. AutoReel does that part on your own Windows or macOS machine, voices the script in Vietnamese on your machine, and posts to Shopee Video or Facebook/Reels. From $6.12 a month, or $57.31 once and keep it; AI and API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
+        a: 'The two formats with the heaviest editing load are voice-over on existing footage and AI review, because the repetition sits in cutting, dubbing, subtitles and branding. AutoReel does that part on your own Windows or macOS machine, voices the script in Vietnamese on your machine, and posts to Shopee Video or Facebook/Reels. From $6.99 a month, or $61.99 once and keep it; AI and API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
       },
     ],
   },

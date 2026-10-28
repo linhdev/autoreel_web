@@ -7,6 +7,18 @@ import { Link, useHref } from '../../i18n/router.jsx';
 import Icon from './Icon.jsx';
 
 /**
+ * Intrinsic sizes of the evidence screenshots.
+ *
+ * They are lazy-loaded, but without width/height the card reserves no space
+ * and the modal jumps when the picture arrives. Every capture is 700px tall;
+ * only the download screen is four pixels narrower than the rest.
+ */
+const EVIDENCE_SIZE = {
+  'tai-video': [1189, 700],
+};
+const DEFAULT_EVIDENCE_SIZE = [1193, 700];
+
+/**
  * The card, opened.
  *
  * **A `<dialog>` rather than a div with a class.** The browser already knows
@@ -114,6 +126,8 @@ export default function PlanDetail({ plan, detail, onClose }) {
                     <img
                       src={evidenceFor(one, lang)}
                       alt={one.alt}
+                      width={(EVIDENCE_SIZE[one.image] || DEFAULT_EVIDENCE_SIZE)[0]}
+                      height={(EVIDENCE_SIZE[one.image] || DEFAULT_EVIDENCE_SIZE)[1]}
                       loading="lazy"
                       decoding="async"
                     />

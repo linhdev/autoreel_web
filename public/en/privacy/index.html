@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b1a">
+  <title>Privacy policy | AutoReel</title>
+  <meta name="description" content="What AutoReel collects when you use the site, the video downloader and the app: what is kept, for how long, and how to ask for deletion.">
+  <link rel="canonical" href="https://autoreelvn.com/en/privacy/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="alternate" hreflang="vi" href="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <link rel="alternate" hreflang="en" href="https://autoreelvn.com/en/privacy/">
+  <link rel="alternate" hreflang="x-default" href="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="vi_VN">
+  <meta property="og:url" content="https://autoreelvn.com/en/privacy/">
+  <meta property="og:title" content="Privacy policy | AutoReel">
+  <meta property="og:description" content="What AutoReel collects, how long it is kept, and how to ask for deletion.">
+  <meta property="og:image" content="https://autoreelvn.com/og-image-en.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Privacy policy | AutoReel">
+  <meta name="twitter:description" content="What AutoReel collects, how long it is kept, and how to ask for deletion.">
+  <meta name="twitter:image" content="https://autoreelvn.com/og-image-en.png">
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-vietnamese.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body>
+  <header class="legal-header">
+    <a class="brand" href="/en/" aria-label="AutoReel — back to home">
+      <img src="/logo-88.webp" width="42" height="42" alt="">
+      <span>
+        <span class="brand-name">AutoReel</span>
+        <span class="brand-tag">AI Content Automation</span>
+      </span>
+    </a>
+    <span class="back"><a href="/chinh-sach-bao-mat/" hreflang="vi">Tiếng Việt</a> · <a href="/en/">Back to home</a></span>
+  </header>
+
+  <main class="legal-wrap">
+    <article class="legal-card">
+      <h1>Privacy policy</h1>
+      <p class="legal-meta">Last updated: 27 October 2026 · Applies to autoreelvn.com and the AutoReel software</p>
+
+      <p>
+        This page states what the site and the video downloader collect, how long it is
+        kept, and how you can ask for deletion. AutoReel runs on your own machine: video,
+        images and project data are not sent to our servers.
+      </p>
+
+      <h2>When you only read the site</h2>
+      <p>
+        The site is static HTML. There are no accounts and no login cookie. Cloudflare
+        handles HTTP requests and may keep technical logs (IP address, time, path,
+        user-agent) under Cloudflare's own policy. We do not use that data to identify you.
+      </p>
+      <p>
+        Google AdSense may set advertising cookies on pages that show ads. You can turn off
+        personalised advertising in Google's ad settings. We do not control cookies set by
+        Google.
+      </p>
+
+      <h2>When you use the video downloader</h2>
+      <ul>
+        <li><strong>The video link</strong> is sent to the download queue. It is not shown publicly.</li>
+        <li><strong>Your IP address</strong> is hashed with HMAC and a private key, only to count quota (3 videos/hour, 10/day). We do not store the raw IP.</li>
+        <li><strong>Downloaded files</strong> are stored on Cloudflare R2 and deleted after about 2 hours; the job record is deleted after 7 days.</li>
+        <li><strong>Push notifications</strong> (if you enable “Notify me when it finishes”): the browser issues a push endpoint; we keep it with the job id to send one notification, and remove it when the subscription expires.</li>
+        <li><strong>Cloudflare Turnstile</strong> checks the submission to stop spam.</li>
+      </ul>
+
+      <h2>When you buy or activate the software</h2>
+      <p>
+        The licence server receives the activation code, device id and plan information to
+        verify that the licence is active. We do not receive your video content, project
+        files or AI API keys. API keys are stored on your machine and sent directly to the
+        AI provider.
+      </p>
+
+      <h2>Who we share with</h2>
+      <p>
+        We use Cloudflare (hosting, queue, file storage), Google AdSense (advertising) and a
+        payment provider when you buy. We do not sell personal data and do not share it with
+        anyone beyond those providers.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>
+        You can ask what data we hold about you, or ask us to correct or delete it. Email
+        <a href="mailto:support@autoreelvn.com">support@autoreelvn.com</a> with enough
+        information to identify the record (when you used the tool, a job id if you have
+        one). We answer within 30 days.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        When this policy changes, the date at the top changes with it. Material changes will
+        be noted in the product news or sent to the email used for a purchase.
+      </p>
+
+      <p>
+        See also the <a href="/en/terms/">Terms of Service</a>.
+        Contact: <a href="mailto:support@autoreelvn.com">support@autoreelvn.com</a> ·
+        Zalo <a href="https://zalo.me/0326012999">0326012999</a>.
+      </p>
+    </article>
+  </main>
+</body>
+</html>

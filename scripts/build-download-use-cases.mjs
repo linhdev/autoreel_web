@@ -11,10 +11,14 @@ import { fileURLToPath } from 'node:url';
 
 import { DOWNLOADS } from '../src/data/downloads.js';
 import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
+import { SUBTITLE_SECTIONS } from '../src/data/subtitleSections.js';
+import { SUBTITLE_EXTRA } from '../src/data/subtitleExtra.js';
+import { USE_CASE_SECTIONS } from '../src/data/useCaseSections.js';
 import { LOCALE_TAGS, SITE_URL, absolute, pathFor } from '../src/data/routes.js';
 import {
   esc, footer, headAssets, langAssets, nav, write,
 } from './lib/site-shell.mjs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -28,9 +32,11 @@ const UI = {
     fine: 'Miễn phí · Không cần đăng nhập · Tối đa 20 phút · 95MB',
     stepsTitle: 'Cách làm',
     notesTitle: 'Giới hạn & lưu ý',
+    factsTitle: 'Thông số nhanh',
     faqTitle: 'Câu hỏi thường gặp',
+    relatedTitle: 'Đọc thêm',
     ctaTitle: 'Mở công cụ tải video',
-    ctaText: 'Dán link trực tiếp trên trang chính; có thể chọn Video, Âm thanh hoặc Ảnh bìa.',
+    ctaText: 'Dán link trực tiếp trên trang chính; có thể chọn Video, Âm thanh, Ảnh bìa hoặc Phụ đề.',
     ctaLabel: 'Mở trang tải video',
     terms: 'Chỉ video công khai · Dùng đúng mục đích · Tôn trọng bản quyền',
   },
@@ -41,9 +47,11 @@ const UI = {
     fine: 'Free · No login · Up to 20 minutes · 95MB',
     stepsTitle: 'How to do it',
     notesTitle: 'Limits & notes',
+    factsTitle: 'Quick facts',
     faqTitle: 'Frequently asked questions',
+    relatedTitle: 'Read next',
     ctaTitle: 'Open the download tool',
-    ctaText: 'Paste a link on the main page; choose Video, Audio or Cover there.',
+    ctaText: 'Paste a link on the main page; choose Video, Audio, Cover or Subtitles there.',
     ctaLabel: 'Open the downloader',
     terms: 'Public videos only · Use it lawfully · Respect copyright',
   },
@@ -76,6 +84,18 @@ const STYLE = `
       .uc-notes { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; max-width: 760px; }
       .uc-notes li { position: relative; padding-left: 20px; color: var(--muted); font-size: 0.9rem; line-height: 1.55; }
       .uc-notes li::before { content: '·'; position: absolute; left: 4px; color: var(--uc-accent, #6d5efc); font-weight: 900; }
+      .uc-list { display: grid; gap: 7px; margin: 14px 0 0; padding: 0 0 0 20px; color: var(--muted); font-size: 0.92rem; line-height: 1.6; }
+      .uc-list li::marker { color: var(--uc-accent, #6d5efc); }
+      .uc-table-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--line); border-radius: 14px; }
+      .uc-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      .uc-table th, .uc-table td { padding: 11px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      .uc-table tr:last-child th, .uc-table tr:last-child td { border-bottom: 0; }
+      .uc-table thead th { color: var(--text); font-weight: 800; background: rgba(255,255,255,.03); }
+      .uc-table tbody th { width: 36%; color: var(--text); font-weight: 700; }
+      .uc-table td { color: var(--muted); }
+      .uc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .uc-chip { padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px; color: var(--text); font-size: 0.82rem; font-weight: 700; }
+      .uc-chip:hover { border-color: var(--uc-accent, #6d5efc); }
       .uc-faq { display: grid; gap: 9px; max-width: 820px; }
       .uc-faq details { border: 1px solid var(--line); border-radius: 14px; background: rgba(11,17,38,.45); }
       .uc-faq summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; font-size: 0.94rem; font-weight: 700; list-style: none; cursor: pointer; }
@@ -95,6 +115,14 @@ function document_({ lang, page, copy, assets }) {
   const other = lang === 'vi' ? 'en' : 'vi';
   const ui = UI[lang];
   const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? DOWNLOADS.path.en : DOWNLOADS.path.vi],
+      [lang === 'en' ? 'Download' : 'Tải video', DOWNLOADS.path[lang]],
+      [copy.h1, null],
+    ],
+  });
   const steps = copy.steps
     .map(([title, text]) => `<li class="uc-step"><h3>${esc(title)}</h3><p>${esc(text)}</p></li>`)
     .join('');
@@ -108,10 +136,51 @@ function document_({ lang, page, copy, assets }) {
           </details>`)
     .join('');
   const points = copy.points.map((point) => `<li>${esc(point)}</li>`).join('');
-  const hidden = page.kind === 'audio'
-    ? `<input type="hidden" name="kind" value="audio" />
-                <input type="hidden" name="audioFormat" value="${esc(page.audioFormat || 'm4a')}" />`
-    : `<input type="hidden" name="kind" value="cover" />`;
+  const sections = (copy.sections || [])
+    .map((section) => {
+      const paragraphs = (section.paragraphs || [])
+        .map((paragraph) => `<p>${esc(paragraph)}</p>`)
+        .join('');
+      const bullets = (section.bullets || []).length
+        ? `<ul class="uc-list">${section.bullets.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`
+        : '';
+      return `<section class="uc-section">
+            <h2 class="uc-h2">${esc(section.h2)}</h2>
+            <div class="uc-prose">${paragraphs}${bullets}</div>
+          </section>`;
+    })
+    .join('\n          ');
+
+  const facts = copy.table
+    ? `<section class="uc-section">
+            <h2 class="uc-h2">${esc(ui.factsTitle)}</h2>
+            <div class="uc-table-wrap">
+              <table class="uc-table">
+                <thead><tr>${copy.table.head.map((cell) => `<th>${esc(cell)}</th>`).join('')}</tr></thead>
+                <tbody>${copy.table.rows.map((row) => `<tr>${row.map((cell, index) => (index === 0 ? `<th scope="row">${esc(cell)}</th>` : `<td>${esc(cell)}</td>`)).join('')}</tr>`).join('')}</tbody>
+              </table>
+            </div>
+          </section>`
+    : '';
+
+  const related = (copy.related || []).length
+    ? `<section class="uc-section">
+            <h2 class="uc-h2">${esc(ui.relatedTitle)}</h2>
+            <div class="uc-chips">${copy.related.map((link) => `<a class="uc-chip" href="${esc(link.href)}">${esc(link.label)}</a>`).join('')}</div>
+          </section>`
+    : '';
+  // A subtitle file is a few KB; the 20-minute/95 MB cap belongs to video.
+  const fine = page.kind === 'subtitle'
+    ? (lang === 'vi' ? 'Miễn phí · Không cần đăng nhập · Tối đa 5 link mỗi lần' : 'Free · No login · Up to five links at a time')
+    : ui.fine;
+  // `kind` is whatever the page asks the tool to open on. The old ternary
+  // treated every non-audio page as a cover page, which would have sent a
+  // subtitle page to the cover tab.
+  const hidden = `<input type="hidden" name="kind" value="${esc(page.kind)}" />${
+    page.kind === 'audio'
+      ? `\n                <input type="hidden" name="audioFormat" value="${esc(page.audioFormat || 'm4a')}" />`
+      : ''
+  }`;
 
   return `<!doctype html>
 <html lang="${LOCALE_TAGS[lang].html}">
@@ -122,7 +191,7 @@ function document_({ lang, page, copy, assets }) {
     <title>${esc(page.meta[lang].title)}</title>
     <meta name="description" content="${esc(page.meta[lang].description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[lang].html}" href="${esc(url)}" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[other].html}" href="${esc(absolute(page.path[other]))}" />
     <link rel="alternate" hreflang="x-default" href="${esc(absolute(page.path.vi))}" />
@@ -138,6 +207,7 @@ function document_({ lang, page, copy, assets }) {
     <meta name="twitter:description" content="${esc(page.meta[lang].description)}" />
     <meta name="twitter:image" content="${SITE_URL}${card}" />
 ${assets}
+${trail.script}
     <style>${STYLE}</style>
   </head>
   <body style="--uc-accent: ${page.accent}">
@@ -145,6 +215,7 @@ ${nav(lang, 'downloads')}
     <main id="main" class="uc-main">
       <div class="ar-container">
         <div class="uc-page">
+          ${trail.nav}
           <section class="uc-hero" itemscope itemtype="https://schema.org/WebApplication">
             <meta itemprop="name" content="${esc(`${page.label} — ${copy.h1}`)}" />
             <meta itemprop="applicationCategory" content="MultimediaApplication" />
@@ -168,7 +239,7 @@ ${nav(lang, 'downloads')}
                        placeholder="${esc(page.placeholder)}" required />
                 <button class="ar-btn ar-btn-primary uc-submit" type="submit">${esc(ui.button)}</button>
               </div>
-              <p class="uc-fine">${esc(ui.fine)}</p>
+              <p class="uc-fine">${esc(fine)}</p>
             </form>
           </section>
 
@@ -183,10 +254,16 @@ ${nav(lang, 'downloads')}
             <ul class="uc-notes">${notes}</ul>
           </section>
 
+          ${sections}
+
+          ${facts}
+
           <section class="uc-section" itemscope itemtype="https://schema.org/FAQPage">
             <h2 class="uc-h2">${esc(ui.faqTitle)}</h2>
             <div class="uc-faq">${faq}</div>
           </section>
+
+          ${related}
 
           <section class="uc-cta">
             <div>
@@ -222,7 +299,20 @@ async function main() {
   for (const page of USE_CASE_PAGES) {
     for (const lang of LANGS) {
       const assets = langAssets(baseAssets, lang);
-      const html = document_({ lang, page, copy: page.copy[lang], assets });
+      const base = SUBTITLE_SECTIONS[page.key]?.[lang] || USE_CASE_SECTIONS[page.key]?.[lang] || {};
+      const more = SUBTITLE_EXTRA[page.key]?.[lang] || {};
+      const copy = {
+        ...page.copy[lang],
+        ...base,
+        ...more,
+        sections: [...(base.sections || []), ...(more.sections || [])],
+        faq: [
+          ...page.copy[lang].faq,
+          ...(base.faq || []),
+          ...(more.faq || []),
+        ],
+      };
+      const html = document_({ lang, page, copy, assets });
       const slug = page.path[lang].replace(/^\/|\/$/g, '');
       await write(join(DIST, slug, 'index.html'), html);
     }

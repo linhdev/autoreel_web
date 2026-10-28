@@ -24,6 +24,7 @@ import { site } from '../src/data/site.js';
 import {
   esc, footer, headAssets, langAssets, nav, write,
 } from './lib/site-shell.mjs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -212,7 +213,14 @@ function alternates(lang) {
 function document_({ lang, copy, assets }) {
   const url = absolute(DOWNLOADS.path[lang]);
   const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
-  const body = pageBody(lang, copy, url);
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? '/en/' : '/'],
+      [lang === 'en' ? 'Download' : 'Tải video', null],
+    ],
+  });
+  const body = pageBody(lang, copy, url, trail);
 
   return `<!doctype html>
 <html lang="${LOCALE_TAGS[lang].html}">
@@ -224,7 +232,7 @@ function document_({ lang, copy, assets }) {
     <title>${esc(copy.title)}</title>
     <meta name="description" content="${esc(copy.description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="${esc(site.name)}" />
 ${alternates(lang)}
 
@@ -244,6 +252,7 @@ ${alternates(lang)}
     <meta name="twitter:image" content="${SITE_URL}${card}" />
 
 ${assets}
+${trail.script}
 
     <style>${STYLE}    </style>
 
@@ -258,7 +267,7 @@ ${body}
 `;
 }
 
-function pageBody(lang, copy, url) {
+function pageBody(lang, copy, url, trail) {
   const steps = copy.steps
     .map(
       (step, index) => `          <div class="dl-step">
@@ -319,6 +328,7 @@ function pageBody(lang, copy, url) {
     <main id="main" class="dl-main">
       <div class="ar-container">
         <div class="dl-page">
+          ${trail.nav}
           <section class="dl-hero">
             <span class="dl-eyebrow"><span class="dl-dot"></span>${esc(copy.badge)}</span>
             <h1 class="dl-h1">${esc(copy.h1)}</h1>
@@ -387,6 +397,14 @@ function pageBody(lang, copy, url) {
                 <p id="dl-push-note" class="dl-note" hidden>${esc(copy.form.pushHint)}</p>
                 <p class="dl-note dl-quick"><a href="${esc(QUICK.path[lang])}">${esc(copy.form.quick)} →</a></p>
                 <p class="dl-note dl-quick"><a href="${esc(REFERENCE_PAGE.path[lang])}">${esc(copy.form.reference)}</a></p>
+                <p class="dl-note dl-quick">
+                  <a href="${lang === 'vi' ? '/tai-phu-de-youtube/' : '/en/download-youtube-subtitles/'}">${lang === 'vi' ? 'Tải phụ đề YouTube' : 'Download YouTube subtitles'} →</a> ·
+                  <a href="${lang === 'vi' ? '/tai-phu-de-bilibili/' : '/en/download-bilibili-subtitles/'}">${lang === 'vi' ? 'Tải phụ đề Bilibili' : 'Download Bilibili subtitles'} →</a>
+                </p>
+                <p class="dl-note dl-quick">
+                  <a href="${lang === 'vi' ? '/tai-nhac-tiktok/' : '/en/download-tiktok-audio/'}">${lang === 'vi' ? 'Tải nhạc TikTok' : 'TikTok audio'} →</a> ·
+                  <a href="${lang === 'vi' ? '/tai-anh-bia-youtube/' : '/en/download-youtube-thumbnail/'}">${lang === 'vi' ? 'Ảnh bìa YouTube' : 'YouTube thumbnails'} →</a>
+                </p>
                 <div id="dl-turnstile" class="dl-turnstile"
                      data-sitekey="${esc(TURNSTILE_SITE_KEY)}" data-action="download"></div>
               </form>

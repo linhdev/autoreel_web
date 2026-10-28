@@ -17,7 +17,7 @@ export default {
   },
   description: {
     vi: 'Dùng engine mã hoá, giọng đọc và mô hình ngôn ngữ thay vì tự viết: đâu là thứ nên mượn, đâu là thứ buộc phải tự làm, và năm câu hỏi để đánh giá một engine.',
-    en: 'Borrowing engines for encoding, speech and language models: what is worth reusing, what you must build yourself, and the five questions to ask before trusting one.',
+    en: 'Which encoding, speech and language engines are worth borrowing, what you must build yourself, and five questions to ask before trusting one.',
   },
   date: '2026-10-10',
   minutes: { vi: 8, en: 8 },

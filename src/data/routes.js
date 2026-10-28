@@ -53,7 +53,7 @@ export const LOCALE_TAGS = {
  * `/slug/` and redirects `/slug` to it, so the slash form is the one that costs
  * no redirect and the one the canonical tag names.
  */
-export const routes = [
+const baseRoutes = [
   {
     key: 'home',
     section: null,
@@ -149,12 +149,12 @@ export const routes = [
       vi: {
         title: 'Bảng giá phần mềm tạo video tự động | AutoReel',
         description:
-          'Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ. Gói Full 259.000đ/tháng làm video rồi tự đăng lên Shopee và Facebook/Reels.',
+          'Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ. Gói Full 259.000đ/tháng làm video rồi tự đăng lên Shopee và Facebook/Reels.',
       },
       en: {
         title: 'Pricing | AutoReel video automation software',
         description:
-          'Rent from $6.12 a month, or buy outright for $57.31. Full at $9.96/month makes the video and publishes it to Shopee and Facebook/Reels.',
+          'Rent from $6.99 a month, or buy outright for $61.99. Full at $10.99/month makes the video and publishes it to Shopee and Facebook/Reels.',
       },
     },
   },
@@ -193,6 +193,194 @@ export const routes = [
     },
   },
 ];
+
+/**
+ * Copy and layout for the seven section routes.
+ *
+ * **A route is a page now, not a scroll position.** Before this table, every
+ * route rendered the same one-pager and only its `<head>` differed; Google saw
+ * sixteen near-duplicate pages with one shared `<h1>`. Each entry here gives a
+ * route its own headline and says which sections belong on it. `section: null`
+ * (applied below) also stops the router from scrolling past that headline to a
+ * section id on a cold load.
+ *
+ * Home deliberately has no entry: it keeps the full one-pager and the hero copy
+ * in `site.js`. `App.jsx` falls back to the full section list when `sections`
+ * is absent, so adding a route without an entry still renders something rather
+ * than an empty main.
+ *
+ * The CTA labels and trust chips stay in `site.js`: a route changes what the
+ * page is about, not what the site asks a visitor to do.
+ */
+const routePages = {
+  workflow: {
+    updated: '2026-10-28',
+    sections: ['workflow', 'deepDive', 'cta'],
+    hero: {
+      vi: {
+        badge: 'QUY TRÌNH',
+        headlineLine1: 'Tạo video hàng loạt,',
+        headlineLine2: 'từ input đến bản hoàn chỉnh.',
+        subheadline:
+          'Ba workflow — Affiliate, Reup/Repurpose và AI Review — nhận **sản phẩm, video có sẵn hoặc một ý tưởng** rồi trả về video đã dựng xong.',
+        support: 'Chọn nguồn, cấu hình một lần, chạy cả lô.',
+      },
+      en: {
+        badge: 'WORKFLOW',
+        headlineLine1: 'Make video in bulk,',
+        headlineLine2: 'from input to finished cut.',
+        subheadline:
+          'Three workflows — Affiliate, Reup/Repurpose and AI Review — take a **product, an existing video or a single idea** and return finished videos.',
+        support: 'Pick a source, configure once, run the batch.',
+      },
+    },
+  },
+  benefits: {
+    updated: '2026-10-27',
+    sections: ['benefits', 'proof', 'cta'],
+    hero: {
+      vi: {
+        badge: 'LỢI ÍCH',
+        headlineLine1: 'Ít thao tác hơn,',
+        headlineLine2: 'nhiều video hơn mỗi ngày.',
+        subheadline:
+          'Việc lặp lại — cắt, lồng tiếng, phụ đề, đóng dấu, đăng bài — chuyển sang máy. **Thời gian còn lại dành cho chọn sản phẩm và viết lời.**',
+        support: 'Một job chạy song song, không cần ngồi canh từng video.',
+      },
+      en: {
+        badge: 'BENEFITS',
+        headlineLine1: 'Fewer manual steps,',
+        headlineLine2: 'more videos every day.',
+        subheadline:
+          'The repeatable work — cutting, voice-over, subtitles, branding, publishing — moves to the machine. **The time left goes to product picks and scripts.**',
+        support: 'Parallel jobs, without watching each video render.',
+      },
+    },
+  },
+  features: {
+    updated: '2026-10-28',
+    sections: ['features', 'deepDive', 'cta'],
+    hero: {
+      vi: {
+        badge: 'TÍNH NĂNG',
+        headlineLine1: 'Mọi thứ AutoReel',
+        headlineLine2: 'làm được, trong một app.',
+        subheadline:
+          'Ba luồng trọn gói, mười hai màn làm từng việc lẻ, giọng đọc tiếng Việt, phụ đề, branding và đăng thẳng lên **Shopee, Facebook/Reels**.',
+        support: 'Danh sách đầy đủ, không chia tab, không giấu sau form.',
+      },
+      en: {
+        badge: 'FEATURES',
+        headlineLine1: 'Everything AutoReel',
+        headlineLine2: 'does, in one app.',
+        subheadline:
+          'Three end-to-end flows, twelve single-job screens, Vietnamese voice-over, subtitles, branding, and publishing straight to **Shopee and Facebook/Reels**.',
+        support: 'The complete list, with nothing hidden behind a form.',
+      },
+    },
+  },
+  demo: {
+    updated: '2026-10-27',
+    sections: ['demo', 'proof', 'cta'],
+    hero: {
+      vi: {
+        badge: 'DEMO THỰC TẾ',
+        headlineLine1: 'Xem AutoReel chạy',
+        headlineLine2: 'trên một job thật.',
+        subheadline:
+          'Từ link sản phẩm tới video hoàn chỉnh rồi tự đăng lên Shopee và Facebook/Reels. **Video quay từ app đang chạy**, không phải mockup.',
+        support: '1 phút 34 giây, 1080p, tiếng Việt.',
+      },
+      en: {
+        badge: 'REAL DEMO',
+        headlineLine1: 'Watch AutoReel run',
+        headlineLine2: 'on a real job.',
+        subheadline:
+          'From a product link to a finished video, then published to Shopee and Facebook/Reels. **Recorded from the running app**, not a mockup.',
+        support: '1 minute 34 seconds, 1080p, Vietnamese narration.',
+      },
+    },
+  },
+  pricing: {
+    updated: '2026-10-28',
+    sections: ['pricing', 'deepDive', 'cta'],
+    hero: {
+      vi: {
+        badge: 'BẢNG GIÁ',
+        headlineLine1: 'Chọn gói theo',
+        headlineLine2: 'cách bạn làm việc.',
+        subheadline:
+          'Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ. **Không tính phí theo từng video**, không có đồng hồ chạy khi bạn dựng.',
+        support: 'Giá và quyền lợi lấy từ cùng một file với bảng bên dưới.',
+      },
+      en: {
+        badge: 'PRICING',
+        headlineLine1: 'Pick the plan that',
+        headlineLine2: 'matches how you work.',
+        subheadline:
+          'Rent from $6.99 a month, or buy outright for $61.99. **No per-video charge**, and no meter running while you edit.',
+        support: 'Prices and entitlements come from the same file as the table below.',
+      },
+    },
+  },
+  faq: {
+    updated: '2026-10-28',
+    sections: ['faq', 'deepDive', 'cta'],
+    hero: {
+      vi: {
+        badge: 'CÂU HỎI THƯỜNG GẶP',
+        headlineLine1: 'Câu hỏi thường gặp',
+        headlineLine2: 'về AutoReel.',
+        subheadline:
+          'Có mất phí hàng tháng không, chạy ở đâu, có tự đăng video không, có hỗ trợ tiếng Việt không — **trả lời đầy đủ, không né.**',
+        support: 'Không thấy câu bạn cần? Gọi Zalo 0326012999.',
+      },
+      en: {
+        badge: 'FREQUENTLY ASKED',
+        headlineLine1: 'Frequently asked questions',
+        headlineLine2: 'about AutoReel.',
+        subheadline:
+          'Is there a monthly fee, where does it run, does it publish by itself, does it support Vietnamese — **answered in full.**',
+        support: 'Still stuck? Message us on Zalo at 0326012999.',
+      },
+    },
+  },
+  contact: {
+    updated: '2026-10-27',
+    sections: ['cta', 'faq'],
+    hero: {
+      vi: {
+        badge: 'LIÊN HỆ',
+        headlineLine1: 'Cần tư vấn?',
+        headlineLine2: 'Nói chuyện với người làm ra nó.',
+        subheadline:
+          'Gửi link sản phẩm hoặc mô tả công việc bạn đang làm; **chúng tôi trả lời bằng cách chỉ đúng workflow**, không bán gói trước khi biết bạn cần gì.',
+        support: 'Zalo, WhatsApp hoặc email — trong giờ làm việc.',
+      },
+      en: {
+        badge: 'CONTACT',
+        headlineLine1: 'Need advice?',
+        headlineLine2: 'Talk to the person who built it.',
+        subheadline:
+          'Send a product link or describe the work you do; **we answer by pointing at the right workflow**, not by selling a plan before we know what you need.',
+        support: 'Zalo, WhatsApp or email — during working hours.',
+      },
+    },
+  },
+};
+
+/**
+ * The exported route table: the hand-written rows above, plus each section
+ * route's page copy and section list.
+ *
+ * A route with an entry is a standalone page, so `section` is cleared: its
+ * headline is the top of the page and scrolling to the old section id would
+ * hide it. Home keeps `section: null` from its own row and gets no extra copy.
+ */
+export const routes = baseRoutes.map((route) => {
+  const page = routePages[route.key];
+  return page ? { ...route, ...page, section: null } : route;
+});
 
 /** The route every unmatched path falls back to. */
 export const homeRoute = routes[0];

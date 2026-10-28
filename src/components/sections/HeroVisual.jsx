@@ -1,9 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { m, useReducedMotion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useCopy } from '../../i18n/copy.jsx';
 import Icon from '../ui/Icon.jsx';
-
-const EASE = [0.22, 1, 0.36, 1];
 
 /**
  * The batch counter: 0 → `to` once per cycle, in step with the CSS.
@@ -85,15 +83,14 @@ function BatchCounter({ to, cycleMs }) {
  * to walk through.
  */
 export default function HeroVisual() {
-  const prefersReduced = useReducedMotion();
   const { heroFlow, ui, line } = useCopy();
 
   return (
     <m.div
       className="ar-hero-visual"
-      initial={prefersReduced ? false : { opacity: 0, y: 28, scale: 0.985 }}
-      animate={prefersReduced ? false : { opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
+      // Visible in the prerendered HTML: this sits in the first viewport and
+      // must not wait for hydration to become opaque.
+      initial={false}
       role="img"
       aria-label={ui.heroVisual}
     >

@@ -11,29 +11,32 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/OFL.txt
+  Content-Type: text/plain; charset=utf-8
+
 # `*.mp4` and not `*`: a route slug under `/demo/` would otherwise have its
 # HTML cached for a week, and header rules merge rather than override, so the
 # `must-revalidate` below would not save it.
 /demo/*.mp4
   Cache-Control: public, max-age=604800
 
-# There was a `/docs-img/*` rule here with a short `max-age`, to stop a re-taken
-# screenshot being invisible for a year. It did not work, and it made things
-# worse: rules merge rather than override, and the live response came back
+# Only the content-hashed screenshots get a one-year immutable rule.
 #
-#     Cache-Control: public, max-age=31536000, immutable, public, max-age=86400
+# This used to be `/*.webp`, which also matched `/assets/*.webp`; Cloudflare
+# merges matching rules rather than overriding, and the live response came back
 #
-# which is two `max-age` directives on one response — not a valid header, and
-# browsers take the first. Measured with `curl -I` against autoreelvn.com on
-# 2026-10-13, which is the check the rule's own comment said to make and which
-# had not been made before it shipped.
+#     Cache-Control: public, max-age=31536000, immutable, public, max-age=31536000, immutable
 #
-# The screenshots do not need a rule any more. Their names carry a content hash
-# (`/docs-img/video-ngan-01-screen-vi.9f3a1c2e.webp`, written by
-# `scripts/optimise-docs-shots.mjs`, resolved by `scripts/lib/docs-images.mjs`),
-# so a re-shot picture is a new address and this rule below is simply true.
-/*.webp
-  Cache-Control: public, max-age=31536000, immutable
+# — two directives on one response, which is not a valid header. It also cached
+# a missing `.webp` at the same one-year lifetime, so a typo stayed a 404 long
+# after the file was added. The names under `/docs-img/` carry a content hash
+# (`/docs-img/video-ngan-01-screen-vi.9f3a1c2e.webp`), so a re-shot picture is
+# a new address and this rule is simply true.
+/docs-img/*.webp
+  Cache-Control: public, max-age=604800
 
 /*.png
   Cache-Control: public, max-age=604800

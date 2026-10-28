@@ -6,7 +6,7 @@ export default function HowItWorks() {
   const { howItWorks } = useCopy();
 
   return (
-    <section className="ar-section" aria-labelledby="how-title">
+    <section id="how-it-works" className="ar-section" aria-labelledby="how-title">
       <div className="ar-container">
         <SectionHeading id="how-title" title={howItWorks.title} />
 

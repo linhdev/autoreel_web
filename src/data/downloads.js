@@ -16,12 +16,17 @@ export const QUICK = {
 };
 
 /**
- * Public Turnstile site key. A production build must set the environment
- * variable; the fallback is Cloudflare's documented "always passes" test key,
- * which is useful locally and would be refused by the production secret.
+ * Public Turnstile site key for the AUTOREELVN widget (domain autoreelvn.com).
+ * Site keys are public by design — they are embedded in every page — so the
+ * production key is the default. That matters because the old fallback was
+ * Cloudflare's "always passes" test key: a build that forgot the environment
+ * variable silently shipped a widget reading "For testing only".
+ *
+ * Set TURNSTILE_SITE_KEY to the test key in local development when the widget
+ * is being worked on; production builds need no variable.
  */
 export const TURNSTILE_SITE_KEY =
-  process.env.TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+  process.env.TURNSTILE_SITE_KEY || '0x4AAAAAAFmRDi9HzZJVqvrJ';
 
 export const downloads = {
   vi: {

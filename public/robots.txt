@@ -1,4 +1,30 @@
+# AutoReel — public pages are open, including to the crawlers behind AI search.
+#
+# Google's May 2026 guidance is explicit that AI Overviews and AI Mode use the
+# same index as Search and need no special file. The groups below are not a
+# ranking trick: they are an active allow, written down so a later Cloudflare
+# "block AI bots" preset or a well-meaning edit has something to contradict.
+# Search crawlers (OAI-SearchBot, PerplexityBot, Claude-SearchBot) are the ones
+# that matter for citations; training crawlers are allowed too because the
+# public pages are the product's documentation, not a paywall.
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /facebook/callback/
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
+Disallow: /facebook/callback/
 
 Sitemap: https://autoreelvn.com/sitemap.xml

@@ -16,7 +16,7 @@ export default {
   },
   description: {
     vi: 'Lên lịch đăng video theo tuần: cách tự thử để chọn khung giờ, chia nhóm nội dung, xử lý ngày bận, giãn cách trong ngày và dựng sẵn hàng đợi cho cả tuần.',
-    en: 'A weekly posting schedule: testing your own time slots, grouping content, handling busy days, spacing posts inside a day, and building a week of videos in advance.',
+    en: 'Build a weekly posting schedule: test your time slots, group content, handle busy days, space posts within a day, and make a week of videos ahead.',
   },
   date: '2026-10-10',
   minutes: { vi: 7, en: 7 },

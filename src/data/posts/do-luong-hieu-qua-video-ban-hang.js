@@ -156,7 +156,7 @@ export default {
       },
       {
         q: 'AutoReel có giúp theo dõi không?',
-        a: 'Bạn giao việc và theo dõi tiến độ từ xa qua Telegram; còn số liệu bán hàng vẫn nằm ở kênh và ở bảng của bạn. Nếu phần dựng đang ăn thời gian, AutoReel làm phần đó: kịch bản, giọng đọc tiếng Việt, dựng video, phụ đề, rồi đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
+        a: 'Bạn giao việc và theo dõi tiến độ từ xa qua Telegram; còn số liệu bán hàng vẫn nằm ở kênh và ở bảng của bạn. Nếu phần dựng đang ăn thời gian, AutoReel làm phần đó: kịch bản, giọng đọc tiếng Việt, dựng video, phụ đề, rồi đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -174,7 +174,7 @@ export default {
       },
       {
         q: 'Does AutoReel help with tracking?',
-        a: 'You hand off the work and follow progress remotely over Telegram; the sales figures still live on the platform and in your own table. If editing is what eats your time, AutoReel does that part: script, Vietnamese voice-over, video build, subtitles, then posting to Shopee Video or Facebook/Reels. From $6.12 a month, or $57.31 once and keep it. Ask on Zalo or WhatsApp 0326012999.',
+        a: 'You hand off the work and follow progress remotely over Telegram; the sales figures still live on the platform and in your own table. If editing is what eats your time, AutoReel does that part: script, Vietnamese voice-over, video build, subtitles, then posting to Shopee Video or Facebook/Reels. From $6.99 a month, or $61.99 once and keep it. Ask on Zalo or WhatsApp 0326012999.',
       },
     ],
   },

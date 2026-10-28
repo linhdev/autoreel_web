@@ -109,7 +109,7 @@ export default {
       },
       {
         q: 'Muốn làm nhiều video hơn mà không đủ thời gian thì sao?',
-        a: 'Đó là lúc nên tính chuyện chia bớt phần dựng cho máy. AutoReel chạy trên máy của bạn: từ link sản phẩm, nó viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện, rồi đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn.',
+        a: 'Đó là lúc nên tính chuyện chia bớt phần dựng cho máy. AutoReel chạy trên máy của bạn: từ link sản phẩm, nó viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện, rồi đăng lên Shopee Video hoặc Facebook/Reels. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn.',
       },
     ],
     en: [
@@ -127,7 +127,7 @@ export default {
       },
       {
         q: 'What if I want more videos but have no time?',
-        a: 'That is when it makes sense to hand part of the editing over to a machine. AutoReel runs on your own computer: from a product link it writes the script, reads the Vietnamese voice-over, builds the video, adds subtitles and your branding, and can publish to Shopee Video or Facebook Reels. From $6.12 a month, or $57.31 once and keep it.',
+        a: 'That is when it makes sense to hand part of the editing over to a machine. AutoReel runs on your own computer: from a product link it writes the script, reads the Vietnamese voice-over, builds the video, adds subtitles and your branding, and can publish to Shopee Video or Facebook Reels. From $6.99 a month, or $61.99 once and keep it.',
       },
     ],
   },

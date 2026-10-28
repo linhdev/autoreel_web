@@ -22,6 +22,9 @@ function VideoFrame() {
           controls
           preload="none"
           playsInline
+          width="1920"
+          height="1080"
+          poster="/demo/autoreel-demo-poster.webp"
           aria-label={demo.videoTitle}
         >
           <source src={demo.videoSrc} />

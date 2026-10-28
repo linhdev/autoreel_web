@@ -19,6 +19,7 @@ export default {
     en: 'Reuploading without a copyright claim takes real change, not a flipped picture: six steps that make it yours, four tricks that do nothing, and a pre-post check.',
   },
   date: '2026-10-10',
+  updated: '2026-10-28',
   minutes: { vi: 5, en: 5 },
   tag: { vi: 'Kinh nghiệm', en: 'Field notes' },
   lead: {
@@ -30,6 +31,9 @@ export default {
       { h2: 'Reup chỉ đáng làm khi bạn thêm được thứ bản gốc không có' },
       {
         p: 'Reup là lấy nội dung có sẵn — video của người khác, phim, clip nước ngoài, video dài — rồi đăng lại dưới dạng của mình. Cách này tiết kiệm thời gian quay dựng, nhưng chỉ đáng làm khi bạn thêm được một góc nhìn, một lời dẫn, một cách kể mới.\n\nNói thẳng: không có cách nào bảo đảm một video reup sẽ không bị đánh bản quyền. Thứ bạn kiểm soát được là mức độ khác biệt của sản phẩm cuối, và việc bạn có quyền dùng nguồn hay không. Làm tốt hai việc đó thì rủi ro thấp hơn nhiều, và bản thân video cũng tốt hơn.\n\nMột điều không được quên: bản quyền thuộc về người tạo ra nội dung. Bạn dựng lại, đổi nhạc hay thêm chữ đều không làm nội dung thành của bạn. Mọi bước dưới đây để tạo ra một sản phẩm mới thật sự, không phải để lách qua hệ thống nhận diện.',
+      },
+      {
+        p: 'Công cụ tải video chỉ giúp bạn lấy nguồn công khai — [YouTube](/tai-video-youtube/), [TikTok](/tai-video-tiktok/), [Bilibili](/tai-video-bilibili/) — không trao quyền đăng lại. Nếu nguồn không có giấy phép, hãy dùng footage của bạn hoặc xin phép trước khi dựng.',
       },
       { h2: 'Sáu bước làm khác bản gốc, và bước thứ hai là bước người xem nghe ra ngay' },
       {
@@ -69,6 +73,9 @@ export default {
       { h2: 'Reuploading is only worth it when you add something the original did not have' },
       {
         p: 'Reuploading means taking something that already exists — somebody else’s video, a film, a foreign clip, a long video — and posting it again as your own. It saves you filming and editing, but it is only worth doing when you add a point of view, an introduction, a different way of telling it.\n\nPlainly: nothing guarantees that a reuploaded video will not get a copyright claim. What you control is how different the finished video is, and whether you have the right to use the source at all. Do both well and the risk drops a long way — and the video itself gets better.\n\nOne thing never to forget: copyright belongs to the person who made the content. Re-editing it, swapping the music or adding text does not make it yours. Every step below is about making a genuinely new piece of work, not about slipping past a detection system.',
+      },
+      {
+        p: 'The downloader only helps you fetch a public source — [YouTube](/en/download-youtube/), [TikTok](/en/download-tiktok/), [Bilibili](/en/download-bilibili/) — it does not grant the right to republish. If the source has no licence, use your own footage or ask for permission before editing.',
       },
       { h2: 'Six steps that make it a different video, and the second is the one people hear' },
       {

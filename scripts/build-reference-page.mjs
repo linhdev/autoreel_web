@@ -14,6 +14,7 @@ import { LOCALE_TAGS, SITE_URL, absolute, pathFor } from '../src/data/routes.js'
 import {
   esc, footer, headAssets, langAssets, nav, write,
 } from './lib/site-shell.mjs';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -82,6 +83,13 @@ function document_({ lang, copy, assets }) {
   const other = lang === 'vi' ? 'en' : 'vi';
   const card = lang === 'en' ? '/og-image-en.png' : '/og-image.png';
   const pricing = pathFor('pricing', lang);
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? '/en/' : '/'],
+      [copy.h1, null],
+    ],
+  });
   const steps = copy.steps
     .map(([title, text]) => `<li class="rf-step"><h3>${esc(title)}</h3><p>${esc(text)}</p></li>`)
     .join('');
@@ -113,7 +121,7 @@ function document_({ lang, copy, assets }) {
     <title>${esc(page.meta[lang].title)}</title>
     <meta name="description" content="${esc(page.meta[lang].description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[lang].html}" href="${esc(url)}" />
     <link rel="alternate" hreflang="${LOCALE_TAGS[other].html}" href="${esc(absolute(page.path[other]))}" />
     <link rel="alternate" hreflang="x-default" href="${esc(absolute(page.path.vi))}" />
@@ -129,6 +137,7 @@ function document_({ lang, copy, assets }) {
     <meta name="twitter:description" content="${esc(page.meta[lang].description)}" />
     <meta name="twitter:image" content="${SITE_URL}${card}" />
 ${assets}
+${trail.script}
     <style>${STYLE}</style>
   </head>
   <body style="--rf-accent: ${page.accent}">
@@ -136,6 +145,7 @@ ${nav(lang, 'downloads')}
     <main id="main" class="rf-main">
       <div class="ar-container">
         <div class="rf-page">
+          ${trail.nav}
           <section class="rf-hero" itemscope itemtype="https://schema.org/WebPage">
             <meta itemprop="name" content="${esc(page.meta[lang].title)}" />
             <meta itemprop="inLanguage" content="${LOCALE_TAGS[lang].html}" />

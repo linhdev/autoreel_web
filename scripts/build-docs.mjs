@@ -36,6 +36,7 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { breadcrumbTrail } from './lib/breadcrumbs.mjs';
 
 import {
   DOCS, DOC_GROUPS, docByKey, docNeighbours, docPath, docs, docsInGroup,
@@ -45,6 +46,7 @@ import {
 // instead of stopping the build. See the note on `link`.
 import { LOCALE_TAGS, SITE_URL, absolute } from '../src/data/routes.js';
 import { site } from '../src/data/site.js';
+import { ORG_ID, PERSON_ID } from '../src/data/schema.js';
 import {
   esc, footer, headAssets, langAssets, nav, shownDate, write,
 } from './lib/site-shell.mjs';
@@ -326,7 +328,7 @@ function document_({ title, description, url, assets, body, ld, lang, extraHead 
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}" />
     <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="${esc(site.name)}" />
 ${extraHead}
 
@@ -399,7 +401,8 @@ function structuredData(doc, lang, url) {
         datePublished: doc.updated,
         dateModified: doc.updated,
         mainEntityOfPage: url,
-        publisher: { '@type': 'Organization', name: site.name, url: SITE_URL },
+        author: { '@id': PERSON_ID },
+        publisher: { '@id': ORG_ID },
       },
       breadcrumb,
     ],
@@ -473,11 +476,19 @@ ${cards}
 
   const url = absolute(DOCS.path[lang]);
   const other = OTHER[lang];
+  const trail = breadcrumbTrail({
+    lang,
+    items: [
+      [lang === 'en' ? 'Home' : 'Trang chủ', lang === 'en' ? '/en/' : '/'],
+      [DOCS.heading[lang], null],
+    ],
+  });
   const body = `${nav(lang, 'docs')}
 
     <main id="main">
       <section class="ar-section">
         <div class="ar-container">
+          ${trail.nav}
           <div class="ar-section-head">
             <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-0.03em;margin:0 0 14px">${esc(DOCS.heading[lang])}</h1>
             <p style="color:var(--muted);line-height:1.7;margin:0">${esc(DOCS.lede[lang])}</p>
@@ -510,6 +521,7 @@ ${footer(lang)}`;
       `    <link rel="alternate" hreflang="vi" href="${esc(absolute(DOCS.path.vi))}" />`,
       `    <link rel="alternate" hreflang="en" href="${esc(absolute(DOCS.path.en))}" />`,
       `    <link rel="alternate" hreflang="x-default" href="${esc(absolute(DOCS.path.vi))}" />`,
+      trail.script,
     ].join('\n'),
   });
 }

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070b1a">
+  <title>Chính sách bảo mật | AutoReel</title>
+  <meta name="description" content="AutoReel thu thập gì khi bạn dùng website, công cụ tải video và phần mềm: dữ liệu nào được giữ, trong bao lâu, và cách yêu cầu xoá.">
+  <link rel="canonical" href="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <link rel="alternate" hreflang="vi" href="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <link rel="alternate" hreflang="en" href="https://autoreelvn.com/en/privacy/">
+  <link rel="alternate" hreflang="x-default" href="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="vi_VN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:url" content="https://autoreelvn.com/chinh-sach-bao-mat/">
+  <meta property="og:title" content="Chính sách bảo mật | AutoReel">
+  <meta property="og:description" content="AutoReel thu thập gì, giữ trong bao lâu, và cách yêu cầu xoá.">
+  <meta property="og:image" content="https://autoreelvn.com/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Chính sách bảo mật | AutoReel">
+  <meta name="twitter:description" content="AutoReel thu thập gì, giữ trong bao lâu, và cách yêu cầu xoá.">
+  <meta name="twitter:image" content="https://autoreelvn.com/og-image.png">
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter-vietnamese.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/legal.css">
+</head>
+<body>
+  <header class="legal-header">
+    <a class="brand" href="/" aria-label="AutoReel — về trang chủ">
+      <img src="/logo-88.webp" width="42" height="42" alt="">
+      <span>
+        <span class="brand-name">AutoReel</span>
+        <span class="brand-tag">AI Content Automation</span>
+      </span>
+    </a>
+    <span class="back"><a href="/en/privacy/" hreflang="en">English</a> · <a href="/">← Về trang chủ</a></span>
+  </header>
+
+  <main class="legal-wrap">
+    <article class="legal-card">
+      <h1>Chính sách bảo mật</h1>
+      <p class="legal-meta">Cập nhật lần cuối: 27/10/2026 · Áp dụng cho autoreelvn.com và phần mềm AutoReel</p>
+
+      <p>
+        Trang này nói rõ website và công cụ tải video thu thập gì, giữ trong bao lâu, và
+        bạn có thể yêu cầu xoá bằng cách nào. Phần mềm AutoReel chạy trên máy của bạn:
+        video, ảnh và dữ liệu dự án không được gửi lên máy chủ của chúng tôi.
+      </p>
+
+      <h2>Khi bạn chỉ đọc website</h2>
+      <p>
+        Website là HTML tĩnh, không có tài khoản và không đặt cookie đăng nhập. Cloudflare
+        xử lý yêu cầu HTTP và có thể ghi log kỹ thuật (địa chỉ IP, thời gian, đường dẫn,
+        user-agent) theo chính sách của Cloudflare. Chúng tôi không dùng dữ liệu này để
+        nhận diện cá nhân.
+      </p>
+      <p>
+        Google AdSense có thể đặt cookie quảng cáo trên các trang có quảng cáo. Bạn có thể
+        tắt quảng cáo cá nhân hoá trong phần cài đặt quảng cáo của Google. Chúng tôi không
+        kiểm soát cookie do Google đặt.
+      </p>
+
+      <h2>Khi bạn dùng công cụ tải video</h2>
+      <ul>
+        <li><strong>Link video</strong> được gửi tới hàng đợi để tải. Link không được hiển thị công khai.</li>
+        <li><strong>Địa chỉ IP</strong> được băm bằng HMAC kèm khoá riêng, chỉ dùng để đếm hạn mức (3 video/giờ, 10 video/ngày). Chúng tôi không lưu IP thô.</li>
+        <li><strong>Tệp tải về</strong> nằm trên Cloudflare R2 và bị xoá sau khoảng 2 giờ; bản ghi công việc bị xoá sau 7 ngày.</li>
+        <li><strong>Thông báo đẩy</strong> (nếu bạn bật “Báo khi tải xong”): trình duyệt cấp một địa chỉ đẩy; chúng tôi giữ địa chỉ đó cùng mã công việc để gửi đúng một thông báo, và xoá khi đăng ký hết hạn.</li>
+        <li><strong>Turnstile</strong> của Cloudflare kiểm tra yêu cầu gửi lên để chống spam.</li>
+      </ul>
+
+      <h2>Khi bạn mua hoặc kích hoạt phần mềm</h2>
+      <p>
+        Máy chủ bản quyền nhận mã kích hoạt, mã thiết bị và thông tin gói để xác định bản
+        quyền còn hiệu lực. Chúng tôi không nhận nội dung video, tệp dự án hay API key AI
+        của bạn. API key được lưu trên máy bạn và gọi trực tiếp tới nhà cung cấp AI.
+      </p>
+
+      <h2>Chia sẻ với ai</h2>
+      <p>
+        Chúng tôi dùng Cloudflare (hosting, hàng đợi, lưu tệp), Google AdSense (quảng cáo)
+        và nhà cung cấp thanh toán khi bạn mua. Chúng tôi không bán dữ liệu cá nhân và
+        không chia sẻ dữ liệu cho bên khác ngoài các nhà cung cấp này.
+      </p>
+
+      <h2>Quyền của bạn</h2>
+      <p>
+        Bạn có thể hỏi chúng tôi đang giữ dữ liệu gì về mình, yêu cầu sửa hoặc xoá. Gửi
+        email tới <a href="mailto:support@autoreelvn.com">support@autoreelvn.com</a> kèm
+        thông tin đủ để xác định bản ghi (thời gian dùng, mã công việc nếu có). Chúng tôi
+        trả lời trong vòng 30 ngày.
+      </p>
+
+      <h2>Thay đổi chính sách</h2>
+      <p>
+        Khi chính sách thay đổi, ngày cập nhật ở đầu trang đổi theo. Thay đổi lớn sẽ được
+        ghi trong phần tin của sản phẩm hoặc gửi tới email bạn đã dùng khi mua.
+      </p>
+
+      <p>
+        Xem thêm <a href="/dieu-khoan/">Điều khoản sử dụng</a>.
+        Liên hệ: <a href="mailto:support@autoreelvn.com">support@autoreelvn.com</a> ·
+        Zalo <a href="https://zalo.me/0326012999">0326012999</a>.
+      </p>
+    </article>
+  </main>
+</body>
+</html>

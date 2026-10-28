@@ -48,6 +48,21 @@ import chuanBiMay from './posts/chuan-bi-may-toi-thieu-va-chon-windows.js';
 import dieuKhienTuXaTelegram from './posts/dieu-khien-tao-video-tu-xa-bang-telegram.js';
 import tuLamHayDungPhanMem from './posts/tu-lam-video-hay-dung-phan-mem.js';
 
+// The movie-recap cluster: the app's most distinctive workflow had no article
+// of its own, only a documentation page for people who had already installed.
+import toolTomTatPhim from './posts/tool-tom-tat-phim-tu-dong.js';
+import cachLamVideoTomTat from './posts/cach-lam-video-tom-tat-phim.js';
+import kiemTienTomTat from './posts/kiem-tien-youtube-voi-video-tom-tat-phim.js';
+
+// The downloader has platform pages, but no article explaining what a subtitle
+// file actually is; the bulk/reference/comparison posts fill the buyer-intent
+// gaps the architecture essays never covered.
+import taiPhuDeVideo from './posts/tai-phu-de-video-srt-vtt.js';
+import taoVideoHangLoat from './posts/tao-video-hang-loat-bang-ai.js';
+import lamTheoVideoMau from './posts/lam-video-theo-video-mau.js';
+import autoreelVsCapcut from './posts/autoreel-vs-capcut.js';
+import autoreelVsMpt from './posts/autoreel-vs-moneyprinterturbo.js';
+
 // Architecture, kept at the level a customer needs — layers, principles and
 // trade-offs, never how any of it is built. `scripts/verify-build.mjs` has a
 // list of internal words these articles may not contain.
@@ -100,6 +115,14 @@ import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
  * `chuanBiMay` is the one that does today.
  */
 export const posts = [
+  toolTomTatPhim,
+  cachLamVideoTomTat,
+  kiemTienTomTat,
+  taiPhuDeVideo,
+  taoVideoHangLoat,
+  lamTheoVideoMau,
+  autoreelVsCapcut,
+  autoreelVsMpt,
   chuanBiMay,
   benTrongMotJob,
   kienTrucTachTienTrinh,
@@ -179,11 +202,15 @@ export function postBySlug(slug, lang = 'vi') {
 export function relatedPosts(post, lang = 'vi', count = 3) {
   const others = posts.filter((one) => one !== post);
   if (!others.length) return [];
-  // Starting where this article sits in the list, rather than always at the
-  // top: otherwise every page in the blog ends with the same three links, and
-  // the oldest article is the one nobody ever reaches.
+  // Same tag first, then the rest in publication order. The old version took
+  // the next three by array position, which meant a movie-recap article ended
+  // with whatever happened to be written beside it — often an engine-room essay
+  // with nothing to do with the reader's question.
+  const sameTag = others.filter((one) => one.tag.vi === post.tag.vi);
+  const rest = others.filter((one) => one.tag.vi !== post.tag.vi);
   const at = Math.max(0, posts.indexOf(post));
-  return [...others.slice(at % others.length), ...others].slice(0, count);
+  const rotated = [...rest.slice(at % rest.length), ...rest];
+  return [...sameTag, ...rotated].slice(0, count);
 }
 
 /** The same article in the other language, for `hreflang` and the switch link. */

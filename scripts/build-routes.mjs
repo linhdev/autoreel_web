@@ -29,12 +29,18 @@ import { fileURLToPath } from 'node:url';
 
 import { LOCALES, LOCALE_TAGS, SITE_URL, absolute, routes } from '../src/data/routes.js';
 import { plans, priceIn } from '../src/data/pricing.js';
+import { faqs } from '../src/data/faq.js';
+import { allFeatures } from '../src/data/allFeatures.js';
+import { demo, socialLinks } from '../src/data/site.js';
+import { ORG_ID, faqNode, graph, videoNode } from '../src/data/schema.js';
+import { crumbsFor, siteGraph } from './lib/seo.mjs';
 import { BLOG, postPath, posts } from '../src/data/posts.js';
 import { DOCS, docPath, docs } from '../src/data/docs.js';
 import { DOWNLOADS, QUICK } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
 import { REFERENCE_PAGE } from '../src/data/referencePage.js';
+import { STATIC_PAGES } from '../src/data/staticPages.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
@@ -86,18 +92,29 @@ function meta(attr, name, content) {
  * price in structured data is the kind of thing Google shows in a result and a
  * customer quotes back at you.
  */
-function structuredData(existing, route, lang) {
+function structuredData(route, lang) {
   const copy = route.meta[lang];
-  const base = JSON.parse(existing);
-  const home = routes[0].meta[lang];
   const homeUrl = absolute(routes[0].slug[lang]);
+  const url = absolute(route.slug[lang]);
+  const tags = LOCALE_TAGS[lang];
 
-  return {
-    ...base,
+  const app = {
+    '@type': 'SoftwareApplication',
+    '@id': `${SITE_URL}/#app`,
     name: 'AutoReel',
+    applicationCategory: 'BusinessApplication',
+    applicationSubCategory: 'Video automation',
+    operatingSystem: 'Windows, macOS',
     description: copy.description,
     url: homeUrl,
-    inLanguage: LOCALE_TAGS[lang].html,
+    inLanguage: tags.html,
+    publisher: { '@id': ORG_ID },
+    sameAs: socialLinks.map((one) => one.href),
+    // A concrete feature list is more useful to a parser than the marketing
+    // description above, and it comes from the same data the feature section
+    // renders, so it cannot claim a feature the page does not show.
+    featureList: allFeatures[lang].flatMap((group) => group.items.map((item) => item.name)),
+    screenshot: `${SITE_URL}/demo/autoreel-demo-poster.webp`,
     // One offer per plan, priced in the currency of the page it is on: a
     // search result for the English page that quotes đồng is a result nobody
     // in that market can act on. `priceIn` is the same function the card uses,
@@ -131,6 +148,39 @@ function structuredData(existing, route, lang) {
       };
     }),
   };
+
+  const breadcrumbs = route.key === 'home'
+    ? undefined
+    : crumbsFor(lang, [
+        ['AutoReel', routes[0].slug[lang]],
+        [copy.title, route.slug[lang]],
+      ]);
+
+  const page = siteGraph({
+    lang: tags.html,
+    url,
+    title: copy.title,
+    description: copy.description,
+    type: route.key === 'contact' ? 'ContactPage' : 'WebPage',
+    breadcrumbs,
+  });
+
+  const extra = [];
+  if (route.key === 'faq') {
+    extra.push(faqNode(faqs[lang].map((one) => [one.question, one.answer])));
+  }
+  if (route.key === 'demo' && demo.videoSrc) {
+    extra.push(videoNode({
+      name: demo[lang].videoTitle,
+      description: demo[lang].headline,
+      thumbnail: `${SITE_URL}/demo/autoreel-demo-poster.webp`,
+      contentUrl: `${SITE_URL}${demo.videoSrc}`,
+      uploadDate: '2026-10-09',
+      duration: 'PT1M34S',
+    }));
+  }
+
+  return graph(...page['@graph'], app, extra);
 }
 
 function rewriteHead(base, route, lang) {
@@ -205,7 +255,7 @@ function rewriteHead(base, route, lang) {
 
   const ld = base.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
   if (!ld) throw new Error('dist/index.html has no JSON-LD block');
-  const data = JSON.stringify(structuredData(ld[1], route, lang), null, 2);
+  const data = JSON.stringify(structuredData(route, lang), null, 2);
   html = replaceTag(
     html,
     /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
@@ -287,6 +337,21 @@ function notFoundPage(base) {
     meta('property', 'og:description', NOT_FOUND.description),
     'og:description',
   );
+
+  // The 404 does not need the 419KB React bundle: the app would render the
+  // home page at a URL that is not the home page. The shell's JSON-LD goes too
+  // — a noindex page claiming to be the SoftwareApplication helps nobody.
+  html = html.replace(/\s*<script\s+type="module"[\s\S]*?<\/script>/, '');
+  html = html.replace(/\s*<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/, '');
+  html = html.replace(
+    /<div id="root"><\/div>/,
+    `    <main style="max-width:720px;margin:0 auto;padding:80px 20px;font-family:Inter,system-ui,sans-serif">
+      <h1 style="font-size:clamp(2rem,5vw,3rem);margin:0 0 16px">Không tìm thấy trang</h1>
+      <p style="color:#aeb8d4;line-height:1.7">Đường dẫn này không tồn tại hoặc đã được chuyển.</p>
+      <p style="margin-top:28px"><a href="/" style="color:#8fb4ff">← Về trang chủ</a></p>
+      <p style="color:#aeb8d4;line-height:1.7">This page does not exist. <a href="/en/" style="color:#8fb4ff">Go to the English home page</a>.</p>
+    </main>`,
+  );
   return html;
 }
 
@@ -344,8 +409,13 @@ function sitemap(stamp) {
             )}"/>`,
         )
         .join('\n');
+      const withDefault = links
+        ? `${links}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${esc(
+            absolute(route.slug.vi),
+          )}"/>`
+        : '';
       urls.push(
-        entry(absolute(route.slug[lang]), stamp, route.key === 'home' ? '1.0' : '0.8', links),
+        entry(absolute(route.slug[lang]), route.updated || stamp, route.key === 'home' ? '1.0' : '0.8', withDefault),
       );
     }
   }
@@ -359,11 +429,18 @@ function sitemap(stamp) {
    * other as a duplicate — which for the blog would mean the English half
    * never ranking at all.
    */
-  const alternatesFor = (pair) =>
-    LOCALES.map(
-      (code) =>
-        `    <xhtml:link rel="alternate" hreflang="${LOCALE_TAGS[code].html}" href="${esc(pair[code])}"/>`,
-    ).join('\n');
+  const alternatesFor = (pair) => {
+    const lines = LOCALES
+      .filter((code) => pair[code])
+      .map(
+        (code) =>
+          `    <xhtml:link rel="alternate" hreflang="${LOCALE_TAGS[code].html}" href="${esc(pair[code])}"/>`,
+      );
+    lines.push(
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${esc(pair.vi || pair.en)}"/>`,
+    );
+    return lines.join('\n');
+  };
 
   // The blog, which `routes` deliberately does not hold: those are the
   // one-pager's section URLs and these are pages of their own, written by
@@ -383,7 +460,7 @@ function sitemap(stamp) {
       urls.push(
         entry(
           absolute(postPath(post, lang)),
-          post.date,
+          post.updated || post.date,
           '0.6',
           alternatesFor({
             vi: absolute(postPath(post, 'vi')),
@@ -506,6 +583,18 @@ function sitemap(stamp) {
         }),
       ),
     );
+  }
+
+  // Pages that live in `public/` or in a small builder: the legal pair and the
+  // visual install guide. They were canonical and indexable but absent from
+  // this file, which is the one place a crawler looks for the full set.
+  for (const page of STATIC_PAGES) {
+    const pair = Object.fromEntries(
+      Object.entries(page.path).map(([code, path]) => [code, absolute(path)]),
+    );
+    for (const path of Object.values(page.path)) {
+      urls.push(entry(absolute(path), page.updated, '0.3', alternatesFor(pair)));
+    }
   }
 
   return (

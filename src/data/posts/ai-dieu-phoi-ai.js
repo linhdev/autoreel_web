@@ -17,7 +17,7 @@ export default {
   },
   description: {
     vi: 'Dùng AI để điều phối chứ không chỉ để viết chữ: chia việc cho từng engine, kiểm tra kết quả trả về, và bốn chỗ tuyệt đối không để mô hình tự quyết định.',
-    en: 'Using AI to run the pipeline, not only to write copy: splitting work across engines, checking what comes back, and the four things a model must never decide alone.',
+    en: 'Using AI to run the pipeline, not just write copy: splitting work across engines, checking the output, and four things a model must never decide alone.',
   },
   date: '2026-10-10',
   minutes: { vi: 8, en: 8 },

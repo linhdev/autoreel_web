@@ -34,6 +34,60 @@ export const DOWNLOAD_TOOLS = {
       'Dán đoạn mã này vào nơi bạn muốn hiện nút tải video. Khách bấm là sang trang tải của AutoReel; không cần cài gì thêm.',
     embedSnippet: '<div id="autoreel-download"></div>\n<script src="https://autoreelvn.com/embed.js" async></script>',
     embedNote: 'Xem trước bên dưới. Nút mở trang tải trong tab mới.',
+    sections: [
+      {
+        h2: 'Khi nào bookmarklet hợp hơn dán link',
+        paragraphs: [
+          'Bạn đang xem một video và không muốn copy link rồi mở tab khác. Bookmarklet lấy địa chỉ hiện tại và mở công cụ với link đã điền sẵn.',
+          'Nếu bạn có nhiều link cần tải một lần, dán trực tiếp vào trang tải nhanh hơn: một lần dán, tối đa năm link.',
+        ],
+        bullets: [
+          'Đang xem video trên máy tính: dùng bookmarklet.',
+          'Tải nhiều link cùng lúc: mở trang tải và dán.',
+          'Trên điện thoại: tạo bookmark thủ công hoặc dán link.',
+          'Trên blog hoặc shop: nhúng nút tải.',
+        ],
+      },
+      {
+        h2: 'Nhúng nút tải vào blog hoặc shop',
+        paragraphs: [
+          'Đoạn nhúng là một thẻ div và một script công khai. Khách bấm là sang trang tải của AutoReel; bạn không cần tài khoản, không cần giữ file, không cần API key.',
+          'Nên đặt ở cuối bài hướng dẫn, cạnh video, hoặc trên trang sản phẩm nơi khách có thể muốn lưu nội dung.',
+        ],
+        bullets: [
+          'Không lưu dữ liệu khách trên blog của bạn.',
+          'Nút mở tab mới; kiểm tra lại trên điện thoại.',
+          'Không dùng để tải nội dung riêng tư.',
+          'Không cần cài thêm thư viện.',
+        ],
+      },
+      {
+        h2: 'Giới hạn của bookmarklet',
+        paragraphs: [
+          'Bookmarklet chỉ đọc địa chỉ trang đang mở, không đọc nội dung trang và không chạy nền. Nếu trình duyệt chặn javascript:, hãy dán link thủ công.',
+        ],
+        bullets: [
+          'Không hoạt động trên trang chặn javascript:.',
+          'Không tải được video cần đăng nhập.',
+          'Không bỏ qua giới hạn 20 phút hoặc 95MB.',
+          'Không phải tiện ích cài đặt, không cần quyền.',
+        ],
+      },
+      {
+        h2: 'Khi nào không nên dùng bookmarklet',
+        paragraphs: [
+          'Nếu bạn cần tải cả kênh hoặc nhiều video từ một danh sách, mở từng video rồi bấm bookmark là quá chậm. Dùng trang tải với danh sách link, hoặc lấy danh sách kênh rồi xử lý theo lô.',
+          'Bookmarklet không lưu lịch sử, không tạo tài khoản và không gửi link đến đâu ngoài trang tải. Nếu bạn không muốn cài bất cứ thứ gì, đây là cách nhẹ nhất.',
+          'Nó là một bookmark, không phải dịch vụ chạy nền: chỉ chạy khi bạn bấm, và trình duyệt có thể xoá nó như mọi bookmark khác.',
+        ],
+        bullets: [
+          'Cần tải cả kênh: dùng tính năng link từ kênh trong app.',
+          'Cần tải 5 link: dán vào trang tải.',
+          'Cần tải video riêng tư: không công cụ nào làm được.',
+          'Cần file gốc: trang chỉ trả bản công khai.',
+        ],
+      },
+    ],
     faqTitle: 'Câu hỏi thường gặp',
     faq: [
       ['Bookmarklet có an toàn không?', 'Nó chỉ đọc địa chỉ trang đang mở và mở autoreelvn.com/downloads với link đó. Không đọc nội dung trang, không gửi gì đi nơi khác.'],
@@ -73,6 +127,60 @@ export const DOWNLOAD_TOOLS = {
       'Paste this snippet where the download button should appear. A click takes the visitor to the AutoReel downloader; there is nothing else to install.',
     embedSnippet: '<div id="autoreel-download"></div>\n<script src="https://autoreelvn.com/embed.js" async></script>',
     embedNote: 'Preview below. The button opens the downloader in a new tab.',
+    sections: [
+      {
+        h2: 'When the bookmarklet beats pasting a link',
+        paragraphs: [
+          'You are watching a video and do not want to copy the link and open another tab. The bookmarklet reads the current address and opens the tool with the link already filled in.',
+          'If you have several links to fetch at once, pasting them into the downloader is faster: one paste, up to five links.',
+        ],
+        bullets: [
+          'Watching on a desktop: use the bookmarklet.',
+          'Fetching several links: open the downloader and paste.',
+          'On a phone: create the bookmark manually or paste the link.',
+          'On a blog or shop: embed the button.',
+        ],
+      },
+      {
+        h2: 'Embedding the button on a blog or shop',
+        paragraphs: [
+          'The embed is one div and one public script. A click takes the visitor to the AutoReel downloader; you need no account, no file storage and no API key.',
+          'Put it at the end of a guide, beside a video, or on a product page where a visitor may want to keep the content.',
+        ],
+        bullets: [
+          'It does not store visitor data on your blog.',
+          'The button opens a new tab; test it on a phone.',
+          'Do not use it for private content.',
+          'No extra library to install.',
+        ],
+      },
+      {
+        h2: 'Bookmarklet limits',
+        paragraphs: [
+          'The bookmarklet reads only the address of the open page; it does not read page content and does not run in the background. If the browser blocks javascript:, paste the link manually.',
+        ],
+        bullets: [
+          'It does not work on pages that block javascript:.',
+          'It cannot fetch login-only videos.',
+          'It does not bypass the 20-minute or 95MB limit.',
+          'It is not an extension and needs no permissions.',
+        ],
+      },
+      {
+        h2: 'When not to use the bookmarklet',
+        paragraphs: [
+          'If you need a whole channel or a list of videos, opening each one and pressing a bookmark is too slow. Use the downloader with a list of links, or pull the channel list and process it in a batch.',
+          'It stores no history, creates no account and sends the link nowhere except the downloader. If you do not want to install anything, it is the lightest option.',
+          'It is a bookmark, not a background service: it runs only when you press it, and the browser can delete it like any other bookmark.',
+        ],
+        bullets: [
+          'A whole channel: use the channel-link feature in the app.',
+          'Five links: paste them into the downloader.',
+          'A private video: no tool can fetch it.',
+          'The original master file: the page returns the public copy only.',
+        ],
+      },
+    ],
     faqTitle: 'Frequently asked questions',
     faq: [
       ['Is the bookmarklet safe?', 'It reads the address of the page you are on and opens autoreelvn.com/downloads with that link. It does not read page content or send anything elsewhere.'],

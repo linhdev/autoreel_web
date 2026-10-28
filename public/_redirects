@@ -6,3 +6,5 @@
 # HTML file, and a catch-all would answer every typo with the home page and a
 # 200 — the soft-404 farm that dist/404.html exists to prevent.
 /vi/*  /:splat  301
+# The wildcard needs a slash after `/vi` to match, so the bare prefix was a 404.
+/vi  /  301

@@ -62,13 +62,15 @@ const missing = required.filter((token) => !html.includes(token));
 const enHtml = renderToString(<App initialPath="/en/pricing/" />);
 
 const enRequired = [
-  'Create video in bulk.',
+  // The pricing route is its own page now: own H1, pricing table and its own
+  // pricing questions. It deliberately does not render the home hero, the
+  // proof section or the home FAQ accordion.
+  'Pick the plan that',
   pricingSection.en.headline,
   'Choose Personal',
   'Coming soon',
   'Notify me',
-  'Frequently asked questions',
-  'Videos created',
+  'Pricing questions',
   formatMoney(personalEn.priceValue, 'en', usdCentsFor(personalEn)),
 ];
 const enMissing = enRequired.filter((token) => !enHtml.includes(token));

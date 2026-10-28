@@ -14,6 +14,7 @@ import { DOWNLOADS, QUICK, downloads } from '../src/data/downloads.js';
 import { PLATFORM_PAGES } from '../src/data/downloadPlatforms.js';
 import { USE_CASE_PAGES } from '../src/data/downloadUseCases.js';
 import { REFERENCE_PAGE } from '../src/data/referencePage.js';
+import { STATIC_PAGES } from '../src/data/staticPages.js';
 import { resolveDocImage } from './lib/docs-images.mjs';
 import { postContentProblems } from './lib/post-rules.mjs';
 import {
@@ -41,6 +42,16 @@ const pass = (msg) => checks.push({ ok: true, msg });
 const fail = (msg) => checks.push({ ok: false, msg });
 
 const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
+
+/** Visible text of an HTML fragment, with scripts, styles and tags removed. */
+const textOf = (html) =>
+  html
+    .replace(/<script[\s\S]*?<\/script>/g, ' ')
+    .replace(/<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
 async function exists(p) {
   try {
@@ -314,6 +325,7 @@ async function main() {
   const bundle = html.match(/assets\/index-[\w-]+\.js/)?.[0];
   if (!bundle) fail('index.html does not reference a hashed JS bundle');
 
+  const seenH1 = new Map();
   for (const route of routes) {
     for (const lang of LOCALES) {
       const slug = route.slug[lang];
@@ -328,6 +340,31 @@ async function main() {
       const page = await readFile(file, 'utf8');
       const wantUrl = absolute(slug);
       const problems = [];
+
+      // ---- The prerender, which is the whole point of this pass ----
+      //
+      // A route file used to be a shell: correct head, empty `<body>`. A
+      // crawler that does not execute JavaScript saw nothing. These checks
+      // assert that each file now carries its own rendered page, exactly one
+      // headline, and that no two routes share that headline.
+      const bodyMatch = page.match(/<body[^>]*>([\s\S]*)<\/body>/);
+      const bodyText = bodyMatch ? textOf(bodyMatch[1]) : '';
+      if (bodyText.length < 1500) {
+        problems.push(`prerendered body only ${bodyText.length} chars`);
+      }
+
+      const h1s = [...page.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => textOf(m[1]));
+      const heroCopy = route.hero?.[lang] || hero[lang];
+      const wantH1 = `${heroCopy.headlineLine1} ${heroCopy.headlineLine2}`;
+      if (h1s.length !== 1) {
+        problems.push(`${h1s.length} <h1> tags`);
+      } else if (h1s[0] !== wantH1) {
+        problems.push(`H1 is "${h1s[0].slice(0, 60)}" not "${wantH1.slice(0, 60)}"`);
+      } else {
+        const previous = seenH1.get(h1s[0]);
+        if (previous) problems.push(`H1 also used by ${previous}`);
+        else seenH1.set(h1s[0], label);
+      }
 
       if (!page.includes(`<html lang="${LOCALE_TAGS[lang].html}">`)) problems.push('lang');
       if (!page.includes(`<title>${route.meta[lang].title}</title>`)) problems.push('title');
@@ -839,6 +876,9 @@ async function main() {
       LOCALES.map((lang) => absolute(page.path[lang]))),
     // The static “make it like this reference” page.
     ...LOCALES.map((lang) => absolute(REFERENCE_PAGE.path[lang])),
+    // Canonical pages that live outside the route table: the legal pair and
+    // the visual install guide.
+    ...STATIC_PAGES.flatMap((page) => Object.values(page.path).map((path) => absolute(path))),
   ]);
   const strays = locs.filter((loc) => !want.has(loc));
   if (locs.length !== want.size) {
@@ -853,6 +893,104 @@ async function main() {
   const unslashed = locs.filter((loc) => !loc.endsWith('/'));
   if (unslashed.length) fail(`sitemap URLs missing a trailing slash: ${unslashed.join(', ')}`);
   else pass('every sitemap URL ends in a slash');
+
+  // ---- Internal links: every one resolves to a file in dist/ ----
+  //
+  // Articles can now write `[label](/path/)` in prose, and a new article is
+  // exactly where a plausible-looking URL that was never built slips through.
+  // Assets are skipped (their extensions are not pages); `/api/*` is served by
+  // the Worker and has no file here.
+  const htmlFiles = files.filter((one) => String(one).endsWith('.html'));
+  const brokenLinks = [];
+  const googleFontPages = [];
+  for (const relative of htmlFiles) {
+    const file = path.join(dist, String(relative));
+    if (!(await exists(file))) continue;
+    const html = await readFile(file, 'utf8');
+    if (html.includes('fonts.googleapis.com')) googleFontPages.push(String(relative));
+    for (const match of html.matchAll(/href="(\/[^"#?]*)"/g)) {
+      let url = match[1];
+      if (url.startsWith('//') || url.startsWith('/api/')) continue;
+      if (/\.(?:png|jpe?g|webp|svg|gif|css|js|woff2?|mp4|webm|txt|xml|webmanifest|ico|json)$/i.test(url)) {
+        continue;
+      }
+      if (!url.endsWith('/')) url += '/';
+      const target = url === '/'
+        ? path.join(dist, 'index.html')
+        : path.join(dist, url.slice(1), 'index.html');
+      if (!(await exists(target))) brokenLinks.push(`${url} (from ${relative})`);
+    }
+  }
+  if (brokenLinks.length) {
+    fail(`internal links with no page: ${[...new Set(brokenLinks)].slice(0, 8).join('; ')}`);
+  } else {
+    pass(`every internal link resolves (${htmlFiles.length} HTML file(s))`);
+  }
+
+  // Every JSON-LD block must parse. A stray `</script>` or an unescaped `<` in
+  // a title is invisible to the string checks above and fatal to the parser.
+  const badLd = [];
+  for (const relative of htmlFiles) {
+    const file = path.join(dist, String(relative));
+    if (!(await exists(file))) continue;
+    const html = await readFile(file, 'utf8');
+    for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+      try {
+        JSON.parse(match[1]);
+      } catch (error) {
+        badLd.push(`${relative}: ${error.message}`);
+      }
+    }
+  }
+  if (badLd.length) fail(`invalid JSON-LD: ${badLd.slice(0, 5).join('; ')}`);
+  else pass('every JSON-LD block parses');
+
+  // Self-hosted fonts: a page that still points at Google Fonts is a page that
+  // pays for an extra DNS lookup and TLS handshake before its headline paints.
+  if (googleFontPages.length) {
+    fail(`pages still load Google Fonts: ${googleFontPages.slice(0, 6).join(', ')}`);
+  } else {
+    pass('no page loads Google Fonts');
+  }
+  for (const font of ['inter-latin.woff2', 'inter-vietnamese.woff2']) {
+    if (!(await exists(path.join(dist, 'fonts', font)))) fail(`missing /fonts/${font}`);
+  }
+
+  // The sitemap's alternates must include x-default, exactly one per URL.
+  const xDefaults = (map.match(/hreflang="x-default"/g) || []).length;
+  if (xDefaults !== locs.length) {
+    fail(`sitemap has ${xDefaults} x-default alternates for ${locs.length} URLs`);
+  } else {
+    pass(`sitemap has one x-default per URL (${xDefaults})`);
+  }
+
+  // The two files that make a deploy discoverable without a dashboard login.
+  const robotsFile = path.join(dist, 'robots.txt');
+  const robotsText = (await exists(robotsFile)) ? await readFile(robotsFile, 'utf8') : '';
+  if (!robotsText.includes('GPTBot') || !robotsText.includes('OAI-SearchBot')) {
+    fail('robots.txt does not name the AI search crawlers');
+  } else {
+    pass('robots.txt allows AI search crawlers');
+  }
+  for (const file of ['llms.txt', '3100178b07d989fa101e82cbae4e54de.txt']) {
+    if (!(await exists(path.join(dist, file)))) fail(`missing /${file}`);
+  }
+
+  // A build without a sitekey used to fall back to Cloudflare's "always
+  // passes" test key. That widget reads "For testing only. If seen, report to
+  // site owner", and the production secret refuses the tokens it produces —
+  // so the download form fails after the visitor solves it. Local builds may
+  // opt into that key, but it must never reach a deploy.
+  const testKeyPages = [];
+  for (const relative of htmlFiles) {
+    const page = await readFile(path.join(dist, String(relative)), 'utf8');
+    if (page.includes('1x00000000000000000000AA')) testKeyPages.push(String(relative));
+  }
+  if (testKeyPages.length) {
+    fail(`Turnstile test sitekey in ${testKeyPages.join(', ')}`);
+  } else {
+    pass('no Turnstile test sitekey');
+  }
 
   // ---- Report ----
   console.log('\nBuild verification\n==================');

@@ -40,7 +40,11 @@ export default function Reveal({
   return (
     <Tag
       className={className}
-      initial={{ opacity: 0, y }}
+      // Visible from the start; only the offset animates. A prerendered page
+      // whose below-fold text is `opacity: 0` is a page a non-rendering crawler
+      // can still parse but a reader sees as blank, and Google's own guidance
+      // treats hidden text as hidden. The slide is enough motion.
+      initial={{ opacity: 1, y }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={VIEWPORT}
       transition={{ duration, delay, ease: EASE }}
@@ -57,7 +61,7 @@ const staggerParent = {
 };
 
 const staggerChild = {
-  hidden: { opacity: 0, y: 22 },
+  hidden: { opacity: 1, y: 22 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE } },
 };
 

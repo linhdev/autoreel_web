@@ -11,7 +11,7 @@
       content="AutoReel giúp Affiliate và Creator tạo, xử lý và đăng video tự động lên Shopee và Facebook/Reels trong một workflow."
     />
     <link rel="canonical" href="https://autoreelvn.com/" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="AutoReel" />
 
     <!-- Open Graph -->
@@ -31,6 +31,7 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="AutoReel — AI Content Automation Platform" />
+    <meta name="twitter:image:alt" content="AutoReel — AI Content Automation Platform" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -52,12 +53,21 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Fonts: preconnect + swap keeps first paint fast -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts: self-hosted subsets, preloaded so the headline paints in Inter
+         rather than swapping after first paint. -->
     <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400..900&display=swap"
+      rel="preload"
+      href="/fonts/inter-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/inter-vietnamese.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
 
     <!-- Paint the dark base before CSS loads (no white flash) -->
@@ -69,6 +79,18 @@
         color: #f8faff;
       }
     </style>
+    <!-- A safety net for any element that still starts hidden. The hero and
+         the scroll reveals now render visible, because hidden text in a
+         prerendered page is text a non-rendering crawler may discount. -->
+    <noscript>
+      <style>
+        [style*="opacity:0"],
+        [style*="opacity: 0"] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
 
     <script type="application/ld+json">
       {

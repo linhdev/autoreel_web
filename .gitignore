@@ -18,6 +18,9 @@ yarn-debug.log*
 yarn-error.log*
 *.log
 
+# Lighthouse reports from local runs
+.lh-*.json
+
 # Editor / OS
 .vscode/*
 !.vscode/extensions.json

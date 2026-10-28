@@ -29,7 +29,7 @@ export default {
   title: { vi: 'Bảo trì và khắc phục sự cố', en: 'Maintenance and troubleshooting' },
   description: {
     vi: 'Giữ AutoReel chạy êm: khởi động lại app bằng nút trong sidebar hoặc trên Docker Desktop, dọn đĩa, sao lưu dữ liệu, và cách xử lý bảy lỗi hay gặp.',
-    en: 'Keeping AutoReel running: restarting it from the sidebar button or Docker Desktop, clearing disk space, backing up, and what to do about the seven failures people hit.',
+    en: 'Keeping AutoReel running: restarting it from the sidebar or Docker Desktop, clearing disk space, backing up, and the seven failures people hit.',
   },
   lead: {
     vi: 'Phần lớn sự cố của AutoReel là sự cố của **Docker Desktop** — thứ chạy bên dưới nó. Bài này nói về việc bảo trì định kỳ, cách khởi động lại, và những lỗi gặp nhiều nhất.',

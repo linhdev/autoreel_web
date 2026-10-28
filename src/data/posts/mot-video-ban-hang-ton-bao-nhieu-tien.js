@@ -165,7 +165,7 @@ export default {
       },
       {
         q: 'Khi nào thì nên để máy làm thay phần dựng?',
-        a: 'Khi bạn đã có công thức rõ cho video của mình và phần dựng ăn mất nhiều thời gian hơn phần nghĩ nội dung. AutoReel chạy trên máy bạn: từ link sản phẩm hoặc video có sẵn, nó viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
+        a: 'Khi bạn đã có công thức rõ cho video của mình và phần dựng ăn mất nhiều thời gian hơn phần nghĩ nội dung. AutoReel chạy trên máy bạn: từ link sản phẩm hoặc video có sẵn, nó viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -183,7 +183,7 @@ export default {
       },
       {
         q: 'When should I let a tool handle the editing?',
-        a: 'When your videos already follow a clear formula and editing takes longer than thinking up the content. AutoReel runs on your own machine: from a product link or an existing video it writes the script, voices it in Vietnamese, builds the video, and adds subtitles and branding. From $6.12 a month, or $57.31 once and keep it; AI or API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
+        a: 'When your videos already follow a clear formula and editing takes longer than thinking up the content. AutoReel runs on your own machine: from a product link or an existing video it writes the script, voices it in Vietnamese, builds the video, and adds subtitles and branding. From $6.99 a month, or $61.99 once and keep it; AI or API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
       },
     ],
   },

@@ -43,7 +43,7 @@ export default {
       { h2: 'Xếp theo năm tiêu chí thì phần mềm chỉ thắng khi bạn cần số lượng' },
       {
         ul: [
-          'Chi phí ban đầu. Làm tay gần như bằng không, nhưng bạn trả bằng thời gian. Phần mềm thì thuê theo tháng — gói Edit 159.000đ, Creator 199.000đ, Full 259.000đ — hoặc mua đứt để dùng vĩnh viễn: gói Personal 1.490.000đ, gói Team 3.990.000đ. Một số API bên thứ ba, ví dụ API AI bạn chọn, có thể tốn thêm phí theo mức dùng.',
+          'Chi phí ban đầu. Làm tay gần như bằng không, nhưng bạn trả bằng thời gian. Phần mềm thì thuê theo tháng — gói Edit 99.000đ, Creator 199.000đ, Full 259.000đ — hoặc mua đứt để dùng vĩnh viễn: gói Personal 1.490.000đ, gói Team 3.990.000đ. Một số API bên thứ ba, ví dụ API AI bạn chọn, có thể tốn thêm phí theo mức dùng.',
           'Thời gian mỗi video. Làm tay tính bằng giờ cho tới khi quen tay. Dùng phần mềm thì khâu dựng còn vài phút, thời gian còn lại dồn cho chọn sản phẩm và duyệt nội dung.',
           'Số video làm được mỗi ngày. Làm tay phụ thuộc sức bạn, thường dừng ở vài video. Dùng phần mềm thì giới hạn thật nằm ở nền tảng chứ không ở phần mềm — ví dụ Facebook chỉ cho 30 Reels mỗi Page trong 24 giờ.',
           'Chất lượng và độ đều. Làm tay cho ra video hay nhất và video dở nhất cách nhau khá xa, nhất là hôm bạn mệt. Dùng phần mềm thì đều hơn, nhưng cái đều đó chỉ tốt khi bạn đã đặt đúng template và đúng tiêu chuẩn.',
@@ -85,7 +85,7 @@ export default {
       { h2: 'On five measures, software only wins when you need volume' },
       {
         ul: [
-          'Upfront cost. By hand is close to free, but you pay in hours. Software is either rented — Edit 159.000₫, Creator 199.000₫, Full 259.000₫ a month — or bought once and kept: Personal 1.490.000₫, Team 3.990.000₫. That is from about $6.12 a month, or $57.31 once. A third-party API, such as the AI provider you choose, can add a small charge based on usage.',
+          'Upfront cost. By hand is close to free, but you pay in hours. Software is either rented — Edit 99.000₫, Creator 199.000₫, Full 259.000₫ a month — or bought once and kept: Personal 1.490.000₫, Team 3.990.000₫. That is from about $6.99 a month, or $61.99 once. A third-party API, such as the AI provider you choose, can add a small charge based on usage.',
           'Time per video. By hand it is measured in hours until you get practised. With software the building takes minutes, and the remaining time goes to choosing products and approving content.',
           'Videos per day. By hand it depends on your stamina and usually stops at a handful. With software the real limit is the platform, not the tool — Facebook allows 30 Reels per Page in 24 hours, for example.',
           'Quality and consistency. By hand, your best video and your worst sit far apart, especially on a tired day. Software is more even, but that evenness only helps once the templates and the standard are right.',
@@ -119,7 +119,7 @@ export default {
       },
       {
         q: 'Chi phí thật khi dùng AutoReel là bao nhiêu?',
-        a: 'Thuê theo tháng: gói Edit 159.000đ, Creator 199.000đ, Full 259.000đ. Hoặc mua đứt để dùng vĩnh viễn: gói Personal 1.490.000đ, gói Team 3.990.000đ. Một số API bên thứ ba, ví dụ API AI bạn chọn, có thể tốn thêm phí theo mức dùng.',
+        a: 'Thuê theo tháng: gói Edit 99.000đ, Creator 199.000đ, Full 259.000đ. Hoặc mua đứt để dùng vĩnh viễn: gói Personal 1.490.000đ, gói Team 3.990.000đ. Một số API bên thứ ba, ví dụ API AI bạn chọn, có thể tốn thêm phí theo mức dùng.',
       },
       {
         q: 'Tôi làm ít video thì có nên mua phần mềm không?',
@@ -137,7 +137,7 @@ export default {
       },
       {
         q: 'What does AutoReel actually cost?',
-        a: 'Monthly: Edit 159.000₫, Creator 199.000₫, Full 259.000₫ — from about $6.12 a month. Or buy once and keep it: Personal 1.490.000₫, Team 3.990.000₫ — $57.31 and up. A third-party API, such as the AI provider you choose, can add usage-based charges.',
+        a: 'Monthly: Edit 99.000₫, Creator 199.000₫, Full 259.000₫ — from about $6.99 a month. Or buy once and keep it: Personal 1.490.000₫, Team 3.990.000₫ — $61.99 and up. A third-party API, such as the AI provider you choose, can add usage-based charges.',
       },
       {
         q: 'I only make a few videos. Should I buy software at all?',

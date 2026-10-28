@@ -5,6 +5,7 @@ import {
   buyPlansHref,
   checkoutHref,
   formatMoney,
+  formatUsdCents,
   paybackMonths,
   planById,
   savingFor,
@@ -31,7 +32,12 @@ import Reveal, { RevealGroup, RevealItem } from '../ui/Reveal.jsx';
  */
 function asideFor(plan, { saveTemplate, paybackTemplate }, lang, lookup) {
   const saving = savingFor(plan, lang, lookup);
-  if (saving) return saveTemplate.replace('{amount}', formatMoney(saving, lang));
+  if (saving) {
+    // `savingFor` returns cents on the English page and đồng on the Vietnamese
+    // one, so each language formats the unit it was actually given.
+    const amount = lang === 'en' ? formatUsdCents(saving) : formatMoney(saving, lang);
+    return saveTemplate.replace('{amount}', amount);
+  }
   const months = paybackMonths(plan, lang, lookup);
   if (months) return paybackTemplate.replace('{months}', String(months));
   return '';

@@ -17,7 +17,7 @@ export default {
   },
   description: {
     vi: 'Sản phẩm thương mại đứng trên mã nguồn mở: giấy phép thật ra yêu cầu gì, cái giá phi tiền của một thư viện, và năm cách trả lại khi bạn không có tiền.',
-    en: 'A commercial product standing on open source: what a licence actually asks of you, what a dependency costs in time rather than money, and five ways to give back.',
+    en: 'What an open-source licence actually asks of a commercial product, why a dependency costs time rather than money, and five ways to give back.',
   },
   date: '2026-10-10',
   minutes: { vi: 7, en: 7 },

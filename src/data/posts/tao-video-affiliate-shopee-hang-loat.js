@@ -16,7 +16,7 @@ export default {
   },
   description: {
     vi: 'Từ danh sách link sản phẩm tới cả loạt video: chuẩn bị gì trước, ba tiêu chí chọn sản phẩm, cấu trúc ba phần của video bán được, và lỗi lặp đủ cả loạt.',
-    en: 'From a list of product links to a finished batch: what to prepare first, how to pick products, the three parts of a video that sells, and the mistakes that repeat.',
+    en: 'From a list of product links to a finished batch: what to prepare, how to pick products, the three parts of a selling video, and the mistakes that repeat.',
   },
   date: '2026-10-10',
   minutes: { vi: 5, en: 5 },
@@ -117,7 +117,7 @@ export default {
       },
       {
         q: 'AutoReel thuê theo tháng hay mua đứt, và giá bao nhiêu?',
-        a: 'Có cả hai. Thuê theo tháng từ 159.000đ — Edit 159.000đ, Creator 199.000đ, Full 259.000đ một tháng — hoặc mua đứt 1.490.000đ (Personal) hay 3.990.000đ (Team) để dùng vĩnh viễn, không gia hạn. Một số dịch vụ bên thứ ba như giọng đọc có thể tính phí theo mức bạn dùng. Cần hỏi thêm thì nhắn Zalo hoặc WhatsApp 0326012999.',
+        a: 'Có cả hai. Thuê theo tháng từ 99.000đ — Edit 99.000đ, Creator 199.000đ, Full 259.000đ một tháng — hoặc mua đứt 1.490.000đ (Personal) hay 3.990.000đ (Team) để dùng vĩnh viễn, không gia hạn. Một số dịch vụ bên thứ ba như giọng đọc có thể tính phí theo mức bạn dùng. Cần hỏi thêm thì nhắn Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -135,7 +135,7 @@ export default {
       },
       {
         q: 'Is AutoReel a monthly plan or a one-off purchase?',
-        a: 'Both. From $6.12 a month — Edit, Creator at $7.65, Full at $9.96 — or $57.31 once and keep it (Personal), or $153.46 for Team. Some third-party services, such as the voices, may charge by how much you use them. For anything else, message Zalo or WhatsApp on 0326012999.',
+        a: 'Both. From $6.99 a month — Edit, Creator at $8.49, Full at $10.99 — or $61.99 once and keep it (Personal), or $153.46 for Team. Some third-party services, such as the voices, may charge by how much you use them. For anything else, message Zalo or WhatsApp on 0326012999.',
       },
     ],
   },

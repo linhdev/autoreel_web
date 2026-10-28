@@ -1,6 +1,6 @@
-import { m, useReducedMotion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useCopy } from '../../i18n/copy.jsx';
-import { Link, useHref } from '../../i18n/router.jsx';
+import { Link, useHref, useRouter } from '../../i18n/router.jsx';
 import Icon from '../ui/Icon.jsx';
 import RichText from '../ui/RichText.jsx';
 import HeroVisual from './HeroVisual.jsx';
@@ -18,10 +18,11 @@ const item = {
 };
 
 export default function Hero() {
-  const prefersReduced = useReducedMotion();
-  const play = prefersReduced ? false : 'show';
   const href = useHref();
+  const { lang, route } = useRouter();
   const { hero } = useCopy();
+  // A section route carries its own headline; home keeps the one in `site.js`.
+  const copy = route.hero?.[lang] || hero;
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-title">
@@ -31,33 +32,32 @@ export default function Hero() {
       <div className="ar-aurora ar-aurora-3" aria-hidden="true" />
 
       <div className="ar-container ar-hero">
-        <m.div
-          variants={container}
-          initial={prefersReduced ? false : 'hidden'}
-          animate={play}
-        >
+        {/* `initial={false}` is deliberate: the prerendered HTML must show the
+            headline, not an opacity-0 element waiting for JavaScript. The hero
+            is the LCP on every route, so there is nothing to animate in. */}
+        <m.div variants={container} initial={false} animate="show">
           <m.div variants={item}>
             <span className="ar-badge">
               <Icon name="Sparkles" size={14} />
-              {hero.badge}
+              {copy.badge}
             </span>
           </m.div>
 
           <m.h1 id="hero-title" variants={item}>
-            {hero.headlineLine1}
+            {copy.headlineLine1}
             <br />
-            <span className="ar-gradient-text">{hero.headlineLine2}</span>
+            <span className="ar-gradient-text">{copy.headlineLine2}</span>
           </m.h1>
 
           <m.p className="ar-hero-lede" variants={item}>
             {/* One sentence with `**` around the two phrases that stay bold.
                 The words used to arrive pre-split into five fields, which only
                 worked while the sentence was Vietnamese — see RichText.jsx. */}
-            <RichText text={hero.subheadline} tag="strong" />
+            <RichText text={copy.subheadline} tag="strong" />
           </m.p>
 
           <m.p className="ar-hero-lede mt-4" variants={item}>
-            <strong>{hero.support}</strong>
+            <strong>{copy.support}</strong>
           </m.p>
 
           <m.div className="my-7 flex flex-wrap gap-3 max-[680px]:flex-col" variants={item}>

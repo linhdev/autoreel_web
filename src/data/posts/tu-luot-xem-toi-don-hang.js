@@ -178,7 +178,7 @@ export default {
       },
       {
         q: 'AutoReel giúp được gì ở phần này?',
-        a: 'Nó làm phần lặp lại: viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện, rồi đăng lên Shopee Video hoặc Facebook/Reels. Phần chọn sản phẩm, viết lời mời và trả lời bình luận vẫn là việc của bạn — và đó cũng chính là những chỗ quyết định đơn. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
+        a: 'Nó làm phần lặp lại: viết kịch bản, đọc lời tiếng Việt, dựng video, thêm phụ đề và bộ nhận diện, rồi đăng lên Shopee Video hoặc Facebook/Reels. Phần chọn sản phẩm, viết lời mời và trả lời bình luận vẫn là việc của bạn — và đó cũng chính là những chỗ quyết định đơn. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -196,7 +196,7 @@ export default {
       },
       {
         q: 'What does AutoReel do on this side?',
-        a: 'It handles the repetitive part: writing the script, voicing it in Vietnamese, building the video, adding subtitles and branding, then posting to Shopee Video or Facebook/Reels. Picking products, writing the invitation and answering comments stay with you — and those are exactly the places where orders are decided. From $6.12 a month, or $57.31 once and keep it. Ask on Zalo or WhatsApp 0326012999.',
+        a: 'It handles the repetitive part: writing the script, voicing it in Vietnamese, building the video, adding subtitles and branding, then posting to Shopee Video or Facebook/Reels. Picking products, writing the invitation and answering comments stay with you — and those are exactly the places where orders are decided. From $6.99 a month, or $61.99 once and keep it. Ask on Zalo or WhatsApp 0326012999.',
       },
     ],
   },

@@ -162,7 +162,7 @@ export default {
       },
       {
         q: 'Có cách nào làm được nhiều video hơn trong cùng một buổi không?',
-        a: 'Có, nhưng phải xếp theo năng lực thật. AutoReel chạy trên máy Windows hoặc macOS của bạn, dữ liệu từng khách nằm trên máy bạn chứ không đẩy lên máy chủ nào, và mỗi lô tới 30 video. Bản Personal mua đứt chạy một job một lúc, nên nhận vượt sức thường kết thúc bằng việc mất cả khách lẫn uy tín. Thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
+        a: 'Có, nhưng phải xếp theo năng lực thật. AutoReel chạy trên máy Windows hoặc macOS của bạn, dữ liệu từng khách nằm trên máy bạn chứ không đẩy lên máy chủ nào, và mỗi lô tới 30 video. Bản Personal mua đứt chạy một job một lúc, nên nhận vượt sức thường kết thúc bằng việc mất cả khách lẫn uy tín. Thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn; chi phí AI/API trả riêng cho nhà cung cấp. Hỏi thêm ở Zalo hoặc WhatsApp 0326012999.',
       },
     ],
     en: [
@@ -184,7 +184,7 @@ export default {
       },
       {
         q: 'Can I get more videos done in one sitting?',
-        a: 'Yes, but only if you schedule against your real capacity. AutoReel runs on your own Windows or macOS machine, each client’s files stay on your machine rather than being uploaded to a server, and one batch can hold up to 30 videos. The Personal buyout licence runs one job at a time, so overcommitting usually ends with losing the client and the reputation. From $6.12 a month, or $57.31 once and keep it; AI and API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
+        a: 'Yes, but only if you schedule against your real capacity. AutoReel runs on your own Windows or macOS machine, each client’s files stay on your machine rather than being uploaded to a server, and one batch can hold up to 30 videos. The Personal buyout licence runs one job at a time, so overcommitting usually ends with losing the client and the reputation. From $6.99 a month, or $61.99 once and keep it; AI and API usage is paid separately to the provider. Ask on Zalo or WhatsApp 0326012999.',
       },
     ],
   },

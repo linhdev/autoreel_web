@@ -19,6 +19,7 @@ export default {
     en: 'Which frame for each place you post: why 9:16 is the default, how text gets cut when the frame changes, and how to shoot once for every crop.',
   },
   date: '2026-10-10',
+  updated: '2026-10-28',
   minutes: { vi: 7, en: 7 },
   tag: {
     vi: 'Hướng dẫn',
@@ -79,6 +80,9 @@ export default {
     },
     {
       note: 'Đừng lấy một bản dọc rồi cắt ra bản vuông cho xong. Cách đó luôn làm mất phần rìa, mà rìa lại đúng là chỗ chữ và logo hay nằm. Nếu bạn cần hai bản cho hai nơi, hãy dựng bản thứ hai cho đúng khung của nó, với chữ và logo đặt lại theo khung đó.',
+    },
+    {
+      p: 'Khi nguồn là video dọc có sẵn, bạn có thể tải về để dựng lại từ [TikTok](/tai-video-tiktok/), [Douyin](/tai-video-douyin/), [YouTube](/tai-video-youtube/) hoặc [Bilibili](/tai-video-bilibili/). Kiểm tra quyền sử dụng trước khi đăng lại; tải được không có nghĩa là được phép đăng.',
     },
     {
       h2: 'Khung ngang đúng khi nội dung vốn đã nằm ngang',
@@ -143,6 +147,9 @@ export default {
     },
     {
       note: 'Do not take the vertical cut and crop a square out of it to be done with it. That always loses the edges, and the edges are exactly where the text and the logo live. If you need two versions for two places, build the second one for its own frame, with the text and the logo laid out for that frame.',
+    },
+    {
+      p: 'When the source is already a vertical video, you can download it to rebuild from [TikTok](/en/download-tiktok/), [Douyin](/en/download-douyin/), [YouTube](/en/download-youtube/) or [Bilibili](/en/download-bilibili/). Check the usage rights before reposting; being able to download is not permission to publish.',
     },
     {
       h2: 'Horizontal is right when the content was horizontal to begin with',

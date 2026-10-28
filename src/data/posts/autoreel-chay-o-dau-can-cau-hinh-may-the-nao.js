@@ -8,8 +8,8 @@ export default {
     en: 'Where the software runs, and what your machine needs',
   },
   description: {
-    vi: 'Phần mềm tạo video tự động chạy ngay trên máy Windows hoặc macOS của bạn: video và dữ liệu nằm tại chỗ, thuê từ 159.000đ/tháng hoặc mua đứt dùng vĩnh viễn.',
-    en: 'The software runs on your own Windows or macOS computer: your footage and your data stay there. From $6.12 a month, or $57.31 once and keep it.',
+    vi: 'Phần mềm tạo video tự động chạy ngay trên máy Windows hoặc macOS của bạn: video và dữ liệu nằm tại chỗ, thuê từ 99.000đ/tháng hoặc mua đứt dùng vĩnh viễn.',
+    en: 'The software runs on your own Windows or macOS computer: your footage and your data stay there. From $6.99 a month, or $61.99 once and keep it.',
   },
   date: '2026-10-10',
   minutes: { vi: 5, en: 5 },
@@ -31,7 +31,7 @@ export default {
         ul: [
           'Dữ liệu ở lại chỗ bạn: video, ảnh và kịch bản không rời khỏi máy, bạn không phải tin vào lời hứa của một dịch vụ nào.',
           'Không phụ thuộc đường truyền: khâu dựng vẫn chạy khi mạng nhà bạn yếu. Chỉ lúc đăng bài mới thật sự cần internet.',
-          'Bạn chọn cách trả: thuê theo tháng từ 159.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Dữ liệu vẫn nằm trên máy bạn, không nằm trong một tài khoản thuê bao.',
+          'Bạn chọn cách trả: thuê theo tháng từ 99.000đ, hoặc mua đứt 1.490.000đ dùng vĩnh viễn. Dữ liệu vẫn nằm trên máy bạn, không nằm trong một tài khoản thuê bao.',
           'Video nặng không phải chờ tải lên rồi tải về: mỗi lần đẩy một file vài trăm MB qua mạng là một lần bạn mất thời gian mà không làm được gì khác.',
           'Thành phẩm nằm sẵn trên máy: muốn đăng lại ở đâu, hay sửa lại chỗ nào, bạn cũng có file gốc trong tay.',
         ],
@@ -72,7 +72,7 @@ export default {
         ul: [
           'Your data stays put: video, photos and scripts never leave the machine, so you are not trusting a service to keep its word.',
           'No dependence on your connection: rendering still runs when the home network is weak. Only publishing actually needs the internet.',
-          'You choose how to pay: from $6.12 a month, or $57.31 once and keep it. Either way your data sits on your own machine rather than inside a subscription account.',
+          'You choose how to pay: from $6.99 a month, or $61.99 once and keep it. Either way your data sits on your own machine rather than inside a subscription account.',
           'Large files are never uploaded and downloaded again: pushing a few hundred MB across the network is time you cannot spend on anything else.',
           'The finished file is already on disk: posting it somewhere else, or fixing one shot, is a matter of opening what you already have.',
         ],
