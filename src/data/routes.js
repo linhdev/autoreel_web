@@ -125,6 +125,26 @@ const baseRoutes = [
     },
   },
   {
+    key: 'aiOperations',
+    section: 'ai-operations',
+    // The feature has a name of its own in both languages, so the URL is two
+    // different words rather than one translated slug. Kept under the
+    // `/en/ai-operations/` prefix like every other English page.
+    slug: { vi: '/ai-van-hanh/', en: '/en/ai-operations/' },
+    meta: {
+      vi: {
+        title: 'AI Vận Hành | Chiến dịch tự tìm, dựng, đăng video',
+        description:
+          'Một chiến dịch, một lần bấm: AI Vận Hành tự tìm video, dựng, kiểm, đăng lên Facebook/Reels rồi đo số ở năm mốc và học cho lượt sau.',
+      },
+      en: {
+        title: 'AI Operations | Campaigns that find, build and post',
+        description:
+          'One campaign, one press: AI Operations finds the source, cuts, checks, posts to Facebook/Reels, measures at five checkpoints and learns.',
+      },
+    },
+  },
+  {
     key: 'demo',
     section: 'demo',
     slug: { vi: '/video-demo-thuc-te/', en: '/en/video-demo/' },
@@ -276,6 +296,28 @@ const routePages = {
         subheadline:
           'Three end-to-end flows, twelve single-job screens, Vietnamese voice-over, subtitles, branding, and publishing straight to **Shopee and Facebook/Reels**.',
         support: 'The complete list, with nothing hidden behind a form.',
+      },
+    },
+  },
+  aiOperations: {
+    updated: '2026-10-29',
+    sections: ['deepDive', 'cta'],
+    hero: {
+      vi: {
+        badge: 'AI VẬN HÀNH',
+        headlineLine1: 'Một chiến dịch, một lần bấm.',
+        headlineLine2: 'Tìm, dựng, đăng, đo, rồi học.',
+        subheadline:
+          'AI Vận Hành nhận một chủ đề và **sáu câu trả lời**, rồi chạy cả vòng lặp: tìm nguồn, dựng video, kiểm, đăng lên Page, đo số và mang bài học sang lượt sau.',
+        support: 'Có trong gói Full trở lên; CAPTCHA vẫn do người giải.',
+      },
+      en: {
+        badge: 'AI OPERATIONS',
+        headlineLine1: 'One campaign, one press.',
+        headlineLine2: 'Find, cut, post, measure, learn.',
+        subheadline:
+          'AI Operations takes a topic and **six answers**, then runs the whole loop: find sources, build the video, check it, post to your Page, measure the numbers and carry the lesson into the next run.',
+        support: 'Included in Full and above; a human still solves the CAPTCHA.',
       },
     },
   },

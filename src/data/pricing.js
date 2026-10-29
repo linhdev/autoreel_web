@@ -276,6 +276,7 @@ export const plans = {
         'Đăng Facebook / Reels, nhiều Page cùng lúc',
         'Điều khiển từ Telegram',
         'Trợ lý AI trong app',
+        'AI Vận Hành: chiến dịch tự tìm, dựng, đăng, đo',
         'Nhiều tài khoản, nhiều shop cùng lúc',
         '30 video mỗi lô',
         '1 máy tính',
@@ -295,6 +296,7 @@ export const plans = {
       available: true,
       features: [
         'Tất cả trong Full',
+        'AI Vận Hành trên cả hai máy',
         'Cài trên 2 máy tính',
         'Mỗi máy một hàng đợi riêng',
         'Rẻ hơn mua hai gói Full',
@@ -447,6 +449,7 @@ export const plans = {
         'Post to Facebook / Reels, several Pages at once',
         'Telegram control',
         'The in-app AI assistant',
+        'AI Operations: a campaign that finds, builds, posts and measures',
         'Multiple accounts, several shops at once',
         '30 videos per batch',
         '1 computer',
@@ -466,6 +469,7 @@ export const plans = {
       available: true,
       features: [
         'Everything in Full',
+        'AI Operations on both machines',
         'Install on 2 computers',
         'Each machine has its own job queue',
         'Cheaper than two Full plans',

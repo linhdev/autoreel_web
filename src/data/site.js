@@ -396,6 +396,7 @@ export const footer = {
   vi: {
     links: [
       { label: 'Workflow', to: 'workflow' },
+      { label: 'AI Vận Hành', to: 'aiOperations' },
       { label: 'Demo', to: 'demo' },
       { label: 'Bảng giá', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },
@@ -416,6 +417,7 @@ export const footer = {
   en: {
     links: [
       { label: 'Workflow', to: 'workflow' },
+      { label: 'AI Operations', to: 'aiOperations' },
       { label: 'Demo', to: 'demo' },
       { label: 'Pricing', to: 'pricing' },
       { label: 'FAQ', to: 'faq' },

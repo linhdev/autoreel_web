@@ -1,5 +1,5 @@
 /**
- * The long-form block for the four commercial section routes.
+ * The long-form block for the commercial section routes.
  *
  * These pages already render sections from the one-pager. That made them
  * subsets of the home page — 55–91% of their sentences were identical — so
@@ -11,7 +11,8 @@
  */
 import workflow from './workflow.js';
 import features from './features.js';
+import aiOperations from './aiOperations.js';
 import pricing from './pricing.js';
 import faq from './faq.js';
 
-export const DEEP_DIVES = { workflow, features, pricing, faq };
+export const DEEP_DIVES = { workflow, features, aiOperations, pricing, faq };

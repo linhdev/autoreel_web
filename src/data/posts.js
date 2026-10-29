@@ -105,6 +105,16 @@ import lamVideoChoNhieuShop from './posts/lam-video-cho-nhieu-shop-cung-luc.js';
 import tuLuotXemToiDonHang from './posts/tu-luot-xem-toi-don-hang.js';
 import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
 
+// The AI Vận Hành cluster: one feature, five questions. What the loop is, how
+// to schedule it, how to read what comes back, how the learning works, and
+// when a human should press the button instead. Written together so the five
+// agree on the same facts about the same feature.
+import aiVanHanhLaGi from './posts/ai-van-hanh-la-gi.js';
+import chienDichChayLienTuc from './posts/chien-dich-chay-lien-tuc.js';
+import docSoLieuSauKhiDang from './posts/doc-so-lieu-sau-khi-dang.js';
+import agentTuHocTuongTac from './posts/agent-tu-hoc-tuong-tac.js';
+import khiNaoKhongNenDeAiTuDang from './posts/khi-nao-khong-nen-de-ai-tu-dang.js';
+
 /**
  * Everything above, newest first — the order the index and the footer draw.
  *
@@ -115,6 +125,11 @@ import doLuongHieuQuaVideo from './posts/do-luong-hieu-qua-video-ban-hang.js';
  * `chuanBiMay` is the one that does today.
  */
 export const posts = [
+  aiVanHanhLaGi,
+  chienDichChayLienTuc,
+  docSoLieuSauKhiDang,
+  agentTuHocTuongTac,
+  khiNaoKhongNenDeAiTuDang,
   toolTomTatPhim,
   cachLamVideoTomTat,
   kiemTienTomTat,

@@ -35,8 +35,8 @@ export default {
           rows: [
             ['Đã có video, chỉ cắt, xoá logo, lồng tiếng', 'Edit — 99.000đ/tháng', 'Đủ các màn xử lý cơ bản, không cần flow'],
             ['Tự làm nội dung từ chủ đề hoặc video có sẵn', 'Creator — 199.000đ/tháng', 'Có ba flow trọn gói và tóm tắt phim'],
-            ['Bán hàng, cần đăng Shopee và Facebook', 'Full — 259.000đ/tháng', 'Có auto publish, nhiều shop và nhiều Page'],
-            ['Hai máy hoặc hai người cùng làm', 'Full 2 máy — 329.000đ/tháng', 'Hai máy, mỗi máy một hàng đợi'],
+            ['Bán hàng, cần đăng Shopee và Facebook', 'Full — 259.000đ/tháng', 'Có auto publish, nhiều shop, nhiều Page và AI Vận Hành'],
+            ['Hai máy hoặc hai người cùng làm', 'Full 2 máy — 329.000đ/tháng', 'Hai máy, mỗi máy một hàng đợi, đều có AI Vận Hành'],
             ['Biết chắc dùng ba tháng', 'Full 3 tháng — 699.000đ', 'Tiết kiệm 78.000đ so với trả ba tháng lẻ'],
             ['Dùng lâu dài, không muốn gia hạn', 'Personal — 1.490.000đ', 'Mua đứt; hoàn vốn sau khoảng 6 tháng so với Full'],
             ['Team nhiều máy, nhiều tài khoản', 'Team — 3.990.000đ', 'Chưa mở bán; đăng ký nhận thông báo'],
@@ -102,6 +102,7 @@ export default {
     ],
     faq: [
       ['Có phí theo video không?', 'Không. Giá gói không phụ thuộc số video bạn tạo trong thời gian sử dụng.'],
+      ['AI Vận Hành có trong gói nào?', 'Có từ Full trở lên: Full, Full 2 máy, Full 3 tháng, Personal và Team. Edit và Creator không có, vì chiến dịch cần phần đăng bài và số liệu Facebook.'],
       ['Giá đã gồm AI chưa?', 'Chưa. AI/API bên thứ ba trả riêng cho nhà cung cấp bạn chọn.'],
       ['Có hoàn tiền không?', 'Trong 7 ngày nếu license chưa kích hoạt; đã kích hoạt thì xem xét từng trường hợp.'],
       ['Trả bằng cách nào?', 'PayOS hoặc PayPal, tuỳ cổng thanh toán hiện trên trang checkout.'],
@@ -132,8 +133,8 @@ export default {
           rows: [
             ['You have footage and only need to cut, remove a logo, dub', 'Edit — $6.99/month', 'The basic processing screens; no flows'],
             ['You make content from a topic or existing video', 'Creator — $8.49/month', 'The three end-to-end flows and movie recap'],
-            ['You sell and need to post to Shopee and Facebook', 'Full — $10.99/month', 'Auto-publish, several shops and Pages'],
-            ['Two machines or two people', 'Full · 2 computers — $13.99/month', 'Two machines, each with its own queue'],
+            ['You sell and need to post to Shopee and Facebook', 'Full — $10.99/month', 'Auto-publish, several shops and Pages, and AI Operations'],
+            ['Two machines or two people', 'Full · 2 computers — $13.99/month', 'Two machines, each with its own queue, both with AI Operations'],
             ['You know you will use three months', 'Full · 3 months — $28.99', 'Saves $3.98 against three monthly payments'],
             ['Long-term use without renewals', 'Personal — $61.99', 'One-off; pays for itself in about 6 months against Full'],
             ['A team with several machines and accounts', 'Team — $153.46', 'Not on sale yet; join the notification list'],
@@ -199,6 +200,7 @@ export default {
     ],
     faq: [
       ['Is there a per-video fee?', 'No. The plan price does not depend on how many videos you make while it is active.'],
+      ['Which plans include AI Operations?', 'Full and above: Full, Full · 2 computers, Full · 3 months, Personal and Team. Edit and Creator do not, because a campaign needs publishing and Facebook numbers.'],
       ['Is AI included?', 'No. Third-party AI/API usage is paid separately to the provider you choose.'],
       ['Are refunds available?', 'Within 7 days if the licence has not been activated; after activation, requests are considered case by case.'],
       ['How do I pay?', 'PayOS or PayPal, whichever the checkout page offers.'],

@@ -123,6 +123,7 @@ export const planDetails = {
         'Hẹn giờ đăng — app giữ nhịp, không cần ngồi canh.',
         'Điều khiển từ Telegram: xem tiến trình và ra lệnh từ điện thoại.',
         'Trợ lý AI trong app: hỏi cách làm, nhờ chạy việc.',
+        'AI Vận Hành: một chiến dịch tự tìm video, dựng, kiểm, đăng và đo số.',
         'Nhiều tài khoản, nhiều shop cùng lúc; 30 video mỗi lô.',
       ],
       benefits: [
@@ -397,6 +398,7 @@ export const planDetails = {
         'Schedule posts — the app keeps the rhythm while you are elsewhere.',
         'Control it from Telegram: watch progress and issue commands from your phone.',
         'Ask the built-in AI assistant how to do something, or to run it.',
+        'AI Operations: one campaign that finds the video, builds it, checks it, posts it and measures it.',
         'Several accounts and shops at once; 30 videos per batch.',
       ],
       benefits: [
