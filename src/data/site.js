@@ -308,19 +308,17 @@ export const demo = {
     },
   },
   /**
-   * The 16:9 cut, recorded from the running app: `tools/record-demo.mjs --set
-   * short` in the ShortGPT repo, then `tools/demo-stitch.mjs --set short`.
-   * 1m34s, 1080p, **Vietnamese narration with a Vietnamese subtitle band burned
-   * into the picture** — so the English page plays the same Vietnamese video.
-   * A second, English recording is a separate job: change `say` in
-   * `tools/demo/short.mjs` and re-run it.
+   * Recorded from the real AI Vận Hành screens and narrated per language:
+   * /demo/autoreel-demo.mp4 is Vietnamese, /demo/autoreel-demo-en.mp4 is English.
+   * 16:9, 1080p, about 2m20.
    *
    * Served from this site rather than YouTube on purpose: the player is
    * `preload="none"`, so a visitor who does not press play downloads none of the
-   * 10 MB. If it moves to YouTube instead, clear `videoSrc`, set `youtubeId`,
+   * file. If it moves to YouTube instead, clear `videoSrc`, set `youtubeId`,
    * and the facade below swaps over without touching the component.
    */
   videoSrc: '/demo/autoreel-demo.mp4',
+  videoSrcEn: '/demo/autoreel-demo-en.mp4',
   youtubeId: '',
 };
 

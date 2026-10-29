@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 560" width="760" height="560" role="img" aria-labelledby="ttl">
+  <title id="ttl">A decision tree from a keyword or a link to the three ways of fetching video from six sources</title>
+  <defs>
+    <marker id="blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M1,1 L9,5 L1,9 z" fill="#5b78ff"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="560" fill="#0b1024"/>
+  <rect x="10" y="10" width="740" height="540" rx="14" fill="none" stroke="#2b3557"/>
+  <text x="380" y="36" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#8ea0c9">Three answers before a download: which platform, fetched how, and what to try next.</text>
+
+  <!-- Start -->
+  <rect x="240" y="54" width="280" height="48" rx="10" fill="#151d38" stroke="#37d9ff"/>
+  <text x="380" y="73" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#e7eeff">What do you have?</text>
+  <text x="380" y="90" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">a keyword or a link</text>
+
+  <!-- Branches -->
+  <rect x="76" y="132" width="230" height="48" rx="9" fill="#151d38" stroke="#3b477a"/>
+  <text x="191" y="151" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#e7eeff">A keyword</text>
+  <text x="191" y="167" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8ea0c9">only four platforms answer</text>
+
+  <rect x="454" y="132" width="230" height="48" rx="9" fill="#151d38" stroke="#3b477a"/>
+  <text x="569" y="151" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600" fill="#e7eeff">A link</text>
+  <text x="569" y="167" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8ea0c9">all six platforms accept</text>
+
+  <line x1="300" y1="102" x2="196" y2="128" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+  <line x1="460" y1="102" x2="564" y2="128" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+
+  <!-- What answers -->
+  <rect x="44" y="208" width="294" height="56" rx="9" fill="#11172d" stroke="#2b3557"/>
+  <text x="58" y="230" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#e7eeff">Found on: Bilibili · Douyin</text>
+  <text x="58" y="247" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">YouTube · iQiyi</text>
+
+  <rect x="422" y="208" width="294" height="56" rx="9" fill="#11172d" stroke="#2b3557"/>
+  <text x="436" y="230" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#e7eeff">Takes a link: YouTube · TikTok · Douyin</text>
+  <text x="436" y="247" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">Bilibili · Hongguoduanju · iQiyi</text>
+
+  <line x1="191" y1="180" x2="191" y2="204" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+  <line x1="569" y1="180" x2="569" y2="204" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+
+  <!-- Three methods -->
+  <rect x="24" y="290" width="712" height="100" rx="12" fill="#11172d" stroke="#2b3557"/>
+  <text x="40" y="308" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#8ea0c9">Three ways to fetch — the platform chooses, not the user</text>
+
+  <line x1="191" y1="264" x2="191" y2="286" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+  <line x1="569" y1="264" x2="569" y2="286" stroke="#5b78ff" stroke-width="1.6" marker-end="url(#blue)"/>
+
+  <rect x="36" y="316" width="216" height="62" rx="9" fill="#151d38" stroke="#55e6a5"/>
+  <text x="50" y="336" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#e7eeff">① yt-dlp</text>
+  <text x="50" y="352" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">each platform keeps a list</text>
+  <text x="50" y="366" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8ea0c9">of attempts, in measured order</text>
+
+  <rect x="272" y="316" width="216" height="62" rx="9" fill="#151d38" stroke="#5b78ff"/>
+  <text x="286" y="336" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#e7eeff">② A real Chrome</text>
+  <text x="286" y="352" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">one page, one exchange</text>
+  <text x="286" y="366" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8ea0c9">port 47832</text>
+
+  <rect x="508" y="316" width="216" height="62" rx="9" fill="#151d38" stroke="#9b5cff"/>
+  <text x="522" y="336" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="12.5" font-weight="600" fill="#e7eeff">③ Read the page</text>
+  <text x="522" y="352" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#aeb8d4">an ordinary HTTP request</text>
+  <text x="522" y="366" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8ea0c9">Bilibili's API · Hongguoduanju's mp4</text>
+
+  <!-- Mapping -->
+  <rect x="24" y="406" width="712" height="110" rx="12" fill="#0f1730" stroke="#2b3557"/>
+  <text x="40" y="426" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#8ea0c9">Which way each platform uses</text>
+  <text x="44" y="450" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#e7eeff">Fetch: YouTube ① · TikTok ① · Hongguoduanju ①</text>
+  <text x="44" y="472" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#e7eeff">Fetch: Douyin ② · Bilibili ② · iQiyi ②</text>
+  <text x="44" y="494" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#e7eeff">Search: Bilibili ③ then ② · iQiyi ② · Douyin ②</text>
+
+  <text x="380" y="538" text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="10.5" fill="#8ea0c9">Shopee uses a second window: port 47831, its own profile.</text>
+</svg>

@@ -114,6 +114,11 @@ import chienDichChayLienTuc from './posts/chien-dich-chay-lien-tuc.js';
 import docSoLieuSauKhiDang from './posts/doc-so-lieu-sau-khi-dang.js';
 import agentTuHocTuongTac from './posts/agent-tu-hoc-tuong-tac.js';
 import khiNaoKhongNenDeAiTuDang from './posts/khi-nao-khong-nen-de-ai-tu-dang.js';
+import kienTrucMotMayKhach from './posts/kien-truc-mot-may-khach.js';
+import hangDoiJobSongSotRestart from './posts/hang-doi-job-song-sot-restart.js';
+import sauNguonVideoBaCachLay from './posts/sau-nguon-video-ba-cach-lay.js';
+import duongOngDungVideoFfmpegGpu from './posts/duong-ong-dung-video-ffmpeg-gpu.js';
+import licenseGuard72GioOffline from './posts/license-guard-72-gio-offline.js';
 
 /**
  * Everything above, newest first — the order the index and the footer draw.
@@ -125,6 +130,11 @@ import khiNaoKhongNenDeAiTuDang from './posts/khi-nao-khong-nen-de-ai-tu-dang.js
  * `chuanBiMay` is the one that does today.
  */
 export const posts = [
+  kienTrucMotMayKhach,
+  hangDoiJobSongSotRestart,
+  sauNguonVideoBaCachLay,
+  duongOngDungVideoFfmpegGpu,
+  licenseGuard72GioOffline,
   aiVanHanhLaGi,
   chienDichChayLienTuc,
   docSoLieuSauKhiDang,

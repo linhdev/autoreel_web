@@ -55,7 +55,11 @@ function bundle(lang) {
     heroFlow: heroFlow[lang],
     howItWorks: howItWorks[lang],
     line,
-    demo: { ...demo[lang], videoSrc: demo.videoSrc, youtubeId: demo.youtubeId },
+    demo: {
+      ...demo[lang],
+      videoSrc: lang === 'en' && demo.videoSrcEn ? demo.videoSrcEn : demo.videoSrc,
+      youtubeId: demo.youtubeId,
+    },
     proof: proof[lang],
     finalCta: {
       ...finalCta[lang],
