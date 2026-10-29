@@ -4,6 +4,7 @@ import { RouterProvider, useRouter } from './i18n/router.jsx';
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
 import Hero from './components/sections/Hero.jsx';
+import AIOperations from './components/sections/AIOperations.jsx';
 import WorkflowSection from './components/sections/WorkflowSection.jsx';
 import HowItWorks from './components/sections/HowItWorks.jsx';
 import Benefits from './components/sections/Benefits.jsx';
@@ -20,6 +21,9 @@ import RouteDeepDive from './components/sections/RouteDeepDive.jsx';
  * `routes.js`; this list is what home falls back to when it names none.
  */
 const HOME_SECTIONS = [
+  // First after the hero on purpose: AI Vận Hành is the product's signature,
+  // and a reader who scrolls once should meet it before the individual jobs.
+  'aiOperations',
   'workflow',
   'howItWorks',
   'benefits',
@@ -40,6 +44,7 @@ const HOME_SECTIONS = [
  * while a build-time throw over a typo in a data file is a deploy that stops.
  */
 const SECTIONS = {
+  aiOperations: AIOperations,
   workflow: WorkflowSection,
   howItWorks: HowItWorks,
   benefits: Benefits,

@@ -33,6 +33,7 @@ import {
   ui,
 } from '../data/site.js';
 import { benefits, benefitsSection } from '../data/features.js';
+import { aiOperationsSection } from '../data/aiOperationsSection.js';
 import { allFeatures, allFeaturesSection } from '../data/allFeatures.js';
 import { workflows, workflowSection } from '../data/workflows.js';
 import { CURRENCY_LOCALE, plans, pricingGroups, pricingSection } from '../data/pricing.js';
@@ -73,6 +74,7 @@ function bundle(lang) {
     workflowSection: workflowSection[lang],
     benefits: benefits[lang],
     benefitsSection: benefitsSection[lang],
+    aiOperations: aiOperationsSection[lang],
     allFeatures: allFeatures[lang],
     allFeaturesSection: allFeaturesSection[lang],
     pricingSection: pricingSection[lang],

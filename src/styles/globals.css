@@ -1194,6 +1194,299 @@
     margin-top: 4px;
   }
 
+  /* ==========================================================================
+     AI Vận Hành — the home page's signature block.
+
+     The one section that is not a job. It gets a shape no other section has:
+     a permanent gradient border (the cards only show theirs on hover), a
+     faint blueprint grid, and the six-step loop drawn as a ring instead of a
+     row of cards — the loop is the product, so the picture is the loop.
+
+     The ring is pure CSS. Each `<li>` carries `--i` and is placed by
+     `rotate(--i * 60deg) translateY(-r) rotate(-(--i) * 60deg)`: rotate out,
+     move along the new axis, rotate back so the chip stays upright. Nothing
+     is measured in JavaScript, so a resize costs a repaint and no work.
+     ========================================================================== */
+  .ar-signature-panel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+    gap: 46px;
+    align-items: center;
+    padding: clamp(28px, 4vw, 52px);
+    border-radius: var(--radius-panel);
+    background:
+      radial-gradient(circle at 10% 6%, rgba(55, 217, 255, 0.14), transparent 34%),
+      radial-gradient(circle at 90% 12%, rgba(155, 92, 255, 0.18), transparent 38%),
+      linear-gradient(145deg, #0e1530, #0a0f22 72%);
+    box-shadow: var(--shadow-panel), 0 0 70px rgba(91, 120, 255, 0.12);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* The always-on gradient border. Same mask trick as `.ar-card-glow`, minus
+     the hover: this is the signature, so it is never off. */
+  .ar-signature-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(55, 217, 255, 0.75),
+      rgba(91, 120, 255, 0.5),
+      rgba(155, 92, 255, 0.75),
+      rgba(239, 79, 196, 0.6)
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Blueprint grid, faded to nothing behind the ring so it reads as depth
+     rather than as a texture over the whole panel. */
+  .ar-signature-panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(circle at 74% 50%, #000 0%, transparent 64%);
+    mask-image: radial-gradient(circle at 74% 50%, #000 0%, transparent 64%);
+    pointer-events: none;
+  }
+
+  .ar-signature-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(155, 92, 255, 0.4);
+    background: rgba(155, 92, 255, 0.12);
+    color: #e6dbff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    line-height: 1;
+  }
+
+  .ar-signature-copy h2 {
+    margin: 18px 0 14px;
+    font-size: clamp(1.85rem, 3.5vw, 2.95rem);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 1.08;
+  }
+
+  .ar-signature-lede {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 1.02rem;
+    max-width: 560px;
+  }
+
+  .ar-signature-points {
+    display: grid;
+    gap: 10px;
+    margin: 0 0 26px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ar-signature-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: #dde5f8;
+    font-size: 0.97rem;
+  }
+
+  .ar-signature-points li svg {
+    flex: none;
+    margin-top: 4px;
+    color: var(--cyan);
+  }
+
+  .ar-signature-points strong {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .ar-signature-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .ar-signature-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 18px 0 0;
+    color: #93a3c9;
+    font-size: 0.83rem;
+  }
+
+  .ar-signature-note svg {
+    color: var(--green);
+    flex: none;
+  }
+
+  /* ---- The loop ---- */
+  .ar-signature-loop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ar-signature-loop::before {
+    content: '';
+    position: absolute;
+    inset: 4% -4% -8%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(91, 120, 255, 0.22), transparent 62%);
+    filter: blur(18px);
+    pointer-events: none;
+  }
+
+  .ar-signature-loop-label {
+    margin: 0;
+    color: #9fb0d8;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .ar-signature-orbit {
+    --orbit-r: clamp(102px, 17vw, 168px);
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1;
+  }
+
+  .ar-signature-ring {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 1px dashed rgba(140, 160, 220, 0.28);
+  }
+
+  /* A comet travelling around the wire — the "loop keeps running" cue. */
+  .ar-signature-ring::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 50%;
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(55, 217, 255, 0.9) 42deg,
+      rgba(155, 92, 255, 0.85) 84deg,
+      transparent 140deg
+    );
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+    animation: ar-loop-sweep 9s linear infinite;
+  }
+
+  .ar-signature-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 44%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: radial-gradient(circle at 50% 36%, rgba(55, 217, 255, 0.18), rgba(10, 15, 34, 0.92) 70%);
+    box-shadow:
+      0 0 48px rgba(91, 120, 255, 0.3),
+      inset 0 0 34px rgba(55, 217, 255, 0.08);
+    text-align: center;
+  }
+
+  .ar-signature-core strong {
+    color: #ffffff;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .ar-signature-core small {
+    margin-top: 3px;
+    color: #9fb0d8;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .ar-signature-steps {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ar-signature-steps li {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Six steps, 60° apart. See the note at the top of this block. */
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--i) * 60deg))
+      translateY(calc(var(--orbit-r) * -1))
+      rotate(calc(var(--i) * -60deg));
+  }
+
+  .ar-signature-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 13px;
+    border-radius: 999px;
+    border: 1px solid rgba(120, 150, 220, 0.3);
+    background: rgba(11, 16, 36, 0.94);
+    color: #e7edff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* One colour per step, so the ring reads as six things and not as one
+     repeated chip. */
+  .ar-signature-steps li:nth-child(1) .ar-signature-chip svg { color: var(--cyan); }
+  .ar-signature-steps li:nth-child(2) .ar-signature-chip svg { color: var(--blue); }
+  .ar-signature-steps li:nth-child(3) .ar-signature-chip svg { color: var(--purple); }
+  .ar-signature-steps li:nth-child(4) .ar-signature-chip svg { color: var(--pink); }
+  .ar-signature-steps li:nth-child(5) .ar-signature-chip svg { color: var(--green); }
+  .ar-signature-steps li:nth-child(6) .ar-signature-chip svg { color: #ffd166; }
+
   .ar-footer-link {
     transition: color 0.2s ease;
   }
@@ -1906,6 +2199,12 @@
   }
 }
 
+@keyframes ar-loop-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes ar-cta-drift {
   0%,
   100% {
@@ -2004,6 +2303,15 @@
   .ar-demo-box {
     padding: 26px;
   }
+
+  .ar-signature-panel {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .ar-signature-orbit {
+    max-width: 380px;
+  }
 }
 
 @media (max-width: 680px) {
@@ -2053,6 +2361,43 @@
   .ar-aurora {
     filter: blur(56px);
     opacity: 0.45;
+  }
+
+  /* The ring does not fit a phone, and shrinking it would make six chips
+     overlap. Below 680px the same six steps become a plain two-column list:
+     the order is still the loop, read top-left to bottom-right. */
+  .ar-signature-loop::before,
+  .ar-signature-ring,
+  .ar-signature-core {
+    display: none;
+  }
+
+  .ar-signature-orbit {
+    max-width: none;
+    aspect-ratio: auto;
+  }
+
+  .ar-signature-steps {
+    position: static;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .ar-signature-steps li {
+    position: static;
+    transform: none;
+  }
+
+  .ar-signature-chip {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+
+  .ar-signature-actions .ar-btn {
+    width: 100%;
   }
 }
 

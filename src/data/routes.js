@@ -62,14 +62,14 @@ const baseRoutes = [
       vi: {
         title: 'AutoReel - AI Content Automation | Tạo và đăng video tự động',
         description:
-          'AutoReel giúp Affiliate và Creator tạo, xử lý và đăng video tự động lên Shopee và Facebook/Reels trong một workflow.',
+          'AutoReel giúp Affiliate và Creator tạo, xử lý và đăng video tự động lên Shopee và Facebook/Reels. AI Vận Hành chạy cả vòng lặp: tìm nguồn, dựng, đăng, đo và học.',
       },
       en: {
         // Kept under ~60 characters: past that Google truncates the tail, and
         // the tail is where the keyword sits.
         title: 'AutoReel - AI Content Automation | Auto-publish video',
         description:
-          'AutoReel creates, processes and publishes videos to Shopee and Facebook/Reels automatically, from one workflow.',
+          'AutoReel creates, processes and publishes videos to Shopee and Facebook/Reels. AI Operations runs the whole loop: find a source, build, post, measure and learn.',
       },
     },
   },
